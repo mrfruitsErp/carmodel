@@ -13,17 +13,23 @@ class SubitoItPlatform extends BasePlatform
 
     public function testConnection(): array
     {
+        // Subito.it non ha API: verifica solo che le credenziali siano presenti
         $creds = $this->credentials();
         $ok    = !empty($creds['email']) && !empty($creds['password']);
 
         return [
             'ok'      => $ok,
             'message' => $ok
-                ? 'Credenziali Subito.it configurate (automazione browser)'
-                : 'Email o password mancanti',
+                ? 'Credenziali Subito.it configurate (integrazione via automazione browser)'
+                : 'Email o password Subito.it mancanti',
         ];
     }
 
+    /**
+     * Subito.it non ha API ufficiali.
+     * La pubblicazione avviene tramite job che usa Playwright/browser automation.
+     * Questo metodo crea il job e imposta il listing in stato "publishing".
+     */
     public function publish(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
         if (!$this->isConfigured()) return $this->notConfiguredError();
@@ -33,13 +39,14 @@ class SubitoItPlatform extends BasePlatform
             return ['success' => false, 'message' => implode(', ', $validation['errors']), 'raw' => []];
         }
 
+        // Dispatcha job async per browser automation
         \App\Jobs\Marketplace\PublishSubitoJob::dispatch($listing->id, $this->tenantId);
 
         return [
             'success'      => true,
-            'external_id'  => null,
+            'external_id'  => null, // verrà popolato dal job
             'external_url' => null,
-            'message'      => 'Pubblicazione Subito.it accodata — completata entro pochi minuti',
+            'message'      => 'Pubblicazione Subito.it accodata — verrà completata entro pochi minuti',
             'raw'          => ['queued' => true],
         ];
     }
@@ -69,27 +76,31 @@ class SubitoItPlatform extends BasePlatform
 
     public function fetchLeads(MarketplaceListing $listing): array
     {
-        return [];
+        return []; // I messaggi Subito arrivano via email/notifica
     }
 
     public function buildPayload(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
         return [
-            'titolo'      => $vehicle->computed_title,
-            'descrizione' => $vehicle->description ?? $vehicle->computed_title,
-            'prezzo'      => (float) ($listing->listed_price ?? $vehicle->asking_price),
-            'trattabile'  => (bool) $vehicle->price_negotiable,
-            'marca'       => $vehicle->brand,
-            'modello'     => $vehicle->model,
-            'anno'        => (int) $vehicle->year,
-            'km'          => (int) $vehicle->mileage,
-            'carburante'  => $vehicle->fuel_type,
-            'cambio'      => $vehicle->transmission,
-            'colore'      => $vehicle->color,
-            'cilindrata'  => $vehicle->engine_cc,
-            'potenza_cv'  => $vehicle->power_hp,
-            'porte'       => (int) $vehicle->doors,
-            'foto'        => $this->getPhotoUrls($vehicle),
+            'titolo'        => $vehicle->computed_title,
+            'descrizione'   => $vehicle->description ?? $vehicle->computed_title,
+            'prezzo'        => (float) ($listing->listed_price ?? $vehicle->asking_price),
+            'trattabile'    => (bool) $vehicle->price_negotiable,
+            'marca'         => $vehicle->brand,
+            'modello'       => $vehicle->model,
+            'anno'          => (int) $vehicle->year,
+            'km'            => (int) $vehicle->mileage,
+            'carburante'    => $vehicle->fuel_type,
+            'cambio'        => $vehicle->transmission,
+            'colore'        => $vehicle->color,
+            'cilindrata'    => $vehicle->engine_cc,
+            'potenza_cv'    => $vehicle->power_hp,
+            'porte'         => (int) $vehicle->doors,
+            'foto'          => $this->getPhotoUrls($vehicle),
         ];
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FACEBOOK MARKETPLACE
+// ═══════════════════════════════════════════════════════════════════════════

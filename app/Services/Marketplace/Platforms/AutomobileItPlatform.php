@@ -43,15 +43,13 @@ class AutomobileItPlatform extends BasePlatform
             return ['success' => false, 'message' => implode(', ', $validation['errors']), 'raw' => []];
         }
 
-        $result = $this->apiRequest(
-            'POST', self::BASE_URL . '/listings',
-            $this->buildPayload($vehicle, $listing),
-            $this->authHeaders(), 'publish', $listing->id
-        );
+        $payload = $this->buildPayload($vehicle, $listing);
+        $result  = $this->apiRequest('POST', self::BASE_URL . '/listings', $payload, $this->authHeaders(), 'publish', $listing->id);
 
         if ($result['success']) {
             $id = $result['body']['id'] ?? null;
 
+            // Upload foto come media separato
             if ($id) {
                 foreach ($vehicle->getMedia('sale_photos') as $media) {
                     try {
@@ -61,11 +59,8 @@ class AutomobileItPlatform extends BasePlatform
                     } catch (\Throwable) {}
                 }
 
-                $this->apiRequest('PATCH',
-                    self::BASE_URL . "/listings/{$id}",
-                    ['status' => 'published'],
-                    $this->authHeaders(), 'publish', $listing->id
-                );
+                // Attiva l'annuncio
+                $this->apiRequest('PATCH', self::BASE_URL . "/listings/{$id}", ['status' => 'published'], $this->authHeaders(), 'publish', $listing->id);
             }
 
             return [
@@ -88,14 +83,12 @@ class AutomobileItPlatform extends BasePlatform
             'PUT',
             self::BASE_URL . "/listings/{$listing->external_id}",
             $this->buildPayload($vehicle, $listing),
-            $this->authHeaders(), 'update', $listing->id
+            $this->authHeaders(),
+            'update',
+            $listing->id
         );
 
-        return [
-            'success' => $result['success'],
-            'message' => $result['success'] ? 'Aggiornato' : $result['error'],
-            'raw'     => $result['body'],
-        ];
+        return ['success' => $result['success'], 'message' => $result['success'] ? 'Aggiornato' : $result['error'], 'raw' => $result['body']];
     }
 
     public function updatePrice(MarketplaceListing $listing, float $newPrice): array
@@ -104,9 +97,10 @@ class AutomobileItPlatform extends BasePlatform
             'PATCH',
             self::BASE_URL . "/listings/{$listing->external_id}",
             ['price' => $newPrice],
-            $this->authHeaders(), 'update', $listing->id
+            $this->authHeaders(),
+            'update',
+            $listing->id
         );
-
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Prezzo aggiornato' : $result['error']];
     }
 
@@ -114,12 +108,7 @@ class AutomobileItPlatform extends BasePlatform
     {
         if (!$listing->external_id) return ['success' => true, 'message' => 'OK'];
 
-        $result = $this->apiRequest(
-            'DELETE',
-            self::BASE_URL . "/listings/{$listing->external_id}",
-            [], $this->authHeaders(), 'delete', $listing->id
-        );
-
+        $result = $this->apiRequest('DELETE', self::BASE_URL . "/listings/{$listing->external_id}", [], $this->authHeaders(), 'delete', $listing->id);
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Eliminato' : $result['error']];
     }
 
@@ -127,11 +116,7 @@ class AutomobileItPlatform extends BasePlatform
     {
         if (!$listing->external_id) return ['views' => 0, 'contacts' => 0, 'favorites' => 0];
 
-        $result = $this->apiRequest(
-            'GET',
-            self::BASE_URL . "/listings/{$listing->external_id}/stats",
-            [], $this->authHeaders(), 'sync_stats', $listing->id
-        );
+        $result = $this->apiRequest('GET', self::BASE_URL . "/listings/{$listing->external_id}/stats", [], $this->authHeaders(), 'sync_stats', $listing->id);
 
         return [
             'views'     => $result['body']['views'] ?? 0,
@@ -144,11 +129,7 @@ class AutomobileItPlatform extends BasePlatform
     {
         if (!$listing->external_id) return [];
 
-        $result = $this->apiRequest(
-            'GET',
-            self::BASE_URL . "/leads?listing_id={$listing->external_id}",
-            [], $this->authHeaders(), 'fetch_leads', $listing->id
-        );
+        $result = $this->apiRequest('GET', self::BASE_URL . "/leads?listing_id={$listing->external_id}", [], $this->authHeaders(), 'fetch_leads', $listing->id);
 
         return collect($result['body']['leads'] ?? [])->map(fn($l) => [
             'external_id' => $l['id'] ?? null,
@@ -181,3 +162,7 @@ class AutomobileItPlatform extends BasePlatform
         ];
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EBAY MOTORS
+// ═══════════════════════════════════════════════════════════════════════════

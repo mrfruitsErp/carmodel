@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -67,12 +67,13 @@
 
   --radius:6px;
   --radius-lg:10px;
+}
 body{
   font-family:var(--font-body);
   background:var(--bg);
-  background-image:none;
   color:var(--text);
-};font-size:14px;line-height:1.5;min-height:100vh;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.012) 2px,rgba(255,255,255,.012) 4px),repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(255,255,255,.012) 2px,rgba(255,255,255,.012) 4px)}
+  font-size:14px;line-height:1.5;min-height:100vh;
+}
 .app{display:flex;min-height:100vh}
 .sidebar{
   width:248px;
@@ -86,11 +87,9 @@ body{
 .logo-name{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--text);letter-spacing:.06em}
 .logo-sub{font-size:9px;color:var(--text3);padding-left:46px;letter-spacing:.12em;text-transform:uppercase}
 .nav{flex:1;padding:8px 0}
-.nav-section{
-  color:#9ca3af;
-};letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.nav-section{color:#9ca3af;font-size:9px;font-weight:600;padding:10px 16px 4px;letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
 .nav-section::after{content:'';flex:1;height:1px;background:var(--border)}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:13px;color:var(--text2);transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.nav-item{display:flex;align-items:center;gap:10px;padding:6px 16px;font-size:12px;color:var(--text2);transition:all .15s;border-left:2px solid transparent;text-decoration:none}
 .nav-item:hover{background:var(--bg3);color:var(--text)}
 .nav-item.active{
   background:#fff7ed;
@@ -253,6 +252,23 @@ tbody tr:hover td{background:var(--bg3)}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
       Ricambi
     </a>
+    <div class="nav-section">Vendita Auto</div>
+    <a href="{{ route('marketplace.dashboard') }}" class="nav-item {{ request()->routeIs('marketplace.dashboard') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="{{ route('marketplace.vehicles.index') }}" class="nav-item {{ request()->routeIs('marketplace.vehicles.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+      Veicoli in vendita
+    </a>
+    <a href="{{ route('marketplace.leads.index') }}" class="nav-item {{ request()->routeIs('marketplace.leads.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Lead
+    </a>
+    <a href="{{ route('marketplace.settings') }}" class="nav-item {{ request()->routeIs('marketplace.settings*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Piattaforme
+    </a>
   </nav>
   <div class="user-area">
     <div style="display:flex;align-items:center;gap:10px">
@@ -280,5 +296,6 @@ tbody tr:hover td{background:var(--bg3)}
   </div>
 </div>
 </div>
+@stack('scripts')
 </body>
 </html>

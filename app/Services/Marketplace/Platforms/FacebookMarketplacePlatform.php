@@ -22,21 +22,18 @@ class FacebookMarketplacePlatform extends BasePlatform
     {
         if (!$this->isConfigured()) return ['ok' => false, 'message' => 'Page Access Token non configurato'];
 
-        $result = $this->apiRequest(
-            'GET',
-            self::GRAPH_URL . '/me',
-            ['access_token' => $this->credential('page_access_token')],
-            [], 'refresh_token'
-        );
+        $result = $this->apiRequest('GET', self::GRAPH_URL . '/me', ['access_token' => $this->credential('page_access_token')], [], 'refresh_token');
 
         return [
             'ok'      => $result['success'],
-            'message' => $result['success']
-                ? 'Connessione Facebook OK — ' . ($result['body']['name'] ?? 'Page')
-                : 'Token non valido',
+            'message' => $result['success'] ? 'Connessione Facebook OK — ' . ($result['body']['name'] ?? 'Page') : 'Token non valido',
         ];
     }
 
+    /**
+     * Facebook Marketplace per dealer:
+     * Pubblica tramite Catalog API (Product Catalog con vertical = automotive).
+     */
     public function publish(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
         if (!$this->isConfigured()) return $this->notConfiguredError();
@@ -46,15 +43,15 @@ class FacebookMarketplacePlatform extends BasePlatform
             return ['success' => false, 'message' => 'Catalog ID Facebook non configurato', 'raw' => []];
         }
 
-        $payload = array_merge(
-            $this->buildPayload($vehicle, $listing),
-            ['access_token' => $this->credential('page_access_token')]
-        );
+        $payload = $this->buildPayload($vehicle, $listing);
 
         $result = $this->apiRequest(
             'POST',
             self::GRAPH_URL . "/{$catalogId}/vehicles",
-            $payload, [], 'publish', $listing->id
+            array_merge($payload, ['access_token' => $this->credential('page_access_token')]),
+            [],
+            'publish',
+            $listing->id
         );
 
         if ($result['success'] && isset($result['body']['id'])) {
@@ -74,30 +71,21 @@ class FacebookMarketplacePlatform extends BasePlatform
     {
         if (!$listing->external_id) return $this->publish($vehicle, $listing);
 
-        $payload              = $this->buildPayload($vehicle, $listing);
+        $payload = $this->buildPayload($vehicle, $listing);
         $payload['access_token'] = $this->credential('page_access_token');
 
-        $result = $this->apiRequest(
-            'POST',
-            self::GRAPH_URL . "/{$listing->external_id}",
-            $payload, [], 'update', $listing->id
-        );
+        $result = $this->apiRequest('POST', self::GRAPH_URL . "/{$listing->external_id}", $payload, [], 'update', $listing->id);
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Aggiornato' : $result['error'], 'raw' => $result['body']];
     }
 
     public function updatePrice(MarketplaceListing $listing, float $newPrice): array
     {
-        $result = $this->apiRequest(
-            'POST',
-            self::GRAPH_URL . "/{$listing->external_id}",
-            [
-                'price'        => (int) ($newPrice * 100),
-                'currency'     => 'EUR',
-                'access_token' => $this->credential('page_access_token'),
-            ],
-            [], 'update', $listing->id
-        );
+        $result = $this->apiRequest('POST', self::GRAPH_URL . "/{$listing->external_id}", [
+            'price'        => (int) ($newPrice * 100), // Facebook vuole centesimi
+            'currency'     => 'EUR',
+            'access_token' => $this->credential('page_access_token'),
+        ], [], 'update', $listing->id);
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Prezzo aggiornato' : $result['error']];
     }
@@ -106,12 +94,9 @@ class FacebookMarketplacePlatform extends BasePlatform
     {
         if (!$listing->external_id) return ['success' => true, 'message' => 'OK'];
 
-        $result = $this->apiRequest(
-            'DELETE',
-            self::GRAPH_URL . "/{$listing->external_id}",
-            ['access_token' => $this->credential('page_access_token')],
-            [], 'delete', $listing->id
-        );
+        $result = $this->apiRequest('DELETE', self::GRAPH_URL . "/{$listing->external_id}", [
+            'access_token' => $this->credential('page_access_token'),
+        ], [], 'delete', $listing->id);
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Eliminato' : $result['error']];
     }
@@ -120,15 +105,10 @@ class FacebookMarketplacePlatform extends BasePlatform
     {
         if (!$listing->external_id) return ['views' => 0, 'contacts' => 0, 'favorites' => 0];
 
-        $result = $this->apiRequest(
-            'GET',
-            self::GRAPH_URL . "/{$listing->external_id}/insights",
-            [
-                'metric'       => 'post_impressions,post_engaged_users',
-                'access_token' => $this->credential('page_access_token'),
-            ],
-            [], 'sync_stats', $listing->id
-        );
+        $result = $this->apiRequest('GET', self::GRAPH_URL . "/{$listing->external_id}/insights", [
+            'metric'       => 'post_impressions,post_engaged_users',
+            'access_token' => $this->credential('page_access_token'),
+        ], [], 'sync_stats', $listing->id);
 
         $data    = collect($result['body']['data'] ?? []);
         $views   = $data->firstWhere('name', 'post_impressions')['values'][0]['value'] ?? 0;
@@ -139,6 +119,7 @@ class FacebookMarketplacePlatform extends BasePlatform
 
     public function fetchLeads(MarketplaceListing $listing): array
     {
+        // Facebook Leads via Messenger — richiede Lead Ads o Messenger webhook
         return [];
     }
 
@@ -147,19 +128,25 @@ class FacebookMarketplacePlatform extends BasePlatform
         $photos = $this->getPhotoUrls($vehicle);
 
         return [
-            'make'             => $vehicle->brand,
-            'model'            => $vehicle->model,
-            'year'             => (int) $vehicle->year,
-            'mileage'          => ['value' => (int) $vehicle->mileage, 'unit' => 'KM'],
-            'fuel_type'        => strtoupper($this->mapFuelType($vehicle->fuel_type)),
-            'transmission'     => strtoupper($this->mapTransmission($vehicle->transmission)),
-            'exterior_color'   => $vehicle->color ?? 'OTHER',
-            'body_style'       => strtoupper($vehicle->body_type ?? 'SEDAN'),
-            'price'            => (int) (($listing->listed_price ?? $vehicle->asking_price) * 100),
-            'currency'         => 'EUR',
-            'description'      => $vehicle->description ?? $vehicle->computed_title,
-            'title'            => $vehicle->computed_title,
-            'url'              => url('/'),
-            'image'            => array_map(fn($url) => ['url' => $url], $photos),
-            'availability'     => 'AVAILABLE',
-            'condition'        =
+            'make'                  => $vehicle->brand,
+            'model'                 => $vehicle->model,
+            'year'                  => (int) $vehicle->year,
+            'mileage'               => ['value' => (int) $vehicle->mileage, 'unit' => 'KM'],
+            'fuel_type'             => strtoupper($this->mapFuelType($vehicle->fuel_type)),
+            'transmission'          => strtoupper($this->mapTransmission($vehicle->transmission)),
+            'exterior_color'        => $vehicle->color ?? 'OTHER',
+            'body_style'            => strtoupper($vehicle->body_type ?? 'SEDAN'),
+            'price'                 => (int) (($listing->listed_price ?? $vehicle->asking_price) * 100),
+            'currency'              => 'EUR',
+            'description'           => $vehicle->description ?? $vehicle->computed_title,
+            'title'                 => $vehicle->computed_title,
+            'url'                   => url('/'),
+            'image'                 => array_map(fn($url) => ['url' => $url], $photos),
+            'availability'          => 'AVAILABLE',
+            'condition'             => 'USED',
+            'drivetrain'            => 'UNKNOWN',
+            'vin'                   => $vehicle->vin ?? '',
+            'state_of_vehicle'      => 'USED',
+        ];
+    }
+}

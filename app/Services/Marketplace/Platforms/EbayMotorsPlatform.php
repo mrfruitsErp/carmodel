@@ -12,7 +12,7 @@ class EbayMotorsPlatform extends BasePlatform
     private const INVENTORY_URL = 'https://api.ebay.com/sell/inventory/v1';
     private const OFFER_URL     = 'https://api.ebay.com/sell/inventory/v1/offer';
     private const MARKETPLACE   = 'EBAY_IT';
-    private const CATEGORY_ID   = '6002';
+    private const CATEGORY_ID   = '6002'; // Cars & Trucks IT
 
     public function platformKey(): string  { return 'ebay_motors'; }
     public function platformName(): string { return 'eBay Motors'; }
@@ -47,9 +47,7 @@ class EbayMotorsPlatform extends BasePlatform
             $creds = $this->credentials();
             $creds['access_token'] = $token;
             $this->credential->setCredentialsArray($creds);
-            $this->credential->update([
-                'token_expires_at' => now()->addSeconds($result['body']['expires_in'] ?? 7200)
-            ]);
+            $this->credential->update(['token_expires_at' => now()->addSeconds($result['body']['expires_in'] ?? 7200)]);
             return $token;
         }
 
@@ -65,9 +63,9 @@ class EbayMotorsPlatform extends BasePlatform
     private function authHeaders(): array
     {
         return [
-            'Authorization'           => 'Bearer ' . $this->getToken(),
-            'Content-Type'            => 'application/json',
-            'X-EBAY-C-MARKETPLACE-ID' => self::MARKETPLACE,
+            'Authorization'                => 'Bearer ' . $this->getToken(),
+            'Content-Type'                 => 'application/json',
+            'X-EBAY-C-MARKETPLACE-ID'      => self::MARKETPLACE,
         ];
     }
 
@@ -88,29 +86,37 @@ class EbayMotorsPlatform extends BasePlatform
 
         $sku = $this->buildSku($vehicle);
 
-        // Step 1: inventory item
+        // Step 1: Crea/aggiorna inventory item
         $inventoryResult = $this->apiRequest(
             'PUT',
             self::INVENTORY_URL . "/inventory_item/{$sku}",
             $this->buildPayload($vehicle, $listing),
-            $this->authHeaders(), 'publish', $listing->id
+            $this->authHeaders(),
+            'publish',
+            $listing->id
         );
 
         if (!$inventoryResult['success'] && $inventoryResult['status'] !== 204) {
             return ['success' => false, 'message' => $inventoryResult['error'] ?? 'Errore inventory', 'raw' => []];
         }
 
-        // Step 2: offer
+        // Step 2: Crea offer
         $offerResult = $this->createOffer($vehicle, $listing, $sku);
-        if (!$offerResult['success']) return $offerResult;
+
+        if (!$offerResult['success']) {
+            return $offerResult;
+        }
 
         $offerId = $offerResult['offer_id'];
 
-        // Step 3: pubblica
+        // Step 3: Pubblica offer
         $publishResult = $this->apiRequest(
             'POST',
             self::OFFER_URL . "/{$offerId}/publish",
-            [], $this->authHeaders(), 'publish', $listing->id
+            [],
+            $this->authHeaders(),
+            'publish',
+            $listing->id
         );
 
         if ($publishResult['success'] || $publishResult['status'] === 200) {
@@ -130,7 +136,7 @@ class EbayMotorsPlatform extends BasePlatform
     {
         $policies = $this->credential('policies') ?? [];
 
-        $result = $this->apiRequest('POST', self::OFFER_URL, [
+        $offerPayload = [
             'sku'               => $sku,
             'marketplaceId'     => self::MARKETPLACE,
             'format'            => 'FIXED_PRICE',
@@ -143,11 +149,13 @@ class EbayMotorsPlatform extends BasePlatform
             ],
             'pricingSummary' => [
                 'price' => [
-                    'value'    => number_format((float)($listing->listed_price ?? $vehicle->asking_price), 2, '.', ''),
+                    'value'    => number_format((float) ($listing->listed_price ?? $vehicle->asking_price), 2, '.', ''),
                     'currency' => 'EUR',
                 ],
             ],
-        ], $this->authHeaders(), 'publish', $listing->id);
+        ];
+
+        $result = $this->apiRequest('POST', self::OFFER_URL, $offerPayload, $this->authHeaders(), 'publish', $listing->id);
 
         return [
             'success'  => $result['success'],
@@ -159,12 +167,16 @@ class EbayMotorsPlatform extends BasePlatform
 
     public function update(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
-        $sku    = $this->buildSku($vehicle);
+        // eBay: aggiorna inventory item (PUT è idempotente)
+        $sku = $this->buildSku($vehicle);
+
         $result = $this->apiRequest(
             'PUT',
             self::INVENTORY_URL . "/inventory_item/{$sku}",
             $this->buildPayload($vehicle, $listing),
-            $this->authHeaders(), 'update', $listing->id
+            $this->authHeaders(),
+            'update',
+            $listing->id
         );
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Aggiornato' : $result['error'], 'raw' => $result['body']];
@@ -178,7 +190,9 @@ class EbayMotorsPlatform extends BasePlatform
             'PATCH',
             self::OFFER_URL . "/{$listing->external_id}",
             ['pricingSummary' => ['price' => ['value' => number_format($newPrice, 2, '.', ''), 'currency' => 'EUR']]],
-            $this->authHeaders(), 'update', $listing->id
+            $this->authHeaders(),
+            'update',
+            $listing->id
         );
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Prezzo aggiornato' : $result['error']];
@@ -190,4 +204,83 @@ class EbayMotorsPlatform extends BasePlatform
 
         $result = $this->apiRequest(
             'DELETE',
-            self::OFFER_
+            self::OFFER_URL . "/{$listing->external_id}",
+            [],
+            $this->authHeaders(),
+            'delete',
+            $listing->id
+        );
+        return ['success' => $result['success'], 'message' => $result['success'] ? 'Eliminato' : $result['error']];
+    }
+
+    public function fetchStats(MarketplaceListing $listing): array
+    {
+        // eBay non ha endpoint stats dedicato per listing auto, ritorna dati mock
+        return ['views' => 0, 'contacts' => 0, 'favorites' => 0];
+    }
+
+    public function fetchLeads(MarketplaceListing $listing): array
+    {
+        if (!$listing->external_id) return [];
+
+        $result = $this->apiRequest(
+            'GET',
+            'https://apiz.ebay.com/post-order/v2/inquiry?item_id=' . $listing->external_id,
+            [],
+            array_merge($this->authHeaders(), ['X-EBAY-C-MARKETPLACE-ID' => self::MARKETPLACE]),
+            'fetch_leads',
+            $listing->id
+        );
+
+        return collect($result['body']['inquiries'] ?? [])->map(fn($i) => [
+            'external_id' => $i['inquiryId'] ?? null,
+            'name'        => $i['buyerUsername'] ?? null,
+            'email'       => null,
+            'phone'       => null,
+            'message'     => $i['buyerMessage'] ?? null,
+            'received_at' => $i['creationDate'] ?? now()->toISOString(),
+            'raw'         => $i,
+        ])->toArray();
+    }
+
+    public function buildPayload(SaleVehicle $vehicle, MarketplaceListing $listing): array
+    {
+        $photos = $this->getPhotoUrls($vehicle, 12);
+
+        return [
+            'product' => [
+                'title'       => $vehicle->computed_title,
+                'description' => $vehicle->description ?? $vehicle->computed_title,
+                'aspects'     => [
+                    'Make'           => [$vehicle->brand],
+                    'Model'          => [$vehicle->model],
+                    'Year'           => [(string) $vehicle->year],
+                    'Mileage'        => [$vehicle->mileage . ' km'],
+                    'Fuel Type'      => [$this->mapFuelType($vehicle->fuel_type, 'ebay_motors')],
+                    'Transmission'   => [$this->mapTransmission($vehicle->transmission)],
+                    'Body Type'      => [$vehicle->body_type ?? 'Other'],
+                    'Number of Doors'=> [(string) $vehicle->doors],
+                    'Colour'         => [$vehicle->color ?? 'Not specified'],
+                ],
+                'imageUrls' => $photos,
+            ],
+            'condition'    => 'USED_EXCELLENT',
+            'availability' => ['shipToLocationAvailability' => ['quantity' => 1]],
+        ];
+    }
+
+    private function buildSku(SaleVehicle $vehicle): string
+    {
+        return strtoupper(implode('-', array_filter([
+            $vehicle->brand,
+            $vehicle->model,
+            $vehicle->year,
+            $vehicle->plate ?? $vehicle->id,
+            'IT',
+        ])));
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SUBITO.IT (browser automation — nessuna API ufficiale)
+// ═══════════════════════════════════════════════════════════════════════════

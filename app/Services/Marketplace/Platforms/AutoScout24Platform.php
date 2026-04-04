@@ -8,17 +8,20 @@ use App\Services\Marketplace\BasePlatform;
 
 class AutoScout24Platform extends BasePlatform
 {
-    private const AUTH_URL  = 'https://auth.autoscout24.com/oauth/token';
-    private const BASE_URL  = 'https://listing-creation.api.autoscout24.com';
-    private const LEADS_URL = 'https://listing-creation.api.autoscout24.com/leads';
+    private const AUTH_URL    = 'https://auth.autoscout24.com/oauth/token';
+    private const BASE_URL    = 'https://listing-creation.api.autoscout24.com';
+    private const LEADS_URL   = 'https://listing-creation.api.autoscout24.com/leads';
 
     public function platformKey(): string  { return 'autoscout24'; }
     public function platformName(): string { return 'AutoScout24'; }
+
+    // ─── Auth ─────────────────────────────────────────────────────────────────
 
     private function getAccessToken(): ?string
     {
         if (!$this->isConfigured()) return null;
 
+        // Usa token in cache se ancora valido
         if ($this->credential->token_expires_at && $this->credential->token_expires_at->gt(now()->addMinutes(5))) {
             return $this->credential('access_token');
         }
@@ -36,12 +39,15 @@ class AutoScout24Platform extends BasePlatform
         ], ['Content-Type' => 'application/x-www-form-urlencoded'], 'refresh_token');
 
         if ($result['success'] && isset($result['body']['access_token'])) {
-            $token     = $result['body']['access_token'];
+            $token = $result['body']['access_token'];
             $expiresIn = $result['body']['expires_in'] ?? 3600;
-            $creds     = $this->credentials();
+
+            // Salva token aggiornato nelle credenziali
+            $creds = $this->credentials();
             $creds['access_token'] = $token;
             $this->credential->setCredentialsArray($creds);
             $this->credential->update(['token_expires_at' => now()->addSeconds($expiresIn)]);
+
             return $token;
         }
 
@@ -63,17 +69,23 @@ class AutoScout24Platform extends BasePlatform
         ];
     }
 
+    // ─── Test connessione ─────────────────────────────────────────────────────
+
     public function testConnection(): array
     {
         if (!$this->isConfigured()) {
             return ['ok' => false, 'message' => 'Credenziali non configurate'];
         }
+
         $token = $this->fetchNewToken();
+
         return [
             'ok'      => (bool) $token,
             'message' => $token ? 'Connessione AutoScout24 OK' : 'Autenticazione fallita — verifica client_id e client_secret',
         ];
     }
+
+    // ─── Publish ──────────────────────────────────────────────────────────────
 
     public function publish(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
@@ -84,10 +96,12 @@ class AutoScout24Platform extends BasePlatform
             return ['success' => false, 'message' => implode(', ', $validation['errors']), 'raw' => []];
         }
 
+        $payload = $this->buildPayload($vehicle, $listing);
+
         $result = $this->apiRequest(
             'POST',
             self::BASE_URL . '/vehicles',
-            $this->buildPayload($vehicle, $listing),
+            $payload,
             $this->authHeaders(),
             'publish',
             $listing->id
@@ -96,12 +110,18 @@ class AutoScout24Platform extends BasePlatform
         if ($result['success']) {
             $vehicleId = $result['body']['id'] ?? null;
 
+            // Upload foto
             if ($vehicleId) {
-                $this->uploadPhotos($vehicleId, $vehicle);
-                $this->apiRequest('PATCH',
+                $this->uploadPhotos($vehicleId, $vehicle, $listing->id);
+
+                // Pubblica (transizione DRAFT → PUBLISHED)
+                $this->apiRequest(
+                    'PATCH',
                     self::BASE_URL . "/vehicles/{$vehicleId}",
                     ['status' => 'PUBLISHED'],
-                    $this->authHeaders(), 'publish', $listing->id
+                    $this->authHeaders(),
+                    'publish',
+                    $listing->id
                 );
             }
 
@@ -114,12 +134,17 @@ class AutoScout24Platform extends BasePlatform
             ];
         }
 
-        return ['success' => false, 'message' => $result['error'] ?? 'Errore pubblicazione', 'raw' => $result['body']];
+        return [
+            'success' => false,
+            'message' => $result['error'] ?? 'Errore pubblicazione AutoScout24',
+            'raw'     => $result['body'],
+        ];
     }
 
-    private function uploadPhotos(string $vehicleId, SaleVehicle $vehicle): void
+    private function uploadPhotos(string $vehicleId, SaleVehicle $vehicle, int $listingId): void
     {
         foreach ($vehicle->getMedia('sale_photos') as $media) {
+            // AutoScout24 vuole multipart/form-data per le foto
             try {
                 \Illuminate\Support\Facades\Http::withToken($this->getAccessToken())
                     ->attach('image', file_get_contents($media->getPath()), $media->file_name)
@@ -130,15 +155,21 @@ class AutoScout24Platform extends BasePlatform
         }
     }
 
+    // ─── Update ───────────────────────────────────────────────────────────────
+
     public function update(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
         if (!$listing->external_id) return $this->publish($vehicle, $listing);
 
+        $payload = $this->buildPayload($vehicle, $listing);
+
         $result = $this->apiRequest(
             'PUT',
             self::BASE_URL . "/vehicles/{$listing->external_id}",
-            $this->buildPayload($vehicle, $listing),
-            $this->authHeaders(), 'update', $listing->id
+            $payload,
+            $this->authHeaders(),
+            'update',
+            $listing->id
         );
 
         return [
@@ -156,11 +187,15 @@ class AutoScout24Platform extends BasePlatform
             'PATCH',
             self::BASE_URL . "/vehicles/{$listing->external_id}",
             ['price' => ['amount' => $newPrice, 'currency' => 'EUR']],
-            $this->authHeaders(), 'update', $listing->id
+            $this->authHeaders(),
+            'update',
+            $listing->id
         );
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Prezzo aggiornato' : $result['error']];
     }
+
+    // ─── Delete ───────────────────────────────────────────────────────────────
 
     public function delete(MarketplaceListing $listing): array
     {
@@ -169,11 +204,16 @@ class AutoScout24Platform extends BasePlatform
         $result = $this->apiRequest(
             'DELETE',
             self::BASE_URL . "/vehicles/{$listing->external_id}",
-            [], $this->authHeaders(), 'delete', $listing->id
+            [],
+            $this->authHeaders(),
+            'delete',
+            $listing->id
         );
 
         return ['success' => $result['success'], 'message' => $result['success'] ? 'Annuncio eliminato' : $result['error']];
     }
+
+    // ─── Stats ────────────────────────────────────────────────────────────────
 
     public function fetchStats(MarketplaceListing $listing): array
     {
@@ -182,7 +222,10 @@ class AutoScout24Platform extends BasePlatform
         $result = $this->apiRequest(
             'GET',
             self::BASE_URL . "/vehicles/{$listing->external_id}/stats",
-            [], $this->authHeaders(), 'sync_stats', $listing->id
+            [],
+            $this->authHeaders(),
+            'sync_stats',
+            $listing->id
         );
 
         return [
@@ -192,6 +235,8 @@ class AutoScout24Platform extends BasePlatform
         ];
     }
 
+    // ─── Leads ────────────────────────────────────────────────────────────────
+
     public function fetchLeads(MarketplaceListing $listing): array
     {
         if (!$listing->external_id) return [];
@@ -199,7 +244,10 @@ class AutoScout24Platform extends BasePlatform
         $result = $this->apiRequest(
             'GET',
             self::LEADS_URL . "?vehicleId={$listing->external_id}",
-            [], $this->authHeaders(), 'fetch_leads', $listing->id
+            [],
+            $this->authHeaders(),
+            'fetch_leads',
+            $listing->id
         );
 
         if (!$result['success']) return [];
@@ -214,6 +262,8 @@ class AutoScout24Platform extends BasePlatform
             'raw'         => $lead,
         ])->toArray();
     }
+
+    // ─── Payload ──────────────────────────────────────────────────────────────
 
     public function buildPayload(SaleVehicle $vehicle, MarketplaceListing $listing): array
     {
@@ -230,19 +280,21 @@ class AutoScout24Platform extends BasePlatform
             'seats'        => (int) $vehicle->seats,
             'color'        => $vehicle->color,
             'price'        => [
-                'amount'     => (float) ($listing->listed_price ?? $vehicle->asking_price),
-                'currency'   => 'EUR',
-                'negotiable' => (bool) $vehicle->price_negotiable,
+                'amount'    => (float) ($listing->listed_price ?? $vehicle->asking_price),
+                'currency'  => 'EUR',
+                'negotiable'=> (bool) $vehicle->price_negotiable,
             ],
-            'description'  => $vehicle->description ?? $vehicle->computed_title,
+            'description' => $vehicle->description ?? $vehicle->computed_title,
         ];
 
         if ($vehicle->power_kw) {
             $payload['power'] = ['value' => $vehicle->power_kw, 'unit' => 'kw'];
         }
+
         if ($vehicle->first_registration) {
             $payload['firstRegistration'] = $vehicle->first_registration->format('m/Y');
         }
+
         if ($vehicle->vin) {
             $payload['vin'] = $vehicle->vin;
         }
@@ -265,4 +317,8 @@ class AutoScout24Platform extends BasePlatform
         };
     }
 
-    public
+    public function requiredFields(): array
+    {
+        return ['brand', 'model', 'year', 'mileage', 'fuel_type', 'transmission', 'asking_price', 'description'];
+    }
+}
