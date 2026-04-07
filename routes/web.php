@@ -57,3 +57,6 @@ Route::middleware(['auth'])->group(function () {
     // Marketplace
     require __DIR__.'/marketplace.php';
 });
+
+// Pagine pubbliche
+require __DIR__.'/public.php';
