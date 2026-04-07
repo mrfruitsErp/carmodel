@@ -297,5 +297,6 @@ tbody tr:hover td{background:var(--bg3)}
 </div>
 </div>
 @stack('scripts')
+@stack('scripts')
 </body>
 </html>
