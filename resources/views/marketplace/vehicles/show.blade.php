@@ -21,7 +21,7 @@
   <span style="color:var(--text)">{{ $saleVehicle->brand }} {{ $saleVehicle->model }}</span>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start">
 
   {{-- COLONNA SINISTRA --}}
   <div>
@@ -54,7 +54,7 @@
         <div id="foto-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px">
           @foreach($fotos as $i => $media)
           <div class="foto-thumb" data-id="{{ $media->id }}" style="position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid {{ $i===0?'var(--orange)':'transparent' }}" onclick="setMainPhoto('{{ $media->getUrl() }}', this)">
-            <img src="{{ $media->getUrl('thumb') }}" style="width:100%;height:100%;object-fit:cover">
+            <img src="{{ $media->getUrl() }}" style="width:100%;height:100%;object-fit:cover" loading="lazy">
             <button onclick="deleteFoto({{ $media->id }}, event)" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,.8);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1">×</button>
           </div>
           @endforeach
@@ -171,7 +171,7 @@
       <form action="{{ route('marketplace.update-price', $saleVehicle) }}" method="POST" style="display:flex;gap:8px;margin-top:14px">
         @csrf
         <input type="number" name="price" value="{{ $saleVehicle->asking_price }}" step="100" class="form-input" style="flex:1">
-        <button type="submit" class="btn btn-ghost btn-sm">Aggiorna</button>
+        <button type="submit" class="btn btn-primary btn-sm">💾 Salva prezzo</button>
       </form>
     </div>
 
