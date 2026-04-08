@@ -144,10 +144,45 @@ tbody tr:hover td{background:var(--bg3)}
 .stato-step.current{background:var(--amber-bg);color:var(--amber-text);border:1px solid rgba(245,158,11,.3)}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--orange)}
 @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}.main-side{grid-template-columns:1fr}}
-@media(max-width:800px){.sidebar{width:60px;min-width:60px}.main{margin-left:60px}.two-col,.three-col{grid-template-columns:1fr}}
+@media(max-width:800px){.two-col,.three-col{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}}
+/* MOBILE */
+@media(max-width:640px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s ease;width:var(--sidebar)!important;min-width:var(--sidebar)!important}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0!important}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998}
+  .sidebar-overlay.show{display:block}
+  .mobile-header{display:flex!important}
+  .topbar{display:none}
+  .content{padding:16px}
+  .two-col,.three-col{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+.mobile-header{display:none;background:#111827;padding:12px 16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.06)}
+.hamburger{background:none;border:none;cursor:pointer;padding:4px;color:rgba(255,255,255,.7);display:flex;flex-direction:column;gap:4px}
+.hamburger span{display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
 </style>
 </head>
 <body>
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- Mobile header -->
+<div class="mobile-header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:28px;height:28px;background:var(--orange);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:#000">CM</div>
+      <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:#fff;letter-spacing:.06em">CARMODEL</span>
+    </div>
+  </div>
+  <span style="font-size:12px;color:rgba(255,255,255,.4)">@yield('title', 'Dashboard')</span>
+</div>
+
 <div class="app">
 <div class="sidebar">
   <div class="logo">
@@ -266,5 +301,26 @@ tbody tr:hover td{background:var(--bg3)}
 </div>
 </div>
 @stack('scripts')
+<script>
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('overlay');
+  const hamburger = document.getElementById('hamburger');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+  hamburger.classList.toggle('open');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('hamburger').classList.remove('open');
+}
+// Chiudi sidebar quando si clicca un link (mobile)
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    if (window.innerWidth <= 640) closeSidebar();
+  });
+});
+</script>
 </body>
 </html>
