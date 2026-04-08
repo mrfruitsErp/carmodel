@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('flotta', FleetVehicleController::class);
     Route::resource('noleggio', RentalController::class);
+    Route::post('noleggio/{noleggio}/chiudi', [RentalController::class, 'chiudi'])->name('noleggio.chiudi');
     Route::resource('sostitutive', RentalController::class);
 
     Route::resource('documenti', DocumentController::class);
@@ -51,12 +52,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('import/wincar', [WincarImportController::class, 'index'])->name('import.wincar');
     Route::post('import/wincar', [WincarImportController::class, 'upload'])->name('import.wincar.upload');
 
-    // Profile (Breeze)
     Route::get('/profile', function() { return redirect()->route('dashboard'); })->name('profile.edit');
 
     // Marketplace
     require __DIR__.'/marketplace.php';
 });
 
-// Pagine pubbliche
+// Pagine pubbliche (senza auth)
 require __DIR__.'/public.php';

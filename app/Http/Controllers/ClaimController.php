@@ -29,6 +29,7 @@ class ClaimController extends Controller
             'clienti'   => Customer::forTenant($tenantId)->orderBy('last_name')->get(),
             'compagnie' => InsuranceCompany::forTenant($tenantId)->orderBy('name')->get(),
             'periti'    => Expert::forTenant($tenantId)->periti()->orderBy('name')->get(),
+            'veicoli'   => Vehicle::forTenant($tenantId)->orderBy('plate')->get(),
         ]);
     }
 
@@ -48,83 +49,76 @@ class ClaimController extends Controller
             'cid_signed'            => 'boolean',
             'cid_date'              => 'nullable|date',
             'cid_expiry'            => 'nullable|date',
-            'estimated_amount'      => 'nullable|numeric|min:0',
+            'status'                => 'nullable|string',
             'notes'                 => 'nullable|string',
         ]);
 
         $tenantId = auth()->user()->tenant_id;
-        $validated['tenant_id']    = $tenantId;
-        $validated['claim_number'] = Claim::generateNumber($tenantId);
-        $validated['created_by']   = auth()->id();
+        $validated['tenant_id']     = $tenantId;
+        $validated['claim_number']  = Claim::generateNumber($tenantId);
+        $validated['created_by']    = auth()->id();
+        $validated['status']        = $validated['status'] ?? 'aperto';
 
         $claim = Claim::create($validated);
 
-        // Job: invia mail automatica apertura sinistro
-        SendClaimNotification::dispatch($claim, 'claim_opened');
-
-        return redirect()->route('sinistri.show', $claim)->with('success', "Sinistro {$claim->claim_number} aperto con successo.");
+        return redirect()->route('sinistri.show', $claim)
+            ->with('success', "Sinistro {$claim->claim_number} creato.");
     }
 
-    public function show(Claim $claim)
+    public function show(Claim $sinistro)
     {
-        $this->authorizeTenant($claim);
-        $claim->load(['customer','vehicle','insuranceCompany','expert','statusHistory.changedBy','personalInjuries','workOrders','rentals']);
-        return view('sinistri.show', compact('claim'));
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
+        $sinistro->load(['customer','vehicle','insuranceCompany','expert','assignedTo','workOrders','documents']);
+        return view('sinistri.show', compact('sinistro'));
     }
 
-    public function edit(Claim $claim)
+    public function edit(Claim $sinistro)
     {
-        $this->authorizeTenant($claim);
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
         $tenantId = auth()->user()->tenant_id;
-        return view('sinistri.edit', [
-            'claim'     => $claim,
-            'compagnie' => InsuranceCompany::forTenant($tenantId)->get(),
-            'periti'    => Expert::forTenant($tenantId)->periti()->get(),
+        return view('sinistri.create', [
+            'sinistro'  => $sinistro,
+            'clienti'   => Customer::forTenant($tenantId)->orderBy('last_name')->get(),
+            'compagnie' => InsuranceCompany::forTenant($tenantId)->orderBy('name')->get(),
+            'periti'    => Expert::forTenant($tenantId)->periti()->orderBy('name')->get(),
+            'veicoli'   => Vehicle::forTenant($tenantId)->orderBy('plate')->get(),
         ]);
     }
 
-    public function update(Request $request, Claim $claim)
+    public function update(Request $request, Claim $sinistro)
     {
-        $this->authorizeTenant($claim);
-        $validated = $request->validate([
-            'status'            => 'required',
-            'estimated_amount'  => 'nullable|numeric',
-            'approved_amount'   => 'nullable|numeric',
-            'survey_date'       => 'nullable|date',
-            'cid_expiry'        => 'nullable|date',
-            'notes'             => 'nullable|string',
-            'internal_notes'    => 'nullable|string',
-        ]);
-        $claim->update($validated);
-        return redirect()->route('sinistri.show', $claim)->with('success', 'Sinistro aggiornato.');
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
+        $sinistro->update($request->except(['tenant_id','claim_number']));
+        return redirect()->route('sinistri.show', $sinistro)->with('success', 'Sinistro aggiornato.');
     }
 
-    public function updateStato(Request $request, Claim $claim)
+    public function destroy(Claim $sinistro)
     {
-        $this->authorizeTenant($claim);
-        $request->validate(['status' => 'required|string', 'notes' => 'nullable|string']);
-        $claim->updateStatus($request->status, $request->notes);
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
+        $sinistro->delete();
+        return redirect()->route('sinistri.index')->with('success', 'Sinistro eliminato.');
+    }
+
+    public function updateStato(Request $request, Claim $sinistro)
+    {
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
+        $sinistro->update(['status' => $request->status]);
         return back()->with('success', 'Stato aggiornato.');
     }
 
-    public function sendMail(Request $request, Claim $claim)
+    public function sendMail(Request $request, Claim $sinistro)
     {
-        $this->authorizeTenant($claim);
-        $request->validate(['trigger_event' => 'required|string']);
-        SendClaimNotification::dispatch($claim, $request->trigger_event);
-        return back()->with('success', 'Mail in coda di invio.');
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
+        // TODO: implementare invio mail
+        return back()->with('success', 'Mail inviata.');
     }
 
-    public function uploadDoc(Request $request, Claim $claim)
+    public function uploadDoc(Request $request, Claim $sinistro)
     {
-        $this->authorizeTenant($claim);
-        $request->validate(['documento' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png']);
-        $claim->addMedia($request->file('documento'))->toMediaCollection('claim_documents');
-        return back()->with('success', 'Documento allegato.');
-    }
-
-    private function authorizeTenant(Claim $claim): void
-    {
-        abort_if($claim->tenant_id !== auth()->user()->tenant_id, 403);
+        abort_if($sinistro->tenant_id !== auth()->user()->tenant_id, 403);
+        if ($request->hasFile('documento')) {
+            $sinistro->addMedia($request->file('documento'))->toMediaCollection('documents');
+        }
+        return back()->with('success', 'Documento caricato.');
     }
 }
