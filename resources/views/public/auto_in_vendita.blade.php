@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Auto in Vendita — CarModel</title>
+<title>Auto in Vendita â€” CarModel</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -77,7 +77,7 @@ footer a{color:var(--orange)}
 <div class="filtri">
   <div class="filtri-inner">
     <form method="GET" style="display:contents">
-      <input type="text" name="search" value="{{ request('search') }}" placeholder="🔍 Cerca marca, modello...">
+      <input type="text" name="search" value="{{ request('search') }}" placeholder="ðŸ” Cerca marca, modello...">
       <select name="fuel">
         <option value="">Tutti i carburanti</option>
         @foreach(['benzina','diesel','elettrico','ibrido_benzina','gpl'] as $f)
@@ -87,7 +87,7 @@ footer a{color:var(--orange)}
       <select name="price_max">
         <option value="">Qualsiasi prezzo</option>
         @foreach([5000,10000,15000,20000,30000,50000] as $p)
-          <option value="{{ $p }}" {{ request('price_max')==$p?'selected':'' }}>fino a € {{ number_format($p,0,',','.') }}</option>
+          <option value="{{ $p }}" {{ request('price_max')==$p?'selected':'' }}>fino a â‚¬ {{ number_format($p,0,',','.') }}</option>
         @endforeach
       </select>
       <button type="submit" class="btn-cerca">Cerca</button>
@@ -99,7 +99,7 @@ footer a{color:var(--orange)}
 <main class="main">
   @if($vehicles->isEmpty())
     <div class="empty">
-      <div style="font-size:64px;margin-bottom:16px">🔍</div>
+      <div style="font-size:64px;margin-bottom:16px">ðŸ”</div>
       <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Nessun veicolo trovato</div>
       <div>Prova a modificare i filtri</div>
     </div>
@@ -114,17 +114,17 @@ footer a{color:var(--orange)}
     <a href="{{ url('/auto-in-vendita/'.$vehicle->id.'-'.$slug) }}" class="car-card">
       <div class="car-photo">
         @if($photoUrl)
-          <img src="{{ $photoUrl }}" alt="{{ $vehicle->full_name }}" loading="lazy">
+          <img src="{{ $photoUrl }}" alt="{{ $vehicle->display_name }}" loading="lazy">
         @else
           <div class="car-photo-placeholder">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
           </div>
         @endif
-        @if($photoCount > 1)<div class="car-photos-count">📷 {{ $photoCount }}</div>@endif
+        @if($photoCount > 1)<div class="car-photos-count">ðŸ“· {{ $photoCount }}</div>@endif
       </div>
       <div class="car-body">
         <div class="car-title">{{ $vehicle->brand }} {{ $vehicle->model }}</div>
-        <div class="car-subtitle">{{ $vehicle->version }} · {{ $vehicle->year }}</div>
+        <div class="car-subtitle">{{ $vehicle->version }} Â· {{ $vehicle->year }}</div>
         <div class="car-specs">
           <span class="car-spec">{{ number_format($vehicle->mileage,0,',','.') }} km</span>
           <span class="car-spec">{{ ucfirst(str_replace('_',' ',$vehicle->fuel_type)) }}</span>
@@ -133,10 +133,10 @@ footer a{color:var(--orange)}
         </div>
         <div class="car-footer">
           <div>
-            <div class="car-price">€ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
+            <div class="car-price">â‚¬ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
             @if($vehicle->price_negotiable)<div class="car-price-sub">Trattabile</div>@endif
           </div>
-          <button class="btn-dettagli">Scopri →</button>
+          <button class="btn-dettagli">Scopri â†’</button>
         </div>
       </div>
     </a>
@@ -147,7 +147,7 @@ footer a{color:var(--orange)}
 </main>
 
 <footer>
-  <p>© {{ date('Y') }} CarModel · <a href="/login">Area riservata</a></p>
+  <p>Â© {{ date('Y') }} CarModel Â· <a href="/login">Area riservata</a></p>
 </footer>
 </body>
 </html>

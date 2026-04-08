@@ -13,10 +13,10 @@
 {{-- KPI bar --}}
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
   @foreach([
-    ['Totale stock', $vehicles->total(), 'var(--blue)', '🚗'],
-    ['Attivi', $stats['vehicles_active'], 'var(--green)', '✅'],
-    ['Bozze', $stats['vehicles_draft'], 'var(--amber)', '📝'],
-    ['Venduti', $stats['vehicles_sold'], 'var(--orange)', '🏆'],
+    ['Totale stock', $vehicles->total(), 'var(--blue)', 'ðŸš—'],
+    ['Attivi', $stats['vehicles_active'], 'var(--green)', 'âœ…'],
+    ['Bozze', $stats['vehicles_draft'], 'var(--amber)', 'ðŸ“'],
+    ['Venduti', $stats['vehicles_sold'], 'var(--orange)', 'ðŸ†'],
   ] as [$label, $val, $color, $icon])
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden">
     <div style="position:absolute;top:0;left:0;right:0;height:2px;background:{{ $color }}"></div>
@@ -39,14 +39,14 @@
     @endforeach
   </select>
   @if(request()->hasAny(['search','status']))
-    <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost btn-sm">✕ Reset</a>
+    <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost btn-sm">âœ• Reset</a>
   @endif
   <div style="margin-left:auto;font-size:12px;color:var(--text3)">{{ $vehicles->total() }} veicoli</div>
 </form>
 
 @if($vehicles->isEmpty())
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:60px 24px;text-align:center">
-    <div style="font-size:48px;margin-bottom:16px">🚗</div>
+    <div style="font-size:48px;margin-bottom:16px">ðŸš—</div>
     <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Nessun veicolo in stock</div>
     <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Aggiungi il primo veicolo per iniziare a vendere</div>
     <a href="{{ route('marketplace.vehicles.create') }}" class="btn btn-primary">+ Aggiungi veicolo</a>
@@ -74,7 +74,7 @@
     {{-- Foto --}}
     <a href="{{ route('marketplace.vehicles.show', $vehicle) }}" style="display:block;position:relative;height:180px;background:#f0f0f0;overflow:hidden">
       @if($photoUrl)
-        <img src="{{ $photoUrl }}" alt="{{ $vehicle->full_name }}" style="width:100%;height:100%;object-fit:cover;transition:transform .3s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform=''">
+        <img src="{{ $photoUrl }}" alt="{{ $vehicle->display_name }}" style="width:100%;height:100%;object-fit:cover;transition:transform .3s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform=''">
       @else
         <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f7fa,#e8ecf0)">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
@@ -91,7 +91,7 @@
       {{-- Contatore foto --}}
       @if($photoCount > 0)
         <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:3px 8px;border-radius:10px;display:flex;align-items:center;gap:4px">
-          📷 {{ $photoCount }}
+          ðŸ“· {{ $photoCount }}
         </div>
       @endif
 
@@ -113,7 +113,7 @@
           @endif
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:8px">
-          <div style="font-size:16px;font-weight:800;color:var(--orange)">€ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
+          <div style="font-size:16px;font-weight:800;color:var(--orange)">â‚¬ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
           @if($vehicle->margin_percent)
             <div style="font-size:10px;color:var(--green-text)">+{{ $vehicle->margin_percent }}%</div>
           @endif

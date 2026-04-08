@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Lead — Marketplace')
+@section('title', 'Lead â€” Marketplace')
 
 @section('topbar-actions')
 <form action="{{ route('marketplace.sync.leads') }}" method="POST">
   @csrf
-  <button class="btn btn-ghost btn-sm">↻ Aggiorna lead</button>
+  <button class="btn btn-ghost btn-sm">â†» Aggiorna lead</button>
 </form>
 @endsection
 
@@ -25,14 +25,14 @@
     @endforeach
   </select>
   @if(request()->hasAny(['status','platform']))
-    <a href="{{ route('marketplace.leads.index') }}" class="btn btn-ghost btn-sm">✕ Reset</a>
+    <a href="{{ route('marketplace.leads.index') }}" class="btn btn-ghost btn-sm">âœ• Reset</a>
   @endif
   <div style="margin-left:auto;font-size:12px;color:var(--text3)">{{ $leads->total() }} lead</div>
 </form>
 
 @if($leads->isEmpty())
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:60px;text-align:center">
-    <div style="font-size:48px;margin-bottom:16px">📭</div>
+    <div style="font-size:48px;margin-bottom:16px">ðŸ“­</div>
     <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Nessun lead trovato</div>
     <div style="font-size:13px;color:var(--text3)">I lead arriveranno quando pubblicherai annunci sulle piattaforme</div>
   </div>
@@ -74,9 +74,9 @@
         </td>
         <td>
           @if($lead->saleVehicle)
-            <a href="{{ route('marketplace.vehicles.show', $lead->sale_vehicle_id) }}" style="font-size:13px;color:var(--text);text-decoration:none;font-weight:500">{{ $lead->saleVehicle->full_name }}</a>
+            <a href="{{ route('marketplace.vehicles.show', $lead->sale_vehicle_id) }}" style="font-size:13px;color:var(--text);text-decoration:none;font-weight:500">{{ $lead->saleVehicle->display_name }}</a>
           @else
-            <span style="color:var(--text3)">—</span>
+            <span style="color:var(--text3)">â€”</span>
           @endif
         </td>
         <td>@include('marketplace.partials._platform_badge', ['platform' => $lead->platform])</td>
@@ -97,10 +97,10 @@
         <td style="text-align:right">
           <div style="display:flex;gap:8px;justify-content:flex-end">
             @if($lead->lead_email)
-              <a href="mailto:{{ $lead->lead_email }}" class="btn btn-ghost btn-sm">✉ Scrivi</a>
+              <a href="mailto:{{ $lead->lead_email }}" class="btn btn-ghost btn-sm">âœ‰ Scrivi</a>
             @endif
             @if($lead->lead_phone)
-              <a href="tel:{{ $lead->lead_phone }}" class="btn btn-primary btn-sm">📞 Chiama</a>
+              <a href="tel:{{ $lead->lead_phone }}" class="btn btn-primary btn-sm">ðŸ“ž Chiama</a>
             @endif
           </div>
         </td>

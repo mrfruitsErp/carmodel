@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $vehicle->exists ? 'Modifica '.$vehicle->full_name : 'Nuovo veicolo in vendita')
+@section('title', $vehicle->exists ? 'Modifica '.$vehicle->display_name : 'Nuovo veicolo in vendita')
 
 @section('content')
 <div class="min-h-screen bg-gray-50/50 px-4 py-6 md:px-8">
@@ -10,7 +10,7 @@
             <a href="{{ route('marketplace.vehicles.index') }}" class="hover:text-gray-800">Veicoli</a>
             <span>/</span><span class="text-gray-800">{{ $vehicle->exists ? 'Modifica' : 'Nuovo veicolo' }}</span>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">{{ $vehicle->exists ? 'Modifica '.$vehicle->full_name : 'Aggiungi veicolo in vendita' }}</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{{ $vehicle->exists ? 'Modifica '.$vehicle->display_name : 'Aggiungi veicolo in vendita' }}</h1>
     </div>
 
     <form action="{{ $vehicle->exists ? route('marketplace.vehicles.update', $vehicle) : route('marketplace.vehicles.store') }}"
@@ -64,8 +64,8 @@
                 <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1.5">Carrozzeria</label>
                     <select name="body_type" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                        <option value="">— Seleziona —</option>
-                        @foreach(['berlina','station_wagon','suv','coupé','cabriolet','monovolume','van','pickup','altro'] as $b)
+                        <option value="">â€” Seleziona â€”</option>
+                        @foreach(['berlina','station_wagon','suv','coupÃ©','cabriolet','monovolume','van','pickup','altro'] as $b)
                             <option value="{{ $b }}" {{ old('body_type', $vehicle->body_type) === $b ? 'selected' : '' }}>{{ ucfirst($b) }}</option>
                         @endforeach
                     </select>
@@ -87,15 +87,15 @@
             <h2 class="text-sm font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Prezzi</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo richiesta (€) <span class="text-red-500">*</span></label>
+                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo richiesta (â‚¬) <span class="text-red-500">*</span></label>
                     <input type="number" name="asking_price" value="{{ old('asking_price', $vehicle->asking_price) }}" min="0" step="100" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo acquisto (€) <span class="text-xs font-normal text-gray-400">interno</span></label>
+                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo acquisto (â‚¬) <span class="text-xs font-normal text-gray-400">interno</span></label>
                     <input type="number" name="purchase_price" value="{{ old('purchase_price', $vehicle->purchase_price) }}" min="0" step="100" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo minimo (€) <span class="text-xs font-normal text-gray-400">interno</span></label>
+                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo minimo (â‚¬) <span class="text-xs font-normal text-gray-400">interno</span></label>
                     <input type="number" name="min_price" value="{{ old('min_price', $vehicle->min_price) }}" min="0" step="100" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
                 </div>
                 <div class="flex items-center gap-2">
@@ -131,7 +131,7 @@
             <label class="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors">
                 <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                 <span class="text-sm text-gray-500">Clicca per caricare foto</span>
-                <span class="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP — max 10MB</span>
+                <span class="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP â€” max 10MB</span>
                 <input type="file" name="photos[]" multiple accept="image/*" class="hidden" onchange="previewFotos(this)">
             </label>
             <div id="foto-preview" class="grid grid-cols-4 gap-2 mt-3"></div>
@@ -140,7 +140,7 @@
 
         {{-- Azioni --}}
         <div class="flex items-center justify-between pt-2">
-            <a href="{{ route('marketplace.vehicles.index') }}" class="text-sm text-gray-500 hover:text-gray-800">← Annulla</a>
+            <a href="{{ route('marketplace.vehicles.index') }}" class="text-sm text-gray-500 hover:text-gray-800">â† Annulla</a>
             <div class="flex gap-2">
                 <button type="submit" class="px-5 py-2.5 text-sm border border-gray-200 bg-white rounded-xl hover:bg-gray-50 text-gray-700">Salva bozza</button>
                 <button type="submit" class="px-5 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-gray-700 font-medium">{{ $vehicle->exists ? 'Salva modifiche' : 'Crea veicolo' }}</button>

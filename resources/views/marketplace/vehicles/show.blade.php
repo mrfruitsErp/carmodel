@@ -1,13 +1,13 @@
 @extends('layouts.app')
-@section('title', $saleVehicle->full_name)
+@section('title', $saleVehicle->display_name)
 
 @section('topbar-actions')
 @if($saleVehicle->status !== 'venduto')
-  <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">✏️ Modifica</a>
+  <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">âœï¸ Modifica</a>
   <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST" onsubmit="return confirm('Segnare come venduto?')" style="display:inline">
     @csrf
     <input type="hidden" name="sold_price" value="{{ $saleVehicle->asking_price }}">
-    <button type="submit" class="btn btn-sm" style="background:var(--blue-bg);color:var(--blue-text);border:1px solid rgba(59,130,246,.3)">✓ Venduto</button>
+    <button type="submit" class="btn btn-sm" style="background:var(--blue-bg);color:var(--blue-text);border:1px solid rgba(59,130,246,.3)">âœ“ Venduto</button>
   </form>
 @endif
 @endsection
@@ -29,7 +29,7 @@
     {{-- Galleria foto --}}
     <div class="card" style="padding:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div class="card-title" style="margin-bottom:0">📷 Foto</div>
+        <div class="card-title" style="margin-bottom:0">ðŸ“· Foto</div>
         <label for="foto-upload" style="font-size:12px;color:var(--orange);cursor:pointer;font-weight:600">+ Aggiungi foto</label>
         <input id="foto-upload" type="file" accept="image/*" multiple style="display:none" onchange="uploadFotos(this)">
       </div>
@@ -38,9 +38,9 @@
 
       @if($fotos->isEmpty())
         <div id="foto-grid" style="border:2px dashed var(--border2);border-radius:8px;padding:40px;text-align:center;cursor:pointer" onclick="document.getElementById('foto-upload').click()">
-          <div style="font-size:32px;margin-bottom:8px">📷</div>
+          <div style="font-size:32px;margin-bottom:8px">ðŸ“·</div>
           <div style="font-size:13px;color:var(--text3)">Clicca per aggiungere foto</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:4px">JPG, PNG, WebP — max 10MB</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">JPG, PNG, WebP â€” max 10MB</div>
         </div>
       @else
         {{-- Foto principale --}}
@@ -55,7 +55,7 @@
           @foreach($fotos as $i => $media)
           <div class="foto-thumb" data-id="{{ $media->id }}" style="position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid {{ $i===0?'var(--orange)':'transparent' }}" onclick="setMainPhoto('{{ $media->getUrl() }}', this)">
             <img src="{{ $media->getUrl() }}" style="width:100%;height:100%;object-fit:cover" loading="lazy">
-            <button onclick="deleteFoto({{ $media->id }}, event)" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,.8);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1">×</button>
+            <button onclick="deleteFoto({{ $media->id }}, event)" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,.8);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1">Ã—</button>
           </div>
           @endforeach
           <div style="aspect-ratio:4/3;border:2px dashed var(--border2);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--bg3)" onclick="document.getElementById('foto-upload').click()">
@@ -67,24 +67,24 @@
 
     {{-- Dati tecnici --}}
     <div class="card">
-      <div class="card-title">🔧 Dati tecnici</div>
+      <div class="card-title">ðŸ”§ Dati tecnici</div>
       <div class="three-col">
         @foreach([
           ['Marca',        $saleVehicle->brand],
           ['Modello',      $saleVehicle->model],
-          ['Versione',     $saleVehicle->version ?? '—'],
+          ['Versione',     $saleVehicle->version ?? 'â€”'],
           ['Anno',         $saleVehicle->year],
           ['Chilometri',   number_format($saleVehicle->mileage,0,',','.').' km'],
           ['Carburante',   ucfirst(str_replace('_',' ',$saleVehicle->fuel_type))],
           ['Cambio',       ucfirst($saleVehicle->transmission)],
-          ['Carrozzeria',  $saleVehicle->body_type ?? '—'],
-          ['Colore',       $saleVehicle->color ?? '—'],
-          ['Potenza',      $saleVehicle->power_hp ? $saleVehicle->power_hp.' CV' : '—'],
-          ['Cilindrata',   $saleVehicle->engine_cc ? $saleVehicle->engine_cc.' cc' : '—'],
+          ['Carrozzeria',  $saleVehicle->body_type ?? 'â€”'],
+          ['Colore',       $saleVehicle->color ?? 'â€”'],
+          ['Potenza',      $saleVehicle->power_hp ? $saleVehicle->power_hp.' CV' : 'â€”'],
+          ['Cilindrata',   $saleVehicle->engine_cc ? $saleVehicle->engine_cc.' cc' : 'â€”'],
           ['Condizione',   ucfirst(str_replace('_',' ',$saleVehicle->condition))],
-          ['Proprietari',  $saleVehicle->previous_owners ?? '—'],
-          ['Targa',        $saleVehicle->plate ?? '—'],
-          ['VIN',          $saleVehicle->vin ?? '—'],
+          ['Proprietari',  $saleVehicle->previous_owners ?? 'â€”'],
+          ['Targa',        $saleVehicle->plate ?? 'â€”'],
+          ['VIN',          $saleVehicle->vin ?? 'â€”'],
         ] as [$label, $value])
         <div>
           <div class="form-label">{{ $label }}</div>
@@ -106,7 +106,7 @@
 
     {{-- Descrizione --}}
     <div class="card">
-      <div class="card-title">📝 Descrizione annuncio</div>
+      <div class="card-title">ðŸ“ Descrizione annuncio</div>
       @if($saleVehicle->title)
         <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px">{{ $saleVehicle->title }}</div>
       @endif
@@ -116,7 +116,7 @@
     {{-- Lead ricevuti --}}
     @if($saleVehicle->leads->isNotEmpty())
     <div class="card">
-      <div class="card-title">💬 Lead ricevuti ({{ $saleVehicle->leads->count() }})</div>
+      <div class="card-title">ðŸ’¬ Lead ricevuti ({{ $saleVehicle->leads->count() }})</div>
       <div>
         @foreach($saleVehicle->leads as $lead)
         <div style="display:flex;align-items:start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
@@ -151,33 +151,33 @@
 
     {{-- Prezzi --}}
     <div class="card">
-      <div class="card-title">💰 Prezzi</div>
+      <div class="card-title">ðŸ’° Prezzi</div>
       <div style="background:linear-gradient(135deg,var(--orange-bg),transparent);border:1px solid var(--orange-border);border-radius:8px;padding:14px;margin-bottom:14px;text-align:center">
         <div style="font-size:11px;color:var(--orange-text);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Prezzo richiesta</div>
-        <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--orange)">€ {{ number_format($saleVehicle->asking_price,0,',','.') }}</div>
+        <div style="font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--orange)">â‚¬ {{ number_format($saleVehicle->asking_price,0,',','.') }}</div>
         @if($saleVehicle->price_negotiable)<div style="font-size:11px;color:var(--text3);margin-top:2px">Trattabile</div>@endif
       </div>
       @if($saleVehicle->purchase_price)
       <div class="info-row">
         <span class="info-label">Prezzo acquisto</span>
-        <span class="info-value">€ {{ number_format($saleVehicle->purchase_price,0,',','.') }}</span>
+        <span class="info-value">â‚¬ {{ number_format($saleVehicle->purchase_price,0,',','.') }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Margine</span>
-        <span class="info-value" style="color:var(--green-text);font-weight:700">€ {{ number_format($saleVehicle->margin,0,',','.') }} ({{ $saleVehicle->margin_percent }}%)</span>
+        <span class="info-value" style="color:var(--green-text);font-weight:700">â‚¬ {{ number_format($saleVehicle->margin,0,',','.') }} ({{ $saleVehicle->margin_percent }}%)</span>
       </div>
       @endif
       {{-- Aggiorna prezzo --}}
       <form action="{{ route('marketplace.update-price', $saleVehicle) }}" method="POST" style="display:flex;gap:8px;margin-top:14px">
         @csrf
         <input type="number" name="price" value="{{ $saleVehicle->asking_price }}" step="100" class="form-input" style="flex:1">
-        <button type="submit" class="btn btn-primary btn-sm">💾 Salva prezzo</button>
+        <button type="submit" class="btn btn-primary btn-sm">ðŸ’¾ Salva prezzo</button>
       </form>
     </div>
 
     {{-- Pubblica su piattaforme --}}
     <div class="card">
-      <div class="card-title">🚀 Pubblica annuncio</div>
+      <div class="card-title">ðŸš€ Pubblica annuncio</div>
       @php
         $allPlatforms = ['autoscout24'=>'AutoScout24','automobile_it'=>'Automobile.it','ebay_motors'=>'eBay Motors','subito_it'=>'Subito.it','facebook_marketplace'=>'Facebook'];
         $listingsByPlatform = $saleVehicle->listings->keyBy('platform');
@@ -197,18 +197,18 @@
               @if($isEnabled && !in_array($lstatus,['published']))
                 <input type="checkbox" name="platforms[]" value="{{ $pk }}" id="p_{{ $pk }}" {{ !$validation['valid']?'disabled':'' }} style="width:14px;height:14px;accent-color:var(--orange)">
               @elseif($lstatus==='published')
-                <span style="color:var(--green-text);font-size:14px">✓</span>
+                <span style="color:var(--green-text);font-size:14px">âœ“</span>
               @else
                 <span style="width:14px;height:14px;background:var(--border2);border-radius:3px;display:inline-block"></span>
               @endif
               <label for="p_{{ $pk }}" style="font-size:12px;font-weight:600;color:var(--text);cursor:pointer">{{ $plabel }}</label>
               @if(!$isEnabled)<span style="font-size:10px;color:var(--text3)">(non conf.)</span>@endif
-              @if($lstatus==='error')<span style="font-size:10px;color:var(--red-text)">⚠ Errore</span>@endif
+              @if($lstatus==='error')<span style="font-size:10px;color:var(--red-text)">âš  Errore</span>@endif
             </div>
             <div style="display:flex;align-items:center;gap:8px">
               @if($listing?->views > 0)<span style="font-size:10px;color:var(--text3)">{{ $listing->views }} views</span>@endif
               @if($lstatus==='published' && $listing?->external_url)
-                <a href="{{ $listing->external_url }}" target="_blank" style="font-size:10px;color:var(--blue-text)">Vedi →</a>
+                <a href="{{ $listing->external_url }}" target="_blank" style="font-size:10px;color:var(--blue-text)">Vedi â†’</a>
               @endif
               @if(in_array($lstatus,['published','error']))
                 <form action="{{ route('marketplace.unpublish', $listing) }}" method="POST" style="display:inline">@csrf @method('DELETE')
@@ -228,7 +228,7 @@
 
     {{-- Statistiche --}}
     <div class="card">
-      <div class="card-title">📊 Statistiche</div>
+      <div class="card-title">ðŸ“Š Statistiche</div>
       <div class="info-row"><span class="info-label">Visualizzazioni totali</span><span class="info-value">{{ $saleVehicle->totalViews() }}</span></div>
       <div class="info-row"><span class="info-label">Lead ricevuti</span><span class="info-value" style="color:var(--green-text)">{{ $saleVehicle->totalContacts() }}</span></div>
       <div class="info-row"><span class="info-label">Annunci live</span><span class="info-value">{{ $saleVehicle->listings->where('status','published')->count() }}</span></div>
@@ -239,13 +239,13 @@
 
     {{-- Sito proprietario --}}
     <div class="card">
-      <div class="card-title">🌐 Sito proprietario</div>
+      <div class="card-title">ðŸŒ Sito proprietario</div>
       <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Link diretto alla scheda pubblica del veicolo</div>
       @php $publicUrl = url('/auto-in-vendita/'.$saleVehicle->id.'-'.str_replace(' ','-',strtolower($saleVehicle->brand.'-'.$saleVehicle->model))); @endphp
       <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--text2);word-break:break-all;margin-bottom:8px">{{ $publicUrl }}</div>
       <div style="display:flex;gap:8px">
-        <a href="{{ $publicUrl }}" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">👁 Anteprima</a>
-        <button onclick="navigator.clipboard.writeText('{{ $publicUrl }}');this.textContent='✓ Copiato!';setTimeout(()=>this.textContent='📋 Copia',2000)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">📋 Copia link</button>
+        <a href="{{ $publicUrl }}" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">ðŸ‘ Anteprima</a>
+        <button onclick="navigator.clipboard.writeText('{{ $publicUrl }}');this.textContent='âœ“ Copiato!';setTimeout(()=>this.textContent='ðŸ“‹ Copia',2000)" class="btn btn-ghost btn-sm" style="flex:1;justify-content:center">ðŸ“‹ Copia link</button>
       </div>
     </div>
 

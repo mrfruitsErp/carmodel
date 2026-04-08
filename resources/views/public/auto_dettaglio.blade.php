@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->year }} — CarModel</title>
+<title>{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->year }} â€” CarModel</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -57,7 +57,7 @@ footer a{color:var(--orange)}
       <div class="logo-icon">CM</div>
       <div class="logo-name">CARMODEL</div>
     </div>
-    <a href="{{ url('/auto-in-vendita') }}" class="back-link">← Tutti i veicoli</a>
+    <a href="{{ url('/auto-in-vendita') }}" class="back-link">â† Tutti i veicoli</a>
   </div>
 </header>
 
@@ -67,7 +67,7 @@ footer a{color:var(--orange)}
     <div class="gallery">
       <div class="gallery-main">
         @if($fotos->isNotEmpty())
-          <img id="main-img" src="{{ $fotos->first()->getUrl() }}" alt="{{ $vehicle->full_name }}">
+          <img id="main-img" src="{{ $fotos->first()->getUrl() }}" alt="{{ $vehicle->display_name }}">
         @else
           <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
@@ -87,7 +87,7 @@ footer a{color:var(--orange)}
 
     <div style="margin-bottom:20px">
       <h1 style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700">{{ $vehicle->brand }} {{ $vehicle->model }}</h1>
-      @if($vehicle->version)<p style="font-size:15px;color:var(--text2);margin-top:4px">{{ $vehicle->version }} · {{ $vehicle->year }}</p>@endif
+      @if($vehicle->version)<p style="font-size:15px;color:var(--text2);margin-top:4px">{{ $vehicle->version }} Â· {{ $vehicle->year }}</p>@endif
     </div>
 
     <div class="info-card">
@@ -98,10 +98,10 @@ footer a{color:var(--orange)}
           ['Km',         number_format($vehicle->mileage,0,',','.').' km'],
           ['Carburante', ucfirst(str_replace('_',' ',$vehicle->fuel_type))],
           ['Cambio',     ucfirst($vehicle->transmission)],
-          ['Colore',     $vehicle->color ?? '—'],
-          ['Carrozzeria',$vehicle->body_type ?? '—'],
-          ['Potenza',    $vehicle->power_hp ? $vehicle->power_hp.' CV' : '—'],
-          ['Proprietari',$vehicle->previous_owners ?? '—'],
+          ['Colore',     $vehicle->color ?? 'â€”'],
+          ['Carrozzeria',$vehicle->body_type ?? 'â€”'],
+          ['Potenza',    $vehicle->power_hp ? $vehicle->power_hp.' CV' : 'â€”'],
+          ['Proprietari',$vehicle->previous_owners ?? 'â€”'],
         ] as [$l,$v])
         <div><span class="spec-label">{{ $l }}</span><span class="spec-value">{{ $v }}</span></div>
         @endforeach
@@ -129,15 +129,15 @@ footer a{color:var(--orange)}
   <div>
     <div class="price-card">
       <div class="price-label">Prezzo</div>
-      <div class="price-value">€ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
-      @if($vehicle->price_negotiable)<div class="price-note">💬 Prezzo trattabile</div>@endif
-      @if($vehicle->vat_deductible)<div class="price-note">📋 IVA detraibile</div>@endif
+      <div class="price-value">â‚¬ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
+      @if($vehicle->price_negotiable)<div class="price-note">ðŸ’¬ Prezzo trattabile</div>@endif
+      @if($vehicle->vat_deductible)<div class="price-note">ðŸ“‹ IVA detraibile</div>@endif
     </div>
 
     <div class="contact-card">
-      <h3>📩 Richiedi informazioni</h3>
+      <h3>ðŸ“© Richiedi informazioni</h3>
       @if(session('success'))
-        <div class="alert-success">✓ {{ session('success') }}</div>
+        <div class="alert-success">âœ“ {{ session('success') }}</div>
       @endif
       <form action="{{ url('/auto-in-vendita/'.$vehicle->id.'/contatto') }}" method="POST">
         @csrf
@@ -157,7 +157,7 @@ footer a{color:var(--orange)}
           <label class="form-label">Messaggio</label>
           <textarea name="message" class="form-input" rows="3" placeholder="Vorrei maggiori informazioni..."></textarea>
         </div>
-        <button type="submit" class="btn-contatto">✉️ Invia richiesta</button>
+        <button type="submit" class="btn-contatto">âœ‰ï¸ Invia richiesta</button>
       </form>
 
       @php $publishedListings = $vehicle->listings->where('status','published'); @endphp
@@ -167,7 +167,7 @@ footer a{color:var(--orange)}
         @foreach($publishedListings as $listing)
           @if($listing->external_url)
             <a href="{{ $listing->external_url }}" target="_blank" class="platform-link">
-              🔗 {{ ucwords(str_replace('_',' ',$listing->platform)) }}
+              ðŸ”— {{ ucwords(str_replace('_',' ',$listing->platform)) }}
             </a>
           @endif
         @endforeach
@@ -178,7 +178,7 @@ footer a{color:var(--orange)}
 </div>
 
 <footer>
-  <p>© {{ date('Y') }} CarModel · <a href="/auto-in-vendita">Tutti i veicoli</a> · <a href="/login">Area riservata</a></p>
+  <p>Â© {{ date('Y') }} CarModel Â· <a href="/auto-in-vendita">Tutti i veicoli</a> Â· <a href="/login">Area riservata</a></p>
 </footer>
 
 <script>

@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Marketplace — Dashboard')
+@section('title', 'Marketplace â€” Dashboard')
 
 @section('topbar-actions')
 <form action="{{ route('marketplace.sync.leads') }}" method="POST" style="display:inline">
   @csrf
-  <button type="submit" class="btn btn-ghost btn-sm">↻ Sync lead</button>
+  <button type="submit" class="btn btn-ghost btn-sm">â†» Sync lead</button>
 </form>
 <a href="{{ route('marketplace.vehicles.create') }}" class="btn btn-primary btn-sm">+ Nuovo veicolo</a>
 @endsection
@@ -32,7 +32,7 @@
 
   {{-- Performance piattaforme --}}
   <div class="card">
-    <div class="card-title">📊 Performance piattaforme</div>
+    <div class="card-title">ðŸ“Š Performance piattaforme</div>
     @forelse($stats['by_platform'] as $platform => $data)
     @php $maxViews = max(1, collect($stats['by_platform'])->max('views')); $pct = min(100, round(($data['views']/$maxViews)*100)); @endphp
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
@@ -48,16 +48,16 @@
     </div>
     @empty
     <div style="text-align:center;padding:30px;color:var(--text3)">
-      <div style="font-size:32px;margin-bottom:8px">🚀</div>
+      <div style="font-size:32px;margin-bottom:8px">ðŸš€</div>
       <div style="font-size:13px;margin-bottom:12px">Nessun annuncio pubblicato</div>
-      <a href="{{ route('marketplace.settings') }}" style="color:var(--orange);font-size:13px">Configura le piattaforme →</a>
+      <a href="{{ route('marketplace.settings') }}" style="color:var(--orange);font-size:13px">Configura le piattaforme â†’</a>
     </div>
     @endforelse
   </div>
 
   {{-- Stato stock --}}
   <div class="card">
-    <div class="card-title">🚗 Stato stock</div>
+    <div class="card-title">ðŸš— Stato stock</div>
     <div style="space-y:8px">
       @foreach([
         ['Attivi',        $stats['vehicles_active'],  'var(--green)',  'var(--green-bg)'],
@@ -75,7 +75,7 @@
       @endforeach
     </div>
     <div style="padding-top:10px;border-top:1px solid var(--border);margin-top:4px">
-      <a href="{{ route('marketplace.vehicles.index') }}" style="font-size:12px;color:var(--text3);text-decoration:none">Vedi tutti i veicoli →</a>
+      <a href="{{ route('marketplace.vehicles.index') }}" style="font-size:12px;color:var(--text3);text-decoration:none">Vedi tutti i veicoli â†’</a>
     </div>
   </div>
 </div>
@@ -85,7 +85,7 @@
   {{-- Lead recenti --}}
   <div class="card" style="padding:0;overflow:hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
-      <div class="card-title" style="margin-bottom:0">💬 Lead recenti</div>
+      <div class="card-title" style="margin-bottom:0">ðŸ’¬ Lead recenti</div>
       @if($stats['leads_new'] > 0)
         <span style="background:var(--green-bg);color:var(--green-text);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">{{ $stats['leads_new'] }} nuovi</span>
       @endif
@@ -101,7 +101,7 @@
           @include('marketplace.partials._platform_badge', ['platform' => $lead->platform])
         </div>
         @if($lead->saleVehicle)
-          <div style="font-size:11px;color:var(--blue-text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $lead->saleVehicle->full_name }}</div>
+          <div style="font-size:11px;color:var(--blue-text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $lead->saleVehicle->display_name }}</div>
         @endif
         @if($lead->lead_message)
           <div style="font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $lead->lead_message }}</div>
@@ -111,13 +111,13 @@
     </div>
     @empty
     <div style="text-align:center;padding:40px;color:var(--text3)">
-      <div style="font-size:32px;margin-bottom:8px">📭</div>
+      <div style="font-size:32px;margin-bottom:8px">ðŸ“­</div>
       <div style="font-size:13px">Nessun lead ancora</div>
     </div>
     @endforelse
     @if($leads->count() > 0)
     <div style="padding:10px 20px;border-top:1px solid var(--border)">
-      <a href="{{ route('marketplace.leads.index') }}" style="font-size:12px;color:var(--text3);text-decoration:none">Tutti i lead →</a>
+      <a href="{{ route('marketplace.leads.index') }}" style="font-size:12px;color:var(--text3);text-decoration:none">Tutti i lead â†’</a>
     </div>
     @endif
   </div>
@@ -125,20 +125,20 @@
   {{-- Annunci con errori --}}
   <div class="card" style="padding:0;overflow:hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
-      <div class="card-title" style="margin-bottom:0">⚠️ Annunci con problemi</div>
+      <div class="card-title" style="margin-bottom:0">âš ï¸ Annunci con problemi</div>
     </div>
     @forelse($errors as $errListing)
     <div style="display:flex;align-items:start;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border)">
       <div style="width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:5px;flex-shrink:0"></div>
       <div style="flex:1;min-width:0">
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-          <span style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $errListing->saleVehicle?->full_name ?? 'Veicolo #'.$errListing->sale_vehicle_id }}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $errListing->saleVehicle?->display_name ?? 'Veicolo #'.$errListing->sale_vehicle_id }}</span>
           @include('marketplace.partials._platform_badge', ['platform' => $errListing->platform])
         </div>
         <div style="font-size:11px;color:var(--red-text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $errListing->last_error_message }}</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px">{{ $errListing->last_error_at?->diffForHumans() }}</div>
       </div>
-      <a href="{{ route('marketplace.vehicles.show', $errListing->sale_vehicle_id) }}" style="font-size:11px;color:var(--blue-text);text-decoration:none;white-space:nowrap">Risolvi →</a>
+      <a href="{{ route('marketplace.vehicles.show', $errListing->sale_vehicle_id) }}" style="font-size:11px;color:var(--blue-text);text-decoration:none;white-space:nowrap">Risolvi â†’</a>
     </div>
     @empty
     <div style="text-align:center;padding:40px">
@@ -152,7 +152,7 @@
     <div style="padding:10px 20px;border-top:1px solid var(--border)">
       <form action="{{ route('marketplace.sync.stats') }}" method="POST" style="display:inline">
         @csrf
-        <button type="submit" style="background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer">Forza ri-sincronizzazione →</button>
+        <button type="submit" style="background:none;border:none;font-size:12px;color:var(--text3);cursor:pointer">Forza ri-sincronizzazione â†’</button>
       </form>
     </div>
     @endif
