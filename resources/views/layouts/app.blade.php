@@ -1,478 +1,270 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ERP Ortofrutta</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>CarModel ERP â€” @yield('title', 'Dashboard')</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f6f7f9;--bg2:#ffffff;--bg3:#f1f3f6;--bg4:#e9edf2;--bg5:#dde3ea;
+  --border:#e5e7eb;--border2:#dfe3e8;--border3:#cfd6de;
+  --text:#1f2937;--text2:#6b7280;--text3:#9ca3af;
+  --orange:#ff6b00;--orange2:#e55f00;--orange3:#ff8c33;
+  --orange-bg:rgba(255,107,0,.08);--orange-border:rgba(255,107,0,.25);--orange-text:#ff6b00;
+  --green:#22c55e;--green-bg:rgba(34,197,94,.08);--green-text:#16a34a;
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,.08);--amber-text:#d97706;
+  --red:#ef4444;--red-bg:rgba(239,68,68,.08);--red-text:#dc2626;
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,.08);--blue-text:#2563eb;
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,.08);--purple-text:#9333ea;
+  --teal:#14b8a6;--teal-bg:rgba(20,184,166,.08);--teal-text:#0d9488;
+  --font-display:'Rajdhani',sans-serif;--font-body:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --radius:6px;--radius-lg:10px;--sidebar:220px;
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh;overflow-x:hidden}
 
-        :root {
-            --green:    #2d6a4f;
-            --green-l:  #40916c;
-            --green-xl: #d8f3dc;
-            --accent:   #f4a261;
-            --dark:     #1b2d27;
-            --text:     #2c3e35;
-            --muted:    #7a9e8e;
-            --bg:       #f5f7f5;
-            --card:     #ffffff;
-            --border:   #e2ebe5;
-            --sidebar-w: 230px;
-        }
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:#111827;border-right:none;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:9999;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1)}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
 
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-        }
+/* LOGO */
+.logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06);position:relative}
+.logo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--orange),transparent)}
+.logo-top{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.logo-icon{width:32px;height:32px;background:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:700;color:#000;flex-shrink:0;box-shadow:0 0 20px rgba(255,107,0,.4)}
+.logo-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:#fff;letter-spacing:.08em}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.3);padding-left:42px;letter-spacing:.15em;text-transform:uppercase}
 
-        /* ── SIDEBAR ── */
-        .sidebar {
-            width: var(--sidebar-w);
-            min-height: 100vh;
-            background: var(--dark);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 100;
-        }
+/* NAV */
+.nav{flex:1;padding:6px 0}
+.nav-section{color:rgba(255,255,255,.25);font-size:9px;font-weight:600;padding:14px 16px 4px;letter-spacing:.18em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.55);transition:all .15s;border-left:2px solid transparent;text-decoration:none;margin:0 4px;border-radius:6px}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+.nav-item.active{background:rgba(255,107,0,.12);color:var(--orange);border-left:2px solid var(--orange);font-weight:600;margin-left:4px;border-radius:0 6px 6px 0}
+.nav-item svg{opacity:.6;flex-shrink:0}
+.nav-item.active svg,.nav-item:hover svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
 
-        .sidebar-logo {
-            padding: 24px 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
+/* USER */
+.user-area{padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--orange-bg);border:1.5px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--orange);flex-shrink:0}
 
-        .sidebar-logo a {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+/* TOPBAR */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.page-title{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text);letter-spacing:.04em;text-transform:uppercase}
+.content{flex:1;padding:22px 24px}
 
-        .logo-icon {
-            width: 36px; height: 36px;
-            background: var(--green-l);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-        }
+/* BUTTONS */
+.btn{padding:7px 16px;font-size:13px;border-radius:var(--radius);cursor:pointer;font-family:var(--font-body);font-weight:500;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn-primary{background:var(--orange);color:#000;font-weight:600;box-shadow:0 0 12px rgba(255,107,0,.3)}.btn-primary:hover{background:var(--orange2);box-shadow:0 0 20px rgba(255,107,0,.5)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}.btn-ghost:hover{background:var(--bg3);color:var(--text);border-color:var(--border3)}
+.btn-danger{background:var(--red-bg);border:1px solid rgba(239,68,68,.3);color:var(--red-text)}
+.btn-sm{padding:5px 11px;font-size:12px}
 
-        .logo-text {
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.3px;
-        }
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border3),transparent)}
+.card-title{font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;letter-spacing:.06em;text-transform:uppercase}
+.stat-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:16px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.stat-card.orange::after{background:var(--orange);box-shadow:0 0 8px var(--orange)}
+.stat-card.green::after{background:var(--green)}.stat-card.amber::after{background:var(--amber)}.stat-card.red::after{background:var(--red)}.stat-card.blue::after{background:var(--blue)}.stat-card.purple::after{background:var(--purple)}
+.stat-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.stat-value{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:6px}
 
-        .logo-sub {
-            font-size: 10px;
-            color: var(--muted);
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--border2);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}
+tbody tr:hover td{background:var(--bg3)}
 
-        .sidebar-nav {
-            padding: 16px 10px;
-            flex: 1;
-            overflow-y: auto;
-        }
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:.02em}
+.badge-green{background:var(--green-bg);color:var(--green-text);border:1px solid rgba(34,197,94,.2)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-text);border:1px solid rgba(245,158,11,.2)}
+.badge-red{background:var(--red-bg);color:var(--red-text);border:1px solid rgba(239,68,68,.2)}
+.badge-blue{background:var(--blue-bg);color:var(--blue-text);border:1px solid rgba(59,130,246,.2)}
+.badge-purple{background:var(--purple-bg);color:var(--purple-text);border:1px solid rgba(168,85,247,.2)}
+.badge-teal{background:var(--teal-bg);color:var(--teal-text);border:1px solid rgba(20,184,166,.2)}
+.badge-orange{background:var(--orange-bg);color:var(--orange-text);border:1px solid var(--orange-border)}
+.badge-gray{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
+.targa{font-family:var(--mono);font-size:12px;background:var(--bg4);color:var(--text);padding:3px 8px;border-radius:4px;border:1px solid var(--border3);letter-spacing:.1em;font-weight:500}
 
-        .nav-section {
-            margin-bottom: 24px;
-        }
+/* FORMS */
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.form-input,.form-select,.form-textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 11px;color:var(--text);font-size:13px;font-family:var(--font-body);outline:none;width:100%;transition:border-color .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--orange)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-select option{background:var(--bg3)}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.6}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.main-side{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 
-        .nav-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--muted);
-            padding: 0 10px;
-            margin-bottom: 6px;
-        }
+/* ALERTS */
+.alert{padding:10px 14px;border-radius:var(--radius);margin-bottom:16px;font-size:13px;display:flex;align-items:flex-start;gap:10px;border-left:3px solid}
+.alert-amber{background:var(--amber-bg);border-color:var(--amber);color:var(--amber-text)}
+.alert-red{background:var(--red-bg);border-color:var(--red);color:var(--red-text)}
+.alert-green{background:var(--green-bg);border-color:var(--green);color:var(--green-text)}
+.alert-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-text)}
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: rgba(255,255,255,0.65);
-            font-size: 13.5px;
-            font-weight: 500;
-            transition: all 0.15s;
-            margin-bottom: 2px;
-        }
-
-        .nav-item:hover {
-            background: rgba(255,255,255,0.07);
-            color: #fff;
-        }
-
-        .nav-item.active {
-            background: var(--green-l);
-            color: #fff;
-        }
-
-        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-
-        .sidebar-footer {
-            padding: 16px 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-
-        /* ── MAIN ── */
-        .main-wrap {
-            margin-left: var(--sidebar-w);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* ── TOPBAR ── */
-        .topbar {
-            height: 60px;
-            background: var(--card);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 28px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .topbar-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-home {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--green-xl);
-            color: var(--green);
-            border: none;
-            border-radius: 8px;
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.15s;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        .btn-home:hover {
-            background: var(--green-l);
-            color: #fff;
-        }
-
-        .btn-logout {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            color: var(--muted);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.15s;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        .btn-logout:hover {
-            border-color: #e74c3c;
-            color: #e74c3c;
-        }
-
-        /* ── CONTENT ── */
-        .content {
-            padding: 28px;
-            flex: 1;
-        }
-
-        /* ── FLASH MESSAGES ── */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .alert-success { background: var(--green-xl); color: var(--green); border: 1px solid #b7e4c7; }
-        .alert-error   { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; }
-
-        /* ── UTILITY CLASSES ── */
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--dark);
-            letter-spacing: -0.5px;
-        }
-
-        .page-sub {
-            font-size: 13px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 18px;
-            border-radius: 8px;
-            font-size: 13.5px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            border: none;
-            transition: all 0.15s;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        .btn-primary {
-            background: var(--green-l);
-            color: #fff;
-        }
-
-        .btn-primary:hover { background: var(--green); }
-
-        .btn-secondary {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover { border-color: var(--green-l); color: var(--green-l); }
-
-        .btn-danger {
-            background: #fde8e8;
-            color: #c0392b;
-            border: 1px solid #f5c6c6;
-        }
-
-        .btn-danger:hover { background: #c0392b; color: #fff; }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13.5px;
-        }
-
-        table th {
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--muted);
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        table td {
-            padding: 11px 14px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        table tr:last-child td { border-bottom: none; }
-        table tbody tr:hover { background: var(--bg); }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 13.5px;
-            font-family: 'DM Sans', sans-serif;
-            color: var(--text);
-            background: var(--card);
-            transition: border 0.15s;
-            outline: none;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--green-l);
-            box-shadow: 0 0 0 3px rgba(64,145,108,0.1);
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-group { margin-bottom: 16px; }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-wrap { margin-left: 0; }
-        }
-    </style>
+/* MISC */
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--text3)}.info-value{color:var(--text);font-weight:500;text-align:right}
+.progress{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:var(--orange);border-radius:2px;box-shadow:0 0 6px rgba(255,107,0,.4)}
+.fleet-item{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:border-color .15s}
+.fleet-item:hover{border-color:var(--border3)}
+.fleet-status{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.fleet-status.green{background:var(--green);box-shadow:0 0 6px var(--green)}.fleet-status.red{background:var(--red);box-shadow:0 0 6px var(--red)}.fleet-status.amber{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.tl-item{display:flex;gap:12px;margin-bottom:12px;font-size:13px}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--orange);margin-top:4px;flex-shrink:0;box-shadow:0 0 6px rgba(255,107,0,.4)}
+.tl-dot.amber{background:var(--amber);box-shadow:none}.tl-dot.blue{background:var(--blue);box-shadow:none}.tl-dot.gray{background:var(--border2);box-shadow:none}.tl-dot.red{background:var(--red);box-shadow:none}.tl-dot.green{background:var(--green);box-shadow:none}
+.tl-body{flex:1}.tl-title{font-weight:500;color:var(--text);margin-bottom:2px}.tl-meta{font-size:11px;color:var(--text3)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 12px;flex:1;max-width:320px;transition:border-color .15s}
+.search-bar:focus-within{border-color:var(--orange)}
+.search-bar input{background:none;border:none;color:var(--text);font-size:13px;flex:1;outline:none;font-family:var(--font-body)}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;text-decoration:none}
+.chip:hover,.chip.active{background:var(--orange-bg);border-color:var(--orange-border);color:var(--orange-text)}
+.sinistro-stati{display:flex;background:var(--bg3);border-radius:var(--radius-lg);padding:4px;border:1px solid var(--border2);margin-bottom:20px;gap:2px}
+.stato-step{flex:1;padding:8px 4px;text-align:center;border-radius:6px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase}
+.stato-step.done{background:var(--orange-bg);color:var(--orange-text);border:1px solid var(--orange-border)}
+.stato-step.current{background:var(--amber-bg);color:var(--amber-text);border:1px solid rgba(245,158,11,.3)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--orange)}
+@media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}.main-side{grid-template-columns:1fr}}
+@media(max-width:800px){.sidebar{width:60px;min-width:60px}.main{margin-left:60px}.two-col,.three-col{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-logo">
-        <a href="{{ url('/dashboard') }}">
-            <div class="logo-icon">🥦</div>
-            <div>
-                <div class="logo-text">OrtoPro ERP</div>
-                <div class="logo-sub">Gestionale B2B</div>
-            </div>
-        </a>
+<div class="app">
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-top">
+      <div class="logo-icon">CM</div>
+      <div class="logo-name">CARMODEL</div>
     </div>
-
-    <nav class="sidebar-nav">
-
-        <div class="nav-section">
-            <div class="nav-label">Principale</div>
-            <a href="{{ url('/dashboard') }}" class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
-                <span class="icon">📊</span> Dashboard
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-label">Vendite</div>
-            <a href="{{ url('/documents') }}" class="nav-item {{ request()->is('documents*') ? 'active' : '' }}">
-                <span class="icon">📄</span> Documenti
-            </a>
-            <a href="{{ url('/clients') }}" class="nav-item {{ request()->is('clients*') ? 'active' : '' }}">
-                <span class="icon">👥</span> Clienti
-            </a>
-            <a href="{{ url('/payments') }}" class="nav-item {{ request()->is('payments*') ? 'active' : '' }}">
-                <span class="icon">💶</span> Pagamenti
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-label">Magazzino</div>
-            <a href="{{ url('/products') }}" class="nav-item {{ request()->is('products*') ? 'active' : '' }}">
-                <span class="icon">🧺</span> Prodotti
-            </a>
-            <a href="{{ url('/magazzino') }}" class="nav-item {{ request()->is('magazzino*') ? 'active' : '' }}">
-                <span class="icon">📦</span> Magazzino
-            </a>
-            <a href="{{ url('/movimenti-magazzino') }}" class="nav-item {{ request()->is('movimenti*') ? 'active' : '' }}">
-                <span class="icon">🔄</span> Movimenti
-            </a>
-            <a href="{{ url('/carico-magazzino') }}" class="nav-item {{ request()->is('carico*') ? 'active' : '' }}">
-                <span class="icon">🚛</span> Carico Merce
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-label">Fornitori</div>
-            <a href="{{ url('/suppliers') }}" class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
-                <span class="icon">🏭</span> Fornitori
-            </a>
-            <a href="{{ url('/purchases') }}" class="nav-item {{ request()->is('purchases*') ? 'active' : '' }}">
-                <span class="icon">🛒</span> Acquisti
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-label">Logistica</div>
-            <a href="{{ url('/routes') }}" class="nav-item {{ request()->is('routes*') ? 'active' : '' }}">
-                <span class="icon">🗺️</span> Giri Consegna
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-label">Report</div>
-            <a href="{{ url('/report-vendite') }}" class="nav-item {{ request()->is('report-vendite*') ? 'active' : '' }}">
-                <span class="icon">📈</span> Vendite
-            </a>
-            <a href="{{ url('/report/prodotti') }}" class="nav-item {{ request()->is('report/prodotti*') ? 'active' : '' }}">
-                <span class="icon">📉</span> Prodotti
-            </a>
-            <a href="{{ url('/report/clienti') }}" class="nav-item {{ request()->is('report/clienti*') ? 'active' : '' }}">
-                <span class="icon">👤</span> Clienti
-            </a>
-        </div>
-
-    </nav>
-
-    <div class="sidebar-footer">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="nav-item" style="width:100%; border:none; cursor:pointer; background:transparent;">
-                <span class="icon">🚪</span> Logout
-            </button>
-        </form>
+    <div class="logo-sub">ERP Â· Automotive</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Principale</div>
+    <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <div class="nav-section">Anagrafica</div>
+    <a href="{{ route('clienti.index') }}" class="nav-item {{ request()->routeIs('clienti.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Clienti
+    </a>
+    <a href="{{ route('veicoli.index') }}" class="nav-item {{ request()->routeIs('veicoli.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+      Veicoli
+    </a>
+    <div class="nav-section">Sinistri & Lesioni</div>
+    <a href="{{ route('sinistri.index') }}" class="nav-item {{ request()->routeIs('sinistri.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Sinistri
+    </a>
+    <a href="{{ route('lesioni.index') }}" class="nav-item {{ request()->routeIs('lesioni.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Lesioni Personali
+    </a>
+    <a href="{{ route('periti.index') }}" class="nav-item {{ request()->routeIs('periti.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+      Periti & Avvocati
+    </a>
+    <div class="nav-section">Officina</div>
+    <a href="{{ route('lavorazioni.index') }}" class="nav-item {{ request()->routeIs('lavorazioni.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Lavorazioni
+    </a>
+    <a href="{{ route('preventivi.index') }}" class="nav-item {{ request()->routeIs('preventivi.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+      Preventivi
+    </a>
+    <div class="nav-section">Noleggio</div>
+    <a href="{{ route('flotta.index') }}" class="nav-item {{ request()->routeIs('flotta.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Flotta Veicoli
+    </a>
+    <a href="{{ route('noleggio.index') }}" class="nav-item {{ request()->routeIs('noleggio.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Contratti Noleggio
+    </a>
+    <a href="{{ route('sostitutive.index') }}" class="nav-item {{ request()->routeIs('sostitutive.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      Auto Sostitutive
+    </a>
+    <div class="nav-section">Amministrazione</div>
+    <a href="{{ route('documenti.index') }}" class="nav-item {{ request()->routeIs('documenti.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Fatture & DDT
+    </a>
+    <a href="{{ route('mail.index') }}" class="nav-item {{ request()->routeIs('mail.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Mail & Notifiche
+    </a>
+    <a href="{{ route('ricambi.index') }}" class="nav-item {{ request()->routeIs('ricambi.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+      Ricambi
+    </a>
+    <div class="nav-section" style="color:rgba(255,107,0,.5)">Vendita Auto</div>
+    <a href="{{ route('marketplace.dashboard') }}" class="nav-item {{ request()->routeIs('marketplace.dashboard') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="{{ route('marketplace.vehicles.index') }}" class="nav-item {{ request()->routeIs('marketplace.vehicles.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
+      Veicoli in vendita
+    </a>
+    <a href="{{ route('marketplace.leads.index') }}" class="nav-item {{ request()->routeIs('marketplace.leads.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Lead
+    </a>
+    <a href="{{ route('marketplace.settings') }}" class="nav-item {{ request()->routeIs('marketplace.settings*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Piattaforme
+    </a>
+  </nav>
+  <div class="user-area">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="avatar">{{ strtoupper(substr(auth()->user()->name,0,2)) }}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()->name }}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.05em">{{ ucfirst(auth()->user()->role) }}</div>
+      </div>
+      <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:16px;padding:4px;transition:color .15s" onmouseover="this.style.color='#ff6b00'" onmouseout="this.style.color='rgba(255,255,255,.3)'" title="Logout">â»</button>
+      </form>
     </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main-wrap">
-
-    <header class="topbar">
-        <span class="topbar-title">
-            @yield('page-title', 'ERP Ortofrutta')
-        </span>
-        <div class="topbar-right">
-            <a href="{{ url('/dashboard') }}" class="btn-home">
-                🏠 Dashboard
-            </a>
-        </div>
-    </header>
-
-    <main class="content">
-        @if(session('success'))
-            <div class="alert alert-success">✅ {{ session('success') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-error">❌ {{ session('error') }}</div>
-        @endif
-
-        @yield('content')
-    </main>
-
+  </div>
 </div>
-
+<div class="main">
+  <div class="topbar">
+    <span class="page-title">@yield('title', 'Dashboard')</span>
+    <div style="display:flex;gap:8px;align-items:center">@yield('topbar-actions')</div>
+  </div>
+  <div class="content">
+    @if(session('success'))<div class="alert alert-green"><span>âœ“</span><span>{{ session('success') }}</span></div>@endif
+    @if(session('warning'))<div class="alert alert-amber"><span>âš </span><span>{{ session('warning') }}</span></div>@endif
+    @if(session('error'))<div class="alert alert-red"><span>âœ—</span><span>{{ session('error') }}</span></div>@endif
+    @yield('content')
+  </div>
+</div>
+</div>
+@stack('scripts')
 </body>
 </html>
