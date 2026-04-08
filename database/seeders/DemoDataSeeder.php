@@ -214,10 +214,10 @@ class DemoDataSeeder extends Seeder
         $claims    = Claim::where('tenant_id',$this->tid)->get();
         if ($flotta->isEmpty() || $customers->isEmpty()) return;
         foreach ([
-            ['ci'=>0,'fi'=>0,'cli'=>0,'type'=>'sostitutiva','start'=>'-10 days','end'=>'+10 days','rate'=>85,'status'=>'pronto','km'=>25000,'fuel'=>100],
-            ['ci'=>1,'fi'=>1,'cli'=>null,'type'=>'breve_termine','start'=>'-5 days','end'=>'+3 days','rate'=>55,'status'=>'pronto','km'=>18000,'fuel'=>80],
+            ['ci'=>0,'fi'=>0,'cli'=>0,'type'=>'sostitutiva','start'=>'-10 days','end'=>'+10 days','rate'=>85,'status'=>'attivo','km'=>25000,'fuel'=>100],
+            ['ci'=>1,'fi'=>1,'cli'=>null,'type'=>'breve_termine','start'=>'-5 days','end'=>'+3 days','rate'=>55,'status'=>'attivo','km'=>18000,'fuel'=>80],
             ['ci'=>2,'fi'=>2,'cli'=>2,'type'=>'sostitutiva','start'=>'-30 days','end'=>'-5 days','rate'=>45,'status'=>'chiuso','km'=>31000,'fuel'=>100],
-            ['ci'=>3,'fi'=>3,'cli'=>null,'type'=>'lungo_termine','start'=>'-60 days','end'=>'+30 days','rate'=>38,'status'=>'pronto','km'=>42000,'fuel'=>90],
+            ['ci'=>3,'fi'=>3,'cli'=>null,'type'=>'lungo_termine','start'=>'-60 days','end'=>'+30 days','rate'=>38,'status'=>'attivo','km'=>42000,'fuel'=>90],
         ] as $n) {
             Rental::create([
                 'tenant_id'=>$this->tid,
