@@ -57,7 +57,7 @@ class Claim extends Model implements HasMedia
     public function expert(): BelongsTo { return $this->belongsTo(Expert::class); }
     public function assignedTo(): BelongsTo { return $this->belongsTo(User::class, 'assigned_to'); }
     public function createdBy(): BelongsTo { return $this->belongsTo(User::class, 'created_by'); }
-    public function statusHistory(): HasMany { return $this->hasMany(ClaimStatusHistory::class); }
+   
     public function personalInjuries(): HasMany { return $this->hasMany(PersonalInjury::class); }
     public function workOrders(): HasMany { return $this->hasMany(WorkOrder::class); }
     public function rentals(): HasMany { return $this->hasMany(Rental::class); }

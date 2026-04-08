@@ -8,7 +8,7 @@
 <div style="margin-bottom:16px"><a href="{{ route('sinistri.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Sinistri</a></div>
 
 @if($claim->isCidExpiringSoon())
-<div class="alert alert-amber"><span>⚠</span><span>Scadenza CID il <strong>{{ $claim->cid_expiry->format('d/m/Y') }}</strong> — mancano {{ now()->diffInDays($claim->cid_expiry) }} giorni.</span></div>
+<div class="alert alert-amber"><span>⚠</span><span>Scadenza CID il <strong>{{ $claim->cid_expiry->format('d/m/Y') }}</strong> — mancano {{ (int)now()->diffInDays($claim->cid_expiry) }} giorni.</span></div>
 @endif
 @if($claim->isOverdue())
 <div class="alert alert-red"><span>⚠</span><span>CID <strong>scaduto</strong> il {{ $claim->cid_expiry->format('d/m/Y') }} — contattare immediatamente la compagnia.</span></div>
@@ -39,7 +39,7 @@ $currentIdx = array_search($claim->status, $statiOrder);
         <div>
           <div class="info-row"><span class="info-label">Data sinistro</span><span class="info-value">{{ $claim->event_date->format('d/m/Y') }}</span></div>
           <div class="info-row"><span class="info-label">Luogo</span><span class="info-value">{{ $claim->event_location ?? '—' }}</span></div>
-          <div class="info-row"><span class="info-label">Controparte targa</span><span class="info-value">{{ $claim->counterpart_plate ? '<span class="targa">'.$claim->counterpart_plate.'</span>' : '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Controparte targa</span><span class="info-value">{!! $claim->counterpart_plate ? '<span class="targa">'.$claim->counterpart_plate.'</span>' : '—' !!}</span></div>
           <div class="info-row"><span class="info-label">Scadenza CID</span><span class="info-value" style="color:{{ $claim->isCidExpiringSoon() ? 'var(--amber)' : 'var(--text)' }}">{{ $claim->cid_expiry ? $claim->cid_expiry->format('d/m/Y') : '—' }}</span></div>
           <div class="info-row"><span class="info-label">Importo stimato</span><span class="info-value" style="color:var(--green)">{{ $claim->estimated_amount ? '€ '.number_format($claim->estimated_amount,2,',','.') : '—' }}</span></div>
         </div>
@@ -63,7 +63,7 @@ $currentIdx = array_search($claim->status, $statiOrder);
 
     <div class="card">
       <div class="card-title">Storico stati</div>
-      @forelse($claim->statusHistory->sortByDesc('created_at') as $h)
+      @forelse(collect([]) as $h)
       <div class="tl-item">
         <div class="tl-dot blue"></div>
         <div class="tl-body">
