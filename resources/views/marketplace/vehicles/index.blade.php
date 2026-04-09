@@ -13,10 +13,10 @@
 {{-- KPI bar --}}
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
   @foreach([
-    ['Totale stock', $vehicles->total(), 'var(--blue)', 'ðŸš—'],
-    ['Attivi', $stats['vehicles_active'], 'var(--green)', 'âœ…'],
-    ['Bozze', $stats['vehicles_draft'], 'var(--amber)', 'ðŸ“'],
-    ['Venduti', $stats['vehicles_sold'], 'var(--orange)', 'ðŸ†'],
+    ['Totale stock', $vehicles->total(), 'var(--blue)', 'Ã°Å¸Å¡â€”'],
+    ['Attivi', $stats['vehicles_active'], 'var(--green)', 'Ã¢Å“â€¦'],
+    ['Bozze', $stats['vehicles_draft'], 'var(--amber)', 'Ã°Å¸â€œÂ'],
+    ['Venduti', $stats['vehicles_sold'], 'var(--orange)', 'Ã°Å¸Ââ€ '],
   ] as [$label, $val, $color, $icon])
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden">
     <div style="position:absolute;top:0;left:0;right:0;height:2px;background:{{ $color }}"></div>
@@ -39,14 +39,14 @@
     @endforeach
   </select>
   @if(request()->hasAny(['search','status']))
-    <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost btn-sm">âœ• Reset</a>
+    <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost btn-sm">Ã¢Å“â€¢ Reset</a>
   @endif
   <div style="margin-left:auto;font-size:12px;color:var(--text3)">{{ $vehicles->total() }} veicoli</div>
 </form>
 
 @if($vehicles->isEmpty())
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:60px 24px;text-align:center">
-    <div style="font-size:48px;margin-bottom:16px">ðŸš—</div>
+    <div style="font-size:48px;margin-bottom:16px">Ã°Å¸Å¡â€”</div>
     <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Nessun veicolo in stock</div>
     <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Aggiungi il primo veicolo per iniziare a vendere</div>
     <a href="{{ route('marketplace.vehicles.create') }}" class="btn btn-primary">+ Aggiungi veicolo</a>
@@ -91,7 +91,7 @@
       {{-- Contatore foto --}}
       @if($photoCount > 0)
         <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:3px 8px;border-radius:10px;display:flex;align-items:center;gap:4px">
-          ðŸ“· {{ $photoCount }}
+          Ã°Å¸â€œÂ· {{ $photoCount }}
         </div>
       @endif
 
@@ -113,7 +113,7 @@
           @endif
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:8px">
-          <div style="font-size:16px;font-weight:800;color:var(--orange)">â‚¬ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
+          <div style="font-size:16px;font-weight:800;color:var(--orange)">Ã¢â€šÂ¬ {{ number_format($vehicle->asking_price,0,',','.') }}</div>
           @if($vehicle->margin_percent)
             <div style="font-size:10px;color:var(--green-text)">+{{ $vehicle->margin_percent }}%</div>
           @endif

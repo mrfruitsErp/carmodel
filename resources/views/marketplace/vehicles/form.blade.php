@@ -1,171 +1,294 @@
 @extends('layouts.app')
-@section('title', $vehicle->exists ? 'Modifica '.$vehicle->display_name : 'Nuovo veicolo in vendita')
-
+@section('title', isset($vehicle) ? 'Modifica Veicolo' : 'Nuovo Veicolo in Vendita')
 @section('content')
-<div class="min-h-screen bg-gray-50/50 px-4 py-6 md:px-8">
-<div class="max-w-4xl mx-auto">
+<div style="max-width:900px">
+  <div style="margin-bottom:16px"><a href="{{ route('marketplace.vehicles.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">&lt;- Veicoli in vendita</a></div>
 
-    <div class="mb-6">
-        <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
-            <a href="{{ route('marketplace.vehicles.index') }}" class="hover:text-gray-800">Veicoli</a>
-            <span>/</span><span class="text-gray-800">{{ $vehicle->exists ? 'Modifica' : 'Nuovo veicolo' }}</span>
-        </div>
-        <h1 class="text-2xl font-bold text-gray-900">{{ $vehicle->exists ? 'Modifica '.$vehicle->display_name : 'Aggiungi veicolo in vendita' }}</h1>
+  {{-- VIN DECODER --}}
+  <div class="card" style="border:1px solid var(--orange-border);background:var(--orange-bg)">
+    <div class="card-title" style="color:var(--orange)">Decodifica VIN automatica</div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div class="form-group" style="flex:1;margin-bottom:0">
+        <label class="form-label">Numero telaio VIN (17 caratteri)</label>
+        <input type="text" id="vin_input" class="form-input" placeholder="es. WBA3A5G59DNP26082" maxlength="17" style="font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <button type="button" onclick="decodeVin()" class="btn btn-primary" id="vin_btn" style="white-space:nowrap">Decodifica VIN</button>
     </div>
+    <div id="vin_result" style="margin-top:10px;font-size:13px"></div>
+  </div>
 
-    <form action="{{ $vehicle->exists ? route('marketplace.vehicles.update', $vehicle) : route('marketplace.vehicles.store') }}"
-          method="POST" enctype="multipart/form-data" class="space-y-6">
-        @csrf
-        @if($vehicle->exists) @method('PUT') @endif
+  <div class="card">
+    <div class="card-title">{{ isset($vehicle) ? 'Modifica veicolo' : 'Nuovo veicolo in vendita' }}</div>
+    <form action="{{ isset($vehicle) ? route('marketplace.vehicles.update',$vehicle) : route('marketplace.vehicles.store') }}" method="POST" enctype="multipart/form-data">
+      @csrf @if(isset($vehicle)) @method('PUT') @endif
+      @if($errors->any())<div class="alert alert-red">@foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>@endif
 
-        {{-- Dati tecnici --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 class="text-sm font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Dati tecnici</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach([
-                    ['brand','Marca','text','es. BMW',true],
-                    ['model','Modello','text','es. 320d',true],
-                    ['version','Versione','text','es. Sport Line',false],
-                    ['plate','Targa','text','AB123CD',false],
-                    ['vin','VIN','text','Numero telaio',false],
-                    ['year','Anno','number','2021',true],
-                ] as [$name, $label, $type, $placeholder, $required])
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">{{ $label }} @if($required)<span class="text-red-500">*</span>@endif</label>
-                    <input type="{{ $type }}" name="{{ $name }}" value="{{ old($name, $vehicle->$name) }}" placeholder="{{ $placeholder }}" {{ $required ? 'required' : '' }}
-                           class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none @error($name) border-red-400 @enderror">
-                    @error($name)<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
-                @endforeach
+      {{-- VIN nascosto --}}
+      <input type="hidden" name="vin" id="vin_hidden" value="{{ old('vin', $vehicle->vin ?? '') }}">
 
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Km <span class="text-red-500">*</span></label>
-                    <input type="number" name="mileage" value="{{ old('mileage', $vehicle->mileage) }}" min="0" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Carburante <span class="text-red-500">*</span></label>
-                    <select name="fuel_type" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                        @foreach(['benzina','diesel','gpl','metano','elettrico','ibrido_benzina','ibrido_diesel','altro'] as $f)
-                            <option value="{{ $f }}" {{ old('fuel_type', $vehicle->fuel_type) === $f ? 'selected' : '' }}>{{ ucfirst(str_replace('_',' ',$f)) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Cambio <span class="text-red-500">*</span></label>
-                    <select name="transmission" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                        @foreach(['manuale','automatico','semiautomatico'] as $t)
-                            <option value="{{ $t }}" {{ old('transmission', $vehicle->transmission) === $t ? 'selected' : '' }}>{{ ucfirst($t) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Carrozzeria</label>
-                    <select name="body_type" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                        <option value="">â€” Seleziona â€”</option>
-                        @foreach(['berlina','station_wagon','suv','coupÃ©','cabriolet','monovolume','van','pickup','altro'] as $b)
-                            <option value="{{ $b }}" {{ old('body_type', $vehicle->body_type) === $b ? 'selected' : '' }}>{{ ucfirst($b) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Condizione</label>
-                    <select name="condition" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                        @foreach(['eccellente','ottimo','buono','discreto','da_riparare'] as $c)
-                            <option value="{{ $c }}" {{ old('condition', $vehicle->condition) === $c ? 'selected' : '' }}>{{ ucfirst(str_replace('_',' ',$c)) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label class="form-label">Marca *</label>
+          <input type="text" name="brand" id="f_brand" value="{{ old('brand', $vehicle->brand ?? '') }}" class="form-input" required placeholder="es. BMW">
         </div>
-
-        {{-- Prezzi --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 class="text-sm font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Prezzi</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo richiesta (â‚¬) <span class="text-red-500">*</span></label>
-                    <input type="number" name="asking_price" value="{{ old('asking_price', $vehicle->asking_price) }}" min="0" step="100" required class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo acquisto (â‚¬) <span class="text-xs font-normal text-gray-400">interno</span></label>
-                    <input type="number" name="purchase_price" value="{{ old('purchase_price', $vehicle->purchase_price) }}" min="0" step="100" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Prezzo minimo (â‚¬) <span class="text-xs font-normal text-gray-400">interno</span></label>
-                    <input type="number" name="min_price" value="{{ old('min_price', $vehicle->min_price) }}" min="0" step="100" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" name="price_negotiable" value="1" id="negotiable" {{ old('price_negotiable', $vehicle->price_negotiable ?? true) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-gray-900">
-                    <label for="negotiable" class="text-sm text-gray-600">Prezzo trattabile</label>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" name="vat_deductible" value="1" id="vat" {{ old('vat_deductible', $vehicle->vat_deductible) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-gray-900">
-                    <label for="vat" class="text-sm text-gray-600">IVA detraibile</label>
-                </div>
-            </div>
+        <div class="form-group">
+          <label class="form-label">Modello *</label>
+          <input type="text" name="model" id="f_model" value="{{ old('model', $vehicle->model ?? '') }}" class="form-input" required placeholder="es. Serie 3">
         </div>
-
-        {{-- Descrizione --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 class="text-sm font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Descrizione annuncio</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Titolo personalizzato <span class="text-xs font-normal text-gray-400">opzionale</span></label>
-                    <input type="text" name="title" value="{{ old('title', $vehicle->title) }}" maxlength="200" placeholder="Lascia vuoto per generazione automatica" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Descrizione</label>
-                    <textarea name="description" rows="5" placeholder="Descrizione dettagliata del veicolo..." class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 outline-none resize-none">{{ old('description', $vehicle->description) }}</textarea>
-                </div>
-            </div>
+        <div class="form-group">
+          <label class="form-label">Versione/Allestimento</label>
+          <input type="text" name="version" id="f_version" value="{{ old('version', $vehicle->version ?? '') }}" class="form-input" placeholder="es. 320d xDrive Sport">
         </div>
+        <div class="form-group">
+          <label class="form-label">Anno *</label>
+          <input type="number" name="year" id="f_year" value="{{ old('year', $vehicle->year ?? date('Y')) }}" class="form-input" required min="1990" max="{{ date('Y')+1 }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Targa</label>
+          <input type="text" name="plate" value="{{ old('plate', $vehicle->plate ?? '') }}" class="form-input" style="font-family:var(--mono);text-transform:uppercase" placeholder="AB123CD">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prima immatricolazione</label>
+          <input type="date" name="first_registration" value="{{ old('first_registration', $vehicle->first_registration?->format('Y-m-d') ?? '') }}" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chilometri *</label>
+          <input type="number" name="mileage" value="{{ old('mileage', $vehicle->mileage ?? '') }}" class="form-input" required min="0" placeholder="es. 45000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Carburante</label>
+          <select name="fuel_type" id="f_fuel" class="form-select">
+            @foreach(['benzina','diesel','gpl','metano','elettrico','ibrido','ibrido_plug_in','altro'] as $f)
+            <option value="{{ $f }}" {{ old('fuel_type',$vehicle->fuel_type??'')===$f?'selected':'' }}>{{ ucfirst(str_replace('_',' ',$f)) }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cambio</label>
+          <select name="transmission" id="f_trans" class="form-select">
+            @foreach(['manuale','automatico','semi_automatico'] as $t)
+            <option value="{{ $t }}" {{ old('transmission',$vehicle->transmission??'')===$t?'selected':'' }}>{{ ucfirst(str_replace('_',' ',$t)) }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Carrozzeria</label>
+          <select name="body_type" id="f_body" class="form-select">
+            @foreach(['berlina','hatchback','station_wagon','suv','crossover','coupe','cabrio','van','pickup','monovolume'] as $b)
+            <option value="{{ $b }}" {{ old('body_type',$vehicle->body_type??'')===$b?'selected':'' }}>{{ ucfirst(str_replace('_',' ',$b)) }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Colore</label>
+          <input type="text" name="color" value="{{ old('color', $vehicle->color ?? '') }}" class="form-input" placeholder="es. Nero Metallizzato">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo colore</label>
+          <select name="color_type" class="form-select">
+            @foreach(['solido','metallizzato','perlato','opaco'] as $c)
+            <option value="{{ $c }}" {{ old('color_type',$vehicle->color_type??'')===$c?'selected':'' }}>{{ ucfirst($c) }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Porte</label>
+          <input type="number" name="doors" id="f_doors" value="{{ old('doors', $vehicle->doors ?? 5) }}" class="form-input" min="2" max="5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Posti</label>
+          <input type="number" name="seats" id="f_seats" value="{{ old('seats', $vehicle->seats ?? 5) }}" class="form-input" min="1" max="9">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cilindrata (cc)</label>
+          <input type="number" name="engine_cc" id="f_cc" value="{{ old('engine_cc', $vehicle->engine_cc ?? '') }}" class="form-input" placeholder="es. 1998">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Potenza (kW)</label>
+          <input type="number" name="power_kw" id="f_kw" value="{{ old('power_kw', $vehicle->power_kw ?? '') }}" class="form-input" placeholder="es. 140">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Potenza (CV)</label>
+          <input type="number" name="power_hp" id="f_hp" value="{{ old('power_hp', $vehicle->power_hp ?? '') }}" class="form-input" placeholder="es. 190">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Condizione</label>
+          <select name="condition" class="form-select">
+            @foreach(['ottimo','buono','discreto','da_revisionare'] as $c)
+            <option value="{{ $c }}" {{ old('condition',$vehicle->condition??'buono')===$c?'selected':'' }}>{{ ucfirst(str_replace('_',' ',$c)) }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Proprietari precedenti</label>
+          <input type="number" name="previous_owners" value="{{ old('previous_owners', $vehicle->previous_owners ?? 1) }}" class="form-input" min="0" max="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stato annuncio</label>
+          <select name="status" class="form-select">
+            @foreach(['bozza','attivo','sospeso','venduto','archiviato'] as $s)
+            <option value="{{ $s }}" {{ old('status',$vehicle->status??'bozza')===$s?'selected':'' }}>{{ ucfirst($s) }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
 
-        {{-- Foto (solo creazione) --}}
-        @if(!$vehicle->exists)
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 class="text-sm font-semibold text-gray-800 mb-4">Foto</h2>
-            <label class="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-                <span class="text-sm text-gray-500">Clicca per caricare foto</span>
-                <span class="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP â€” max 10MB</span>
-                <input type="file" name="photos[]" multiple accept="image/*" class="hidden" onchange="previewFotos(this)">
+      {{-- PREZZI --}}
+      <div style="border-top:1px solid var(--border);margin:20px 0;padding-top:20px">
+        <div class="card-title">Prezzi</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px">
+          <div class="form-group">
+            <label class="form-label">Prezzo richiesto (euro) *</label>
+            <input type="number" name="asking_price" value="{{ old('asking_price', $vehicle->asking_price ?? '') }}" class="form-input" required step="100" min="0" placeholder="es. 18900">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Prezzo minimo (euro)</label>
+            <input type="number" name="min_price" value="{{ old('min_price', $vehicle->min_price ?? '') }}" class="form-input" step="100" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Prezzo acquisto (euro)</label>
+            <input type="number" name="purchase_price" value="{{ old('purchase_price', $vehicle->purchase_price ?? '') }}" class="form-input" step="100" min="0">
+          </div>
+          <div class="form-group" style="display:flex;flex-direction:column;gap:8px;padding-top:20px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+              <input type="checkbox" name="price_negotiable" value="1" {{ old('price_negotiable',$vehicle->price_negotiable??false)?'checked':'' }} style="width:15px;height:15px;accent-color:var(--orange)"> Prezzo trattabile
             </label>
-            <div id="foto-preview" class="grid grid-cols-4 gap-2 mt-3"></div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+              <input type="checkbox" name="vat_deductible" value="1" {{ old('vat_deductible',$vehicle->vat_deductible??false)?'checked':'' }} style="width:15px;height:15px;accent-color:var(--orange)"> IVA detraibile
+            </label>
+          </div>
         </div>
-        @endif
+      </div>
 
-        {{-- Azioni --}}
-        <div class="flex items-center justify-between pt-2">
-            <a href="{{ route('marketplace.vehicles.index') }}" class="text-sm text-gray-500 hover:text-gray-800">â† Annulla</a>
-            <div class="flex gap-2">
-                <button type="submit" class="px-5 py-2.5 text-sm border border-gray-200 bg-white rounded-xl hover:bg-gray-50 text-gray-700">Salva bozza</button>
-                <button type="submit" class="px-5 py-2.5 text-sm bg-gray-900 text-white rounded-xl hover:bg-gray-700 font-medium">{{ $vehicle->exists ? 'Salva modifiche' : 'Crea veicolo' }}</button>
-            </div>
+      {{-- OPTIONAL --}}
+      <div style="border-top:1px solid var(--border);margin:20px 0;padding-top:20px">
+        <div class="card-title">Optional e dotazioni</div>
+        @php
+        $allFeatures = [
+          'Comfort' => ['aria_condizionata','clima_automatico','clima_bizona','sedili_riscaldati','sedili_ventilati','sedili_elettrici','sedili_memoria','volante_riscaldato','tetto_apribile','tetto_panoramico','cruise_control','cruise_control_adattivo'],
+          'Sicurezza' => ['abs','esp','airbag_frontali','airbag_laterali','airbag_tendina','sensori_parcheggio_ant','sensori_parcheggio_post','telecamera_posteriore','telecamera_360','lane_assist','blind_spot','frenata_autonoma','riconoscimento_segnali'],
+          'Infotainment' => ['radio','bluetooth','apple_carplay','android_auto','navigatore','schermo_touch','hifi','usb','wireless_charging','head_up_display'],
+          'Esterno' => ['cerchi_lega','vernice_metallizzata','tetto_nero','barre_portapacchi','gancio_traino','specchi_elettrici','specchi_ripiegabili','luci_led','luci_matrix','fari_fendinebbia'],
+          'Motore/Telaio' => ['start_stop','recupero_energia','paddleshift','launch_control','sospensioni_adattive','4x4','differenziale_sportivo','freni_sportivi'],
+        ];
+        $savedFeatures = old('features', isset($vehicle) ? ($vehicle->features ?? []) : []);
+        @endphp
+        @foreach($allFeatures as $gruppo => $items)
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">{{ $gruppo }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            @foreach($items as $item)
+            <label style="display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;transition:all .15s" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)'">
+              <input type="checkbox" name="features[]" value="{{ $item }}" {{ in_array($item, (array)$savedFeatures) ? 'checked' : '' }} style="accent-color:var(--orange)">
+              {{ ucfirst(str_replace('_',' ',$item)) }}
+            </label>
+            @endforeach
+          </div>
         </div>
+        @endforeach
+      </div>
+
+      {{-- TITOLO E DESCRIZIONE --}}
+      <div style="border-top:1px solid var(--border);margin:20px 0;padding-top:20px">
+        <div class="card-title">Annuncio</div>
+        <div class="form-group">
+          <label class="form-label">Titolo annuncio *</label>
+          <input type="text" name="title" value="{{ old('title', $vehicle->title ?? '') }}" class="form-input" required placeholder="es. BMW 320d xDrive Sport - Unico proprietario" id="f_title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descrizione</label>
+          <textarea name="description" class="form-textarea" rows="6" placeholder="Descrizione dettagliata del veicolo...">{{ old('description', $vehicle->description ?? '') }}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note interne (non visibili nell'annuncio)</label>
+          <textarea name="internal_notes" class="form-textarea" rows="3">{{ old('internal_notes', $vehicle->internal_notes ?? '') }}</textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost">Annulla</a>
+        <button type="submit" name="action" value="bozza" class="btn btn-ghost">Salva bozza</button>
+        <button type="submit" name="action" value="attivo" class="btn btn-primary">Pubblica annuncio</button>
+      </div>
     </form>
-</div>
+  </div>
 </div>
 
 @push('scripts')
 <script>
-function previewFotos(input) {
-    const preview = document.getElementById('foto-preview');
-    preview.innerHTML = '';
-    [...input.files].forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const div = document.createElement('div');
-            div.className = 'aspect-video rounded-lg overflow-hidden bg-gray-100';
-            div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-            preview.appendChild(div);
-        };
-        reader.readAsDataURL(file);
+async function decodeVin() {
+  const vin = document.getElementById('vin_input').value.trim();
+  if (vin.length !== 17) {
+    showResult('Il VIN deve essere di esattamente 17 caratteri', 'error');
+    return;
+  }
+  const btn = document.getElementById('vin_btn');
+  btn.textContent = 'Decodifica in corso...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/vin/decode', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content},
+      body: JSON.stringify({vin})
     });
+    const json = await res.json();
+    if (json.success) {
+      const d = json.data;
+      if (d.brand)    setField('f_brand', d.brand);
+      if (d.model)    setField('f_model', d.model);
+      if (d.year)     setField('f_year', d.year);
+      if (d.fuel_type)setSelect('f_fuel', d.fuel_type);
+      if (d.transmission) setSelect('f_trans', d.transmission);
+      if (d.body_type)setSelect('f_body', d.body_type);
+      if (d.doors)    setField('f_doors', d.doors);
+      if (d.engine_cc)setField('f_cc', d.engine_cc);
+      if (d.power_kw) setField('f_kw', d.power_kw);
+      if (d.power_hp) setField('f_hp', d.power_hp);
+      document.getElementById('vin_hidden').value = vin;
+      // Auto-genera titolo
+      if (d.brand && d.model && d.year) {
+        const titleField = document.getElementById('f_title');
+        if (!titleField.value) titleField.value = d.brand+' '+d.model+' ('+d.year+')';
+      }
+      showResult('VIN decodificato: '+[d.brand,d.model,d.year].filter(Boolean).join(' ')+' - Dati compilati automaticamente!', 'success');
+    } else {
+      showResult('Errore: '+(json.error||'VIN non trovato nel database'), 'error');
+    }
+  } catch(e) {
+    showResult('Errore connessione API', 'error');
+  }
+  btn.textContent = 'Decodifica VIN';
+  btn.disabled = false;
 }
+
+function setField(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) el.value = val;
+}
+
+function setSelect(id, val) {
+  const el = document.getElementById(id);
+  if (!el || !val) return;
+  for (let opt of el.options) {
+    if (opt.value === val || opt.value.includes(val)) { opt.selected = true; break; }
+  }
+}
+
+function showResult(msg, type) {
+  const el = document.getElementById('vin_result');
+  el.style.color = type === 'success' ? 'var(--green-text)' : 'var(--red-text)';
+  el.textContent = msg;
+}
+
+// Auto-calcola CV da kW
+document.getElementById('f_kw')?.addEventListener('input', function() {
+  const kw = parseFloat(this.value);
+  if (kw > 0) document.getElementById('f_hp').value = Math.round(kw * 1.36);
+});
+document.getElementById('f_hp')?.addEventListener('input', function() {
+  const hp = parseFloat(this.value);
+  if (hp > 0) document.getElementById('f_kw').value = Math.round(hp / 1.36);
+});
 </script>
 @endpush
 @endsection
