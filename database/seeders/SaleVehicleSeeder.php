@@ -61,7 +61,7 @@ class SaleVehicleSeeder extends Seeder
             [
                 'brand'=>'Toyota','model'=>'RAV4','version'=>'2.5 Hybrid AWD-i Style',
                 'year'=>2023,'plate'=>'NO234ST','vin'=>'JTMRWREV50D123456',
-                'mileage'=>12000,'fuel_type'=>'ibrido','transmission'=>'automatico',
+                'mileage'=>12000,'fuel_type'=>'ibrido_benzina','transmission'=>'automatico',
                 'color'=>'Bianco Perla','color_type'=>'perlato',
                 'body_type'=>'suv','doors'=>5,'seats'=>5,
                 'engine_cc'=>2487,'power_kw'=>160,'power_hp'=>218,
@@ -93,7 +93,7 @@ class SaleVehicleSeeder extends Seeder
             [
                 'brand'=>'Fiat','model'=>'500','version'=>'1.0 Hybrid Dolcevita',
                 'year'=>2022,'plate'=>'RS890WX','vin'=>'ZFA3120000P123456',
-                'mileage'=>24000,'fuel_type'=>'ibrido','transmission'=>'manuale',
+                'mileage'=>24000,'fuel_type'=>'ibrido_benzina','transmission'=>'manuale',
                 'color'=>'Rosa Venezia','color_type'=>'solido',
                 'body_type'=>'hatchback','doors'=>3,'seats'=>4,
                 'engine_cc'=>999,'power_kw'=>51,'power_hp'=>70,
