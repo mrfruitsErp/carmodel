@@ -8,8 +8,8 @@ class WorkOrderController extends Controller {
         $tid = auth()->user()->tenant_id;
         $q = WorkOrder::forTenant($tid)->with(['customer','vehicle','claim','assignedTo']);
         if ($request->search) $q->where(fn($s)=>$s->where('job_number','like',"%{$request->search}%")->orWhereHas('vehicle',fn($v)=>$v->where('plate','like',"%{$request->search}%")));
-        if ($request->status) $q->where('status', $request->status);
         if ($request->filter === 'overdue') $q->overdue();
+        elseif ($request->status) $q->where('status', $request->status);
         else $q->whereNotIn('status',['consegnato','annullato']);
         $lavorazioni = $q->orderBy('expected_end_date')->paginate(20);
         return view('lavorazioni.index', compact('lavorazioni'));
