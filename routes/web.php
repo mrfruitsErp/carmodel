@@ -29,8 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('periti', ExpertController::class);
 
     Route::resource('lavorazioni', WorkOrderController::class);
-    Route::post('lavorazioni/{workOrder}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
-    Route::post('lavorazioni/{workOrder}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
+    Route::post('lavorazioni/{lavorazioni}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
+    Route::post('lavorazioni/{lavorazioni}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
 
     Route::resource('preventivi', QuoteController::class);
     Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
