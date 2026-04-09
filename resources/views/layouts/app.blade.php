@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>CarModel ERP — @yield('title', 'Dashboard')</title>
+<title>CarModel Software â€” @yield('title', 'Dashboard')</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -293,9 +293,9 @@ tbody tr:hover td{background:var(--bg3)}
     <div style="display:flex;gap:8px;align-items:center">@yield('topbar-actions')</div>
   </div>
   <div class="content">
-    @if(session('success'))<div class="alert alert-green"><span>✓</span><span>{{ session('success') }}</span></div>@endif
-    @if(session('warning'))<div class="alert alert-amber"><span>⚠</span><span>{{ session('warning') }}</span></div>@endif
-    @if(session('error'))<div class="alert alert-red"><span>✗</span><span>{{ session('error') }}</span></div>@endif
+    @if(session('success'))<div class="alert alert-green"><span>âœ“</span><span>{{ session('success') }}</span></div>@endif
+    @if(session('warning'))<div class="alert alert-amber"><span>âš </span><span>{{ session('warning') }}</span></div>@endif
+    @if(session('error'))<div class="alert alert-red"><span>âœ—</span><span>{{ session('error') }}</span></div>@endif
     @yield('content')
   </div>
 </div>
