@@ -1,115 +1,53 @@
 @extends('layouts.app')
-@section('title', 'Lead â€” Marketplace')
-
-@section('topbar-actions')
-<form action="{{ route('marketplace.sync.leads') }}" method="POST">
-  @csrf
-  <button class="btn btn-ghost btn-sm">â†» Aggiorna lead</button>
-</form>
-@endsection
-
+@section('title', 'Lead marketplace')
 @section('content')
-
-{{-- Filtri --}}
-<form method="GET" style="display:flex;gap:10px;margin-bottom:20px;align-items:center;flex-wrap:wrap">
-  <select name="status" onchange="this.form.submit()" style="background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:7px 12px;font-size:13px;color:var(--text);outline:none;cursor:pointer">
-    <option value="">Tutti gli stati</option>
-    @foreach(['nuovo','contattato','appuntamento','trattativa','vinto','perso'] as $s)
-      <option value="{{ $s }}" {{ request('status')===$s?'selected':'' }}>{{ ucfirst($s) }}</option>
-    @endforeach
-  </select>
-  <select name="platform" onchange="this.form.submit()" style="background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:7px 12px;font-size:13px;color:var(--text);outline:none;cursor:pointer">
-    <option value="">Tutte le piattaforme</option>
-    @foreach(['autoscout24','automobile_it','ebay_motors','subito_it','facebook_marketplace','manual'] as $p)
-      <option value="{{ $p }}" {{ request('platform')===$p?'selected':'' }}>{{ ucwords(str_replace('_',' ',$p)) }}</option>
-    @endforeach
-  </select>
-  @if(request()->hasAny(['status','platform']))
-    <a href="{{ route('marketplace.leads.index') }}" class="btn btn-ghost btn-sm">âœ• Reset</a>
-  @endif
-  <div style="margin-left:auto;font-size:12px;color:var(--text3)">{{ $leads->total() }} lead</div>
-</form>
-
-@if($leads->isEmpty())
-  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:60px;text-align:center">
-    <div style="font-size:48px;margin-bottom:16px">ðŸ“­</div>
-    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Nessun lead trovato</div>
-    <div style="font-size:13px;color:var(--text3)">I lead arriveranno quando pubblicherai annunci sulle piattaforme</div>
+<div class="filter-row">
+  <div class="search-bar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Nome, email, telefono..." onkeyup="filterTable(this.value)">
   </div>
-@else
+</div>
 <div class="card" style="padding:0;overflow:hidden">
-  <table>
+  <table id="leadsTable">
     <thead>
       <tr>
-        <th>Contatto</th>
-        <th>Veicolo</th>
-        <th>Piattaforma</th>
-        <th>Stato</th>
-        <th>Ricevuto</th>
-        <th></th>
+        <th>Data</th><th>Contatto</th><th>Veicolo</th><th>Piattaforma</th><th>Messaggio</th><th>Stato</th>
       </tr>
     </thead>
     <tbody>
-      @foreach($leads as $lead)
-      @php
-        $statusColor = match($lead->status) {
-          'nuovo'        => ['bg'=>'var(--green-bg)',  'text'=>'var(--green-text)'],
-          'contattato'   => ['bg'=>'var(--blue-bg)',   'text'=>'var(--blue-text)'],
-          'appuntamento' => ['bg'=>'var(--purple-bg)', 'text'=>'var(--purple-text)'],
-          'trattativa'   => ['bg'=>'var(--amber-bg)',  'text'=>'var(--amber-text)'],
-          'vinto'        => ['bg'=>'var(--green-bg)',  'text'=>'var(--green-text)'],
-          default        => ['bg'=>'var(--bg4)',       'text'=>'var(--text3)'],
-        };
-      @endphp
-      <tr>
-        <td>
-          <div style="font-weight:600;color:var(--text)">{{ $lead->lead_name ?? 'Anonimo' }}</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap">
-            @if($lead->lead_email)<a href="mailto:{{ $lead->lead_email }}" style="color:var(--blue-text)">{{ $lead->lead_email }}</a>@endif
-            @if($lead->lead_phone)<a href="tel:{{ $lead->lead_phone }}" style="color:var(--blue-text)">{{ $lead->lead_phone }}</a>@endif
-          </div>
-          @if($lead->lead_message)
-            <div style="font-size:11px;color:var(--text3);margin-top:3px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $lead->lead_message }}</div>
-          @endif
-        </td>
-        <td>
-          @if($lead->saleVehicle)
-            <a href="{{ route('marketplace.vehicles.show', $lead->sale_vehicle_id) }}" style="font-size:13px;color:var(--text);text-decoration:none;font-weight:500">{{ $lead->saleVehicle->display_name }}</a>
-          @else
-            <span style="color:var(--text3)">â€”</span>
-          @endif
-        </td>
-        <td>@include('marketplace.partials._platform_badge', ['platform' => $lead->platform])</td>
-        <td>
-          <form action="{{ route('marketplace.leads.update', $lead) }}" method="POST">
-            @csrf @method('PATCH')
-            <select name="status" onchange="this.form.submit()" style="background:{{ $statusColor['bg'] }};color:{{ $statusColor['text'] }};border:none;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;cursor:pointer;outline:none">
-              @foreach(['nuovo','contattato','appuntamento','trattativa','vinto','perso'] as $s)
-                <option value="{{ $s }}" {{ $lead->status===$s?'selected':'' }}>{{ ucfirst($s) }}</option>
-              @endforeach
-            </select>
-          </form>
-        </td>
-        <td style="white-space:nowrap">
-          <div style="font-size:12px;color:var(--text)">{{ $lead->created_at->format('d/m/Y') }}</div>
-          <div style="font-size:10px;color:var(--text3)">{{ $lead->created_at->format('H:i') }}</div>
-        </td>
-        <td style="text-align:right">
-          <div style="display:flex;gap:8px;justify-content:flex-end">
-            @if($lead->lead_email)
-              <a href="mailto:{{ $lead->lead_email }}" class="btn btn-ghost btn-sm">âœ‰ Scrivi</a>
-            @endif
-            @if($lead->lead_phone)
-              <a href="tel:{{ $lead->lead_phone }}" class="btn btn-primary btn-sm">ðŸ“ž Chiama</a>
-            @endif
-          </div>
-        </td>
-      </tr>
-      @endforeach
+    @forelse($leads as $lead)
+    <tr>
+      <td style="white-space:nowrap;color:var(--text3);font-size:12px">{{ $lead->created_at->format('d/m/Y H:i') }}</td>
+      <td>
+        <div style="font-weight:500">{{ $lead->name }}</div>
+        <div style="font-size:11px;color:var(--text3)">{{ $lead->email }}</div>
+        @if($lead->phone)<div style="font-size:11px;color:var(--text3)">{{ $lead->phone }}</div>@endif
+      </td>
+      <td>
+        @if($lead->vehicle)
+          <a href="{{ route('marketplace.vehicles.show',$lead->vehicle) }}" style="color:var(--blue-text);font-weight:500">{{ $lead->vehicle->brand }} {{ $lead->vehicle->model }}</a>
+          <div style="font-size:11px;color:var(--text3)">{{ $lead->vehicle->year }} - {{ number_format($lead->vehicle->asking_price,0,',','.') }} euro</div>
+        @else - @endif
+      </td>
+      <td><span class="badge badge-blue">{{ ucfirst($lead->platform ?? 'web') }}</span></td>
+      <td style="max-width:200px;font-size:12px;color:var(--text2)">{{ Str::limit($lead->message, 60) }}</td>
+      <td><span class="badge {{ $lead->status==='nuovo' ? 'badge-orange' : ($lead->status==='contattato' ? 'badge-blue' : 'badge-green') }}">{{ ucfirst($lead->status ?? 'nuovo') }}</span></td>
+    </tr>
+    @empty
+    <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">Nessun lead ancora</td></tr>
+    @endforelse
     </tbody>
   </table>
 </div>
 <div style="margin-top:16px">{{ $leads->links() }}</div>
-@endif
-
+@push('scripts')
+<script>
+function filterTable(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#leadsTable tbody tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+@endpush
 @endsection
