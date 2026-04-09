@@ -10,17 +10,17 @@
     <input type="text" placeholder="Commessa, targa, cliente..." onkeyup="filterTable(this.value)">
   </div>
   <a href="{{ route('lavorazioni.index') }}" class="chip {{ !request('status') && !request('filter') ? 'active' : '' }}">Tutte</a>
-  <a href="{{ route('lavorazioni.index', ['status'=>'in_lavorazione']) }}" class="chip {{ request('status')==='in_lavorazione' ? 'active' : '' }}">In lavorazione</a>
-  <a href="{{ route('lavorazioni.index', ['status'=>'attesa']) }}" class="chip {{ request('status')==='attesa' ? 'active' : '' }}">In attesa</a>
-  <a href="{{ route('lavorazioni.index', ['filter'=>'overdue']) }}" class="chip {{ request('filter')==='overdue' ? 'active' : '' }}" style="{{ request('filter')==='overdue' ? '' : 'color:var(--red-text)' }}">&#9888; Ritardo</a>
-  <a href="{{ route('lavorazioni.index', ['status'=>'completato']) }}" class="chip {{ request('status')==='completato' ? 'active' : '' }}">Completate</a>
-  <a href="{{ route('lavorazioni.index', ['status'=>'annullato']) }}" class="chip {{ request('status')==='annullato' ? 'active' : '' }}">Annullate</a>
+  <a href="{{ route('lavorazioni.index', ['status'=>'in_lavorazione']) }}" class="chip {{ request('status')=='in_lavorazione' ? 'active' : '' }}">In lavorazione</a>
+  <a href="{{ route('lavorazioni.index', ['status'=>'attesa']) }}" class="chip {{ request('status')=='attesa' ? 'active' : '' }}">In attesa</a>
+  <a href="{{ route('lavorazioni.index', ['filter'=>'overdue']) }}" class="chip {{ request('filter')=='overdue' ? 'active' : '' }}" style="color:var(--red-text)">! Ritardo</a>
+  <a href="{{ route('lavorazioni.index', ['status'=>'completato']) }}" class="chip {{ request('status')=='completato' ? 'active' : '' }}">Completate</a>
+  <a href="{{ route('lavorazioni.index', ['status'=>'annullato']) }}" class="chip {{ request('status')=='annullato' ? 'active' : '' }}">Annullate</a>
 </div>
 <div class="card" style="padding:0;overflow:hidden">
   <table id="lavTable">
     <thead>
       <tr>
-        <th>N&deg; Commessa</th>
+        <th>N. Commessa</th>
         <th>Cliente / Targa</th>
         <th>Sinistro</th>
         <th>Tipo</th>
@@ -36,13 +36,13 @@
     <tr onclick="location.href='{{ route('lavorazioni.show', $l) }}'" style="cursor:pointer">
       <td><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">#{{ $l->job_number }}</span></td>
       <td><div style="font-weight:500">{{ $l->customer->display_name }}</div><span class="targa">{{ $l->vehicle->plate }}</span></td>
-      <td>@if($l->claim)<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">#{{ $l->claim->claim_number }}</span>@else &mdash;@endif</td>
+      <td>@if($l->claim)<span style="font-family:var(--mono);font-size:11px;color:var(--text3)">#{{ $l->claim->claim_number }}</span>@else -@endif</td>
       <td><span class="badge badge-teal">{{ ucfirst($l->job_type) }}</span></td>
-      <td style="color:var(--text2)">{{ $l->assignedTo?->name ?? '&mdash;' }}</td>
+      <td style="color:var(--text2)">{{ $l->assignedTo?->name ?? '-' }}</td>
       <td><span class="badge {{ $l->status==='in_lavorazione' ? 'badge-amber' : ($l->status==='completato' ? 'badge-green' : ($l->status==='annullato' ? 'badge-gray' : 'badge-blue')) }}">{{ str_replace('_',' ',ucfirst($l->status)) }}</span></td>
       <td><div style="display:flex;align-items:center;gap:6px"><span style="font-size:11px;color:var(--text3)">{{ $l->progress_percent }}%</span><div class="progress" style="width:60px"><div class="progress-fill" style="width:{{ $l->progress_percent }}%"></div></div></div></td>
-      <td style="color:{{ $l->isOverdue() ? 'var(--red)' : 'var(--text2)' }}">{{ $l->expected_end_date ? $l->expected_end_date->format('d/m') : '--' }}{{ $l->isOverdue() ? ' !' : '' }}</td>
-      <td>{{ $l->estimated_amount ? '&euro; '.number_format($l->estimated_amount,0,',','.') : '--' }}</td>
+      <td style="color:{{ $l->isOverdue() ? 'var(--red)' : 'var(--text2)' }}">{{ $l->expected_end_date ? $l->expected_end_date->format('d/m') : '-' }}{{ $l->isOverdue() ? ' !' : '' }}</td>
+      <td>euro {{ $l->estimated_amount ? number_format($l->estimated_amount,0,',','.') : '-' }}</td>
     </tr>
     @empty
     <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text3)">Nessuna lavorazione trovata</td></tr>
