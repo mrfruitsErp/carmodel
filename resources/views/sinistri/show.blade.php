@@ -1,17 +1,17 @@
 @extends('layouts.app')
 @section('title', 'Sinistro #'.$claim->claim_number)
 @section('topbar-actions')
-<a href="{{ route('sinistri.edit', $claim) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
+<a href="{{ route('sinistri.edit', $claim) }}" class="btn btn-ghost btn-sm">âœŽ Modifica</a>
 <button onclick="document.getElementById('modal-stato').style.display='flex'" class="btn btn-primary btn-sm">Aggiorna stato</button>
 @endsection
 @section('content')
-<div style="margin-bottom:16px"><a href="{{ route('sinistri.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Sinistri</a></div>
+<div style="margin-bottom:16px"><a href="{{ route('sinistri.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">â† Sinistri</a></div>
 
 @if($claim->isCidExpiringSoon())
-<div class="alert alert-amber"><span>⚠</span><span>Scadenza CID il <strong>{{ $claim->cid_expiry->format('d/m/Y') }}</strong> — mancano {{ (int)now()->diffInDays($claim->cid_expiry) }} giorni.</span></div>
+<div class="alert alert-amber"><span>âš </span><span>Scadenza CID il <strong>{{ $claim->cid_expiry->format('d/m/Y') }}</strong> â€” mancano {{ (int)now()->diffInDays($claim->cid_expiry) }} giorni.</span></div>
 @endif
 @if($claim->isOverdue())
-<div class="alert alert-red"><span>⚠</span><span>CID <strong>scaduto</strong> il {{ $claim->cid_expiry->format('d/m/Y') }} — contattare immediatamente la compagnia.</span></div>
+<div class="alert alert-red"><span>âš </span><span>CID <strong>scaduto</strong> il {{ $claim->cid_expiry->format('d/m/Y') }} â€” contattare immediatamente la compagnia.</span></div>
 @endif
 
 @php
@@ -32,16 +32,16 @@ $currentIdx = array_search($claim->status, $statiOrder);
         <div>
           <div class="info-row"><span class="info-label">Cliente</span><span class="info-value"><a href="{{ route('clienti.show', $claim->customer) }}" style="color:var(--green);text-decoration:none">{{ $claim->customer->display_name }}</a></span></div>
           <div class="info-row"><span class="info-label">Veicolo</span><span class="info-value"><span class="targa">{{ $claim->vehicle->plate }}</span> {{ $claim->vehicle->brand }} {{ $claim->vehicle->model }}</span></div>
-          <div class="info-row"><span class="info-label">Compagnia</span><span class="info-value">{{ $claim->insuranceCompany?->name ?? '—' }}</span></div>
-          <div class="info-row"><span class="info-label">N° Polizza</span><span class="info-value" style="font-family:var(--mono);font-size:12px">{{ $claim->policy_number ?? '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Compagnia</span><span class="info-value">{{ $claim->insuranceCompany?->name ?? 'â€”' }}</span></div>
+          <div class="info-row"><span class="info-label">NÂ° Polizza</span><span class="info-value" style="font-family:var(--mono);font-size:12px">{{ $claim->policy_number ?? 'â€”' }}</span></div>
           <div class="info-row"><span class="info-label">Tipo sinistro</span><span class="info-value"><span class="badge badge-blue">{{ strtoupper($claim->claim_type) }}</span></span></div>
         </div>
         <div>
           <div class="info-row"><span class="info-label">Data sinistro</span><span class="info-value">{{ $claim->event_date->format('d/m/Y') }}</span></div>
-          <div class="info-row"><span class="info-label">Luogo</span><span class="info-value">{{ $claim->event_location ?? '—' }}</span></div>
-          <div class="info-row"><span class="info-label">Controparte targa</span><span class="info-value">{!! $claim->counterpart_plate ? '<span class="targa">'.$claim->counterpart_plate.'</span>' : '—' !!}</span></div>
-          <div class="info-row"><span class="info-label">Scadenza CID</span><span class="info-value" style="color:{{ $claim->isCidExpiringSoon() ? 'var(--amber)' : 'var(--text)' }}">{{ $claim->cid_expiry ? $claim->cid_expiry->format('d/m/Y') : '—' }}</span></div>
-          <div class="info-row"><span class="info-label">Importo stimato</span><span class="info-value" style="color:var(--green)">{{ $claim->estimated_amount ? '€ '.number_format($claim->estimated_amount,2,',','.') : '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Luogo</span><span class="info-value">{{ $claim->event_location ?? 'â€”' }}</span></div>
+          <div class="info-row"><span class="info-label">Controparte targa</span><span class="info-value">{!! $claim->countSoftwareart_plate ? '<span class="targa">'.$claim->countSoftwareart_plate.'</span>' : 'â€”' !!}</span></div>
+          <div class="info-row"><span class="info-label">Scadenza CID</span><span class="info-value" style="color:{{ $claim->isCidExpiringSoon() ? 'var(--amber)' : 'var(--text)' }}">{{ $claim->cid_expiry ? $claim->cid_expiry->format('d/m/Y') : 'â€”' }}</span></div>
+          <div class="info-row"><span class="info-label">Importo stimato</span><span class="info-value" style="color:var(--green)">{{ $claim->estimated_amount ? 'â‚¬ '.number_format($claim->estimated_amount,2,',','.') : 'â€”' }}</span></div>
         </div>
       </div>
       @if($claim->event_description)
@@ -68,7 +68,7 @@ $currentIdx = array_search($claim->status, $statiOrder);
         <div class="tl-dot blue"></div>
         <div class="tl-body">
           <div class="tl-title">{{ str_replace('_',' ',ucfirst($h->status)) }}</div>
-          <div class="tl-meta">{{ $h->created_at->format('d/m/Y H:i') }} @if($h->changedBy) · {{ $h->changedBy->name }} @endif @if($h->notes) · {{ $h->notes }} @endif</div>
+          <div class="tl-meta">{{ $h->created_at->format('d/m/Y H:i') }} @if($h->changedBy) Â· {{ $h->changedBy->name }} @endif @if($h->notes) Â· {{ $h->notes }} @endif</div>
         </div>
       </div>
       @empty
@@ -82,14 +82,14 @@ $currentIdx = array_search($claim->status, $statiOrder);
       <div class="card-title">Perito</div>
       @if($claim->expert)
       <div class="info-row"><span class="info-label">Nome</span><span class="info-value">{{ $claim->expert->name }}</span></div>
-      <div class="info-row"><span class="info-label">Compagnia</span><span class="info-value">{{ $claim->expert->insuranceCompany?->name ?? '—' }}</span></div>
-      <div class="info-row"><span class="info-label">Tel</span><span class="info-value">{{ $claim->expert->phone ?? '—' }}</span></div>
+      <div class="info-row"><span class="info-label">Compagnia</span><span class="info-value">{{ $claim->expert->insuranceCompany?->name ?? 'â€”' }}</span></div>
+      <div class="info-row"><span class="info-label">Tel</span><span class="info-value">{{ $claim->expert->phone ?? 'â€”' }}</span></div>
       <div class="info-row"><span class="info-label">Data perizia</span><span class="info-value" style="color:var(--amber)">{{ $claim->survey_date ? $claim->survey_date->format('d/m/Y') : 'Da fissare' }}</span></div>
       <div style="margin-top:10px">
         <form method="POST" action="{{ route('sinistri.mail', $claim) }}">
           @csrf
           <input type="hidden" name="trigger_event" value="survey_scheduled">
-          <button type="submit" class="btn btn-ghost btn-sm" style="width:100%">✉ Invia mail perito</button>
+          <button type="submit" class="btn btn-ghost btn-sm" style="width:100%">âœ‰ Invia mail perito</button>
         </form>
       </div>
       @else
@@ -117,12 +117,12 @@ $currentIdx = array_search($claim->status, $statiOrder);
       <form method="POST" action="{{ route('sinistri.mail', $claim) }}" style="margin-bottom:8px">
         @csrf
         <input type="hidden" name="trigger_event" value="claim_opened">
-        <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:6px">✉ Conferma apertura → cliente</button>
+        <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:6px">âœ‰ Conferma apertura â†’ cliente</button>
       </form>
       <form method="POST" action="{{ route('sinistri.mail', $claim) }}">
         @csrf
         <input type="hidden" name="trigger_event" value="cid_expiry_48h">
-        <button type="submit" class="btn btn-ghost btn-sm" style="width:100%">✉ Sollecito CID → compagnia</button>
+        <button type="submit" class="btn btn-ghost btn-sm" style="width:100%">âœ‰ Sollecito CID â†’ compagnia</button>
       </form>
     </div>
 
@@ -142,7 +142,7 @@ $currentIdx = array_search($claim->status, $statiOrder);
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:24px;width:420px">
     <div style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between">
       Aggiorna stato sinistro
-      <button onclick="document.getElementById('modal-stato').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button>
+      <button onclick="document.getElementById('modal-stato').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">Ã—</button>
     </div>
     <form method="POST" action="{{ route('sinistri.stato', $claim) }}">
       @csrf

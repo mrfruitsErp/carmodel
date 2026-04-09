@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CarModel ERP — Accesso</title>
+<title>CarModel Software â€” Accesso</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -38,21 +38,21 @@ background-image:radial-gradient(ellipse at 20% 50%, rgba(255,107,0,.08) 0%, tra
   <div class="logo">
     <div class="logo-icon">CM</div>
     <span class="logo-name">CARMODEL</span>
-    <span class="logo-sub">ERP · Automotive</span>
+    <span class="logo-sub">Software Â· Automotive</span>
   </div>
 
   <div class="card">
-    <h2>🔐 Accesso</h2>
+    <h2>ðŸ” Accesso</h2>
 
     @if(session('status'))
       <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 14px;color:#86efac;font-size:13px;margin-bottom:16px">
-        ✓ {{ session('status') }}
+        âœ“ {{ session('status') }}
       </div>
     @endif
 
     @if($errors->any())
       <div class="alert-error">
-        ✗ {{ $errors->first() }}
+        âœ— {{ $errors->first() }}
       </div>
     @endif
 
@@ -64,7 +64,7 @@ background-image:radial-gradient(ellipse at 20% 50%, rgba(255,107,0,.08) 0%, tra
       </div>
       <div class="form-group">
         <label class="form-label" for="password">Password</label>
-        <input id="password" type="password" name="password" class="form-input" required autocomplete="current-password" placeholder="••••••••">
+        <input id="password" type="password" name="password" class="form-input" required autocomplete="current-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
       </div>
       <div class="checkbox-row">
         <label class="checkbox-label">
@@ -75,11 +75,11 @@ background-image:radial-gradient(ellipse at 20% 50%, rgba(255,107,0,.08) 0%, tra
           <a href="{{ route('password.request') }}" class="forgot">Password dimenticata?</a>
         @endif
       </div>
-      <button type="submit" class="btn-login">Accedi →</button>
+      <button type="submit" class="btn-login">Accedi â†’</button>
     </form>
   </div>
 
-  <div class="footer-text">© {{ date('Y') }} CarModel ERP — Area riservata</div>
+  <div class="footer-text">Â© {{ date('Y') }} CarModel Software â€” Area riservata</div>
 </div>
 </body>
 </html>
