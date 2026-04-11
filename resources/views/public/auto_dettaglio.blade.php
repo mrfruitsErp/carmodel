@@ -1,167 +1,172 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->year }} - CarModel</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#f6f7f9;color:#1f2937;font-size:14px}
-.topbar{background:#111827;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:36px;height:36px;background:#ff6b00;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#000}
-.logo-name{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:.06em}
-.back-link{color:rgba(255,255,255,.6);text-decoration:none;font-size:13px}
-.back-link:hover{color:#ff6b00}
-.container{max-width:1100px;margin:0 auto;padding:24px 20px}
-.grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
-.photo-main{background:#e8ecf0;border-radius:12px;overflow:hidden;aspect-ratio:16/9;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
-.photo-main img{width:100%;height:100%;object-fit:cover}
-.photo-thumbs{display:flex;gap:8px;overflow-x:auto}
-.thumb{width:80px;height:60px;background:#e8ecf0;border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid transparent;flex-shrink:0}
-.thumb.active,.thumb:hover{border-color:#ff6b00}
-.thumb img{width:100%;height:100%;object-fit:cover}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px}
-.price-card{background:linear-gradient(135deg,#1a1f2e,#111827);border:none;color:#fff}
-.price-big{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:#ff6b00;line-height:1}
-.badge{display:inline-flex;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
-.badge-green{background:rgba(34,197,94,.15);color:#16a34a;border:1px solid rgba(34,197,94,.2)}
-.badge-blue{background:rgba(59,130,246,.1);color:#2563eb;border:1px solid rgba(59,130,246,.2)}
-.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.spec{background:#f6f7f9;border-radius:6px;padding:10px 12px}
-.spec-label{font-size:10px;color:#9ca3af;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
-.spec-value{font-size:13px;font-weight:600;color:#1f2937}
-.features-grid{display:flex;flex-wrap:wrap;gap:6px}
-.feature{background:#f6f7f9;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px;font-size:12px;color:#374151}
-.form-input{width:100%;background:#f6f7f9;border:1px solid #e5e7eb;border-radius:6px;padding:9px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;margin-bottom:10px}
-.form-input:focus{border-color:#ff6b00}
-.btn-send{width:100%;background:#ff6b00;color:#000;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
-.btn-send:hover{background:#e55f00}
-.section-title{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;color:#1f2937}
-h1{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#1f2937;margin-bottom:4px}
-.subtitle{font-size:14px;color:#6b7280;margin-bottom:16px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}.spec-grid{grid-template-columns:1fr 1fr}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->version }} - {{ $vehicle->year }}</title>
+  <meta name="description" content="{{ $vehicle->description ? Str::limit($vehicle->description, 160) : $vehicle->brand.' '.$vehicle->model.' '.$vehicle->year.' - '.number_format($vehicle->asking_price,0,',','.').' euro' }}">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;line-height:1.5}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    .header{background:#1a1a1a;padding:14px 0}
+    .header a{color:#ff6b00;font-weight:700;font-size:18px;text-decoration:none}
+    .breadcrumb{padding:12px 0;font-size:13px;color:#888}
+    .breadcrumb a{color:#ff6b00;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;padding:20px 0 40px}
+    @media(max-width:768px){.grid{grid-template-columns:1fr}}
+    .card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .main-photo{width:100%;height:380px;object-fit:cover;border-radius:10px;margin-bottom:10px}
+    .thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+    .thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+    .thumb:hover{border-color:#ff6b00}
+    .no-photo{width:100%;height:280px;background:#f0f0f0;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:14px}
+    h1{font-size:22px;font-weight:700;margin-bottom:4px}
+    .price{font-size:32px;font-weight:800;color:#ff6b00;margin:12px 0}
+    .badge{display:inline-block;background:#f0f0f0;border-radius:6px;padding:4px 10px;font-size:12px;margin:2px}
+    .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .spec-item .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.05em}
+    .spec-item .value{font-size:14px;font-weight:600}
+    .section-title{font-size:16px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #ff6b00}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#444}
+    .form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none}
+    .form-group input:focus,.form-group textarea:focus{border-color:#ff6b00}
+    .btn{width:100%;padding:13px;background:#ff6b00;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+    .btn:hover{background:#e05e00}
+    .alert-success{background:#d4edda;color:#155724;padding:12px;border-radius:8px;margin-bottom:14px;font-size:14px}
+    .targa{font-family:monospace;background:#1a1a1a;color:#fff;padding:2px 8px;border-radius:4px;font-size:13px}
+    .features{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .feature{background:#f5f5f5;border:1px solid #e0e0e0;border-radius:6px;padding:4px 10px;font-size:12px}
+    .back-link{display:inline-block;margin-bottom:16px;color:#ff6b00;text-decoration:none;font-size:14px}
+  </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="logo">
-    <div class="logo-icon">CM</div>
-    <span class="logo-name">CARMODEL</span>
+
+<div class="header">
+  <div class="container">
+    <a href="{{ url('/') }}">CarModel</a>
   </div>
-  <a href="{{ route('public.auto_in_vendita') }}" class="back-link">Tutti i veicoli</a>
 </div>
 
 <div class="container">
+
+  <div class="breadcrumb">
+    <a href="{{ url('auto-in-vendita') }}">Auto in vendita</a> &rsaquo; {{ $vehicle->brand }} {{ $vehicle->model }}
+  </div>
+
   <div class="grid">
+
+    {{-- COLONNA SINISTRA --}}
     <div>
-      {{-- Galleria foto --}}
+
       @php $photos = $vehicle->getMedia('sale_photos'); @endphp
-      <div class="photo-main" id="mainPhoto">
-        @if($photos->count())
-          <img src="{{ $photos->first()->getUrl() }}" id="mainImg" alt="{{ $vehicle->brand }} {{ $vehicle->model }}">
-        @else
-          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
-        @endif
-      </div>
-      @if($photos->count() > 1)
-      <div class="photo-thumbs">
-        @foreach($photos as $i => $photo)
-        <div class="thumb {{ $i===0 ? 'active' : '' }}" onclick="changePhoto('{{ $photo->getUrl() }}', this)">
-          <img src="{{ $photo->getUrl('thumb') }}" alt="">
+      @if($photos->count())
+        <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" class="main-photo" alt="{{ $vehicle->brand }} {{ $vehicle->model }}">
+        @if($photos->count() > 1)
+        <div class="thumbs">
+          @foreach($photos as $photo)
+          <img src="{{ $photo->getUrl('thumb') }}" class="thumb" onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" alt="">
+          @endforeach
         </div>
-        @endforeach
-      </div>
+        @endif
+      @else
+        <div class="no-photo">Nessuna foto disponibile</div>
       @endif
 
-      <div style="margin-top:20px">
-        <h1>{{ $vehicle->brand }} {{ $vehicle->model }}</h1>
-        <div class="subtitle">{{ $vehicle->version }} - {{ $vehicle->year }}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-          <span class="badge badge-green">{{ ucfirst($vehicle->condition ?? 'buono') }}</span>
-          @if($vehicle->previous_owners)<span class="badge badge-blue">{{ $vehicle->previous_owners }} {{ $vehicle->previous_owners===1 ? 'proprietario' : 'proprietari' }}</span>@endif
-          @if($vehicle->vat_deductible)<span class="badge badge-blue">IVA detraibile</span>@endif
-        </div>
-      </div>
-
-      {{-- Specifiche tecniche --}}
-      <div class="card">
-        <div class="section-title">Caratteristiche tecniche</div>
+      {{-- DATI TECNICI --}}
+      <div class="card" style="margin-top:16px">
+        <div class="section-title">Dati tecnici</div>
         <div class="spec-grid">
-          <div class="spec"><div class="spec-label">Anno</div><div class="spec-value">{{ $vehicle->year }}</div></div>
-          <div class="spec"><div class="spec-label">KM</div><div class="spec-value">{{ number_format($vehicle->mileage,0,',','.') }} km</div></div>
-          <div class="spec"><div class="spec-label">Carburante</div><div class="spec-value">{{ ucfirst(str_replace('_',' ',$vehicle->fuel_type)) }}</div></div>
-          <div class="spec"><div class="spec-label">Cambio</div><div class="spec-value">{{ ucfirst($vehicle->transmission ?? '-') }}</div></div>
-          @if($vehicle->power_hp)<div class="spec"><div class="spec-label">Potenza</div><div class="spec-value">{{ $vehicle->power_hp }} CV ({{ $vehicle->power_kw }} kW)</div></div>@endif
-          @if($vehicle->engine_cc)<div class="spec"><div class="spec-label">Cilindrata</div><div class="spec-value">{{ number_format($vehicle->engine_cc) }} cc</div></div>@endif
-          @if($vehicle->doors)<div class="spec"><div class="spec-label">Porte</div><div class="spec-value">{{ $vehicle->doors }}</div></div>@endif
-          @if($vehicle->seats)<div class="spec"><div class="spec-label">Posti</div><div class="spec-value">{{ $vehicle->seats }}</div></div>@endif
-          @if($vehicle->color)<div class="spec"><div class="spec-label">Colore</div><div class="spec-value">{{ $vehicle->color }}</div></div>@endif
-          @if($vehicle->body_type)<div class="spec"><div class="spec-label">Carrozzeria</div><div class="spec-value">{{ ucfirst(str_replace('_',' ',$vehicle->body_type)) }}</div></div>@endif
+          <div class="spec-item"><div class="label">Marca</div><div class="value">{{ $vehicle->brand }}</div></div>
+          <div class="spec-item"><div class="label">Modello</div><div class="value">{{ $vehicle->model }}</div></div>
+          @if($vehicle->version)<div class="spec-item"><div class="label">Versione</div><div class="value">{{ $vehicle->version }}</div></div>@endif
+          <div class="spec-item"><div class="label">Anno</div><div class="value">{{ $vehicle->year }}</div></div>
+          <div class="spec-item"><div class="label">Chilometri</div><div class="value">{{ number_format($vehicle->mileage,0,',','.') }} km</div></div>
+          <div class="spec-item"><div class="label">Carburante</div><div class="value">{{ ucfirst(str_replace('_',' ',$vehicle->fuel_type)) }}</div></div>
+          @if($vehicle->transmission)<div class="spec-item"><div class="label">Cambio</div><div class="value">{{ ucfirst($vehicle->transmission) }}</div></div>@endif
+          @if($vehicle->body_type)<div class="spec-item"><div class="label">Carrozzeria</div><div class="value">{{ ucfirst(str_replace('_',' ',$vehicle->body_type)) }}</div></div>@endif
+          @if($vehicle->color)<div class="spec-item"><div class="label">Colore</div><div class="value">{{ $vehicle->color }}</div></div>@endif
+          @if($vehicle->power_hp)<div class="spec-item"><div class="label">Potenza</div><div class="value">{{ $vehicle->power_hp }} CV</div></div>@endif
+          @if($vehicle->engine_cc)<div class="spec-item"><div class="label">Cilindrata</div><div class="value">{{ number_format($vehicle->engine_cc) }} cc</div></div>@endif
+          <div class="spec-item"><div class="label">Condizione</div><div class="value">{{ ucfirst($vehicle->condition ?? '-') }}</div></div>
+          @if($vehicle->previous_owners)<div class="spec-item"><div class="label">Proprietari prec.</div><div class="value">{{ $vehicle->previous_owners }}</div></div>@endif
+          @if($vehicle->plate)<div class="spec-item"><div class="label">Targa</div><div class="value"><span class="targa">{{ $vehicle->plate }}</span></div></div>@endif
         </div>
       </div>
 
-      {{-- Optional --}}
+      {{-- OPTIONAL --}}
       @if(!empty($vehicle->features))
       <div class="card">
-        <div class="section-title">Optional e dotazioni</div>
-        <div class="features-grid">
+        <div class="section-title">Optionals</div>
+        <div class="features">
           @foreach($vehicle->features as $f)
-          <div class="feature">{{ ucfirst(str_replace('_',' ',$f)) }}</div>
+          <span class="feature">{{ ucfirst(str_replace('_',' ',$f)) }}</span>
           @endforeach
         </div>
       </div>
       @endif
 
-      {{-- Descrizione --}}
+      {{-- DESCRIZIONE --}}
       @if($vehicle->description)
       <div class="card">
         <div class="section-title">Descrizione</div>
-        <div style="font-size:13px;color:#374151;line-height:1.8;white-space:pre-wrap">{{ $vehicle->description }}</div>
+        <div style="font-size:14px;color:#444;line-height:1.8;white-space:pre-wrap">{{ $vehicle->description }}</div>
       </div>
       @endif
+
     </div>
 
-    {{-- Colonna destra --}}
+    {{-- COLONNA DESTRA --}}
     <div>
-      <div class="card price-card">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">Prezzo</div>
-        <div class="price-big">{{ number_format($vehicle->asking_price,0,',','.') }} euro</div>
-        @if($vehicle->price_negotiable)<div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:6px">Prezzo trattabile</div>@endif
-      </div>
 
       <div class="card">
-        <div class="section-title">Richiedi informazioni</div>
-        @if(session('lead_sent'))
-          <div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:14px;color:#16a34a;text-align:center;font-weight:500">Richiesta inviata! Sarai contattato presto.</div>
-        @else
-        <form method="POST" action="{{ route('public.lead.store', $vehicle->id) }}">
-          @csrf
-          <input type="text" name="name" class="form-input" placeholder="Nome *" required value="{{ old('name') }}">
-          <input type="email" name="email" class="form-input" placeholder="Email *" required value="{{ old('email') }}">
-          <input type="tel" name="phone" class="form-input" placeholder="Telefono" value="{{ old('phone') }}">
-          <textarea name="message" class="form-input" rows="3" placeholder="Messaggio..." style="resize:none">{{ old('message') }}</textarea>
-          <button type="submit" class="btn-send">Invia richiesta</button>
-        </form>
-        @endif
+        <h1>{{ $vehicle->brand }} {{ $vehicle->model }}</h1>
+        @if($vehicle->version)<div style="color:#666;font-size:14px">{{ $vehicle->version }}</div>@endif
+        <div class="price">euro {{ number_format($vehicle->asking_price,0,',','.') }}</div>
+        @if($vehicle->price_negotiable)<div style="font-size:13px;color:#888;margin-bottom:8px">Prezzo trattabile</div>@endif
+        @if($vehicle->vat_deductible)<span class="badge" style="background:#e8f5e9;color:#2e7d32">IVA detraibile</span>@endif
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">
+          <span class="badge">{{ $vehicle->year }}</span>
+          <span class="badge">{{ number_format($vehicle->mileage,0,',','.') }} km</span>
+          <span class="badge">{{ ucfirst(str_replace('_',' ',$vehicle->fuel_type)) }}</span>
+        </div>
       </div>
 
-      <div class="card" style="text-align:center">
-        <div style="font-size:12px;color:#6b7280;margin-bottom:4px">Targa</div>
-        <div style="font-family:monospace;font-size:18px;font-weight:700;background:#f6f7f9;padding:6px 16px;border-radius:6px;border:1px solid #e5e7eb;display:inline-block">{{ $vehicle->plate ?? 'N/D' }}</div>
-        @if($vehicle->vin)<div style="font-size:11px;color:#9ca3af;margin-top:8px">VIN: {{ $vehicle->vin }}</div>@endif
+      {{-- FORM CONTATTO --}}
+      <div class="card">
+        <div class="section-title">Richiedi informazioni</div>
+
+        @if(session('contact_sent'))
+          <div class="alert-success">Messaggio inviato! Sarai contattato a breve.</div>
+        @endif
+
+        <form method="POST" action="{{ route('public.vehicles.contact', $vehicle->id) }}">
+          @csrf
+          <div class="form-group">
+            <label>Nome e Cognome *</label>
+            <input type="text" name="name" required placeholder="Mario Rossi" value="{{ old('name') }}">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" required placeholder="mario@email.it" value="{{ old('email') }}">
+          </div>
+          <div class="form-group">
+            <label>Telefono</label>
+            <input type="tel" name="phone" placeholder="+39 333 1234567" value="{{ old('phone') }}">
+          </div>
+          <div class="form-group">
+            <label>Messaggio</label>
+            <textarea name="message" rows="3" placeholder="Sono interessato a questo veicolo...">{{ old('message') }}</textarea>
+          </div>
+          <button type="submit" class="btn">Invia richiesta</button>
+        </form>
       </div>
+
     </div>
   </div>
 </div>
 
-<script>
-function changePhoto(url, thumb) {
-  document.getElementById('mainImg').src = url;
-  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-  thumb.classList.add('active');
-}
-</script>
 </body>
 </html>
