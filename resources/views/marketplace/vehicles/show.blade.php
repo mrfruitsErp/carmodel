@@ -4,7 +4,7 @@
 @section('topbar-actions')
 @if($saleVehicle->status !== 'venduto')
   <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">Modifica</a>
-  <form action="{{ route('marketplace.vehicles.markSold', $saleVehicle) }}" method="POST" style="display:inline" onsubmit="return confirm('Segnare come venduto?')">
+  <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST" style="display:inline" onsubmit="return confirm('Segnare come venduto?')">
     @csrf
     <button type="submit" class="btn btn-primary btn-sm">Venduto</button>
   </form>
@@ -32,12 +32,12 @@
       @php $photos = $saleVehicle->getMedia('sale_photos'); @endphp
       @if($photos->count())
         <div style="border-radius:8px;overflow:hidden;margin-bottom:10px;max-height:400px">
-          <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" style="width:100%;height:350px;object-fit:cover;cursor:pointer" alt="{{ $saleVehicle->brand }}">
+          <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" style="width:100%;height:350px;object-fit:cover" alt="{{ $saleVehicle->brand }}">
         </div>
         @if($photos->count() > 1)
         <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
           @foreach($photos as $i => $photo)
-          <div onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" style="width:80px;height:60px;border-radius:6px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid {{ $i===0 ? 'var(--orange)' : 'transparent' }};transition:.15s" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='transparent'">
+          <div onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" style="width:80px;height:60px;border-radius:6px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid transparent" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='transparent'">
             <img src="{{ $photo->getUrl('thumb') }}" style="width:100%;height:100%;object-fit:cover">
           </div>
           @endforeach
@@ -111,7 +111,7 @@
       </div>
       <div class="info-row"><span class="info-label">Prezzo acquisto</span><span class="info-value">{{ $saleVehicle->purchase_price ? 'euro '.number_format($saleVehicle->purchase_price,0,',','.') : '-' }}</span></div>
       @if($saleVehicle->margin)<div class="info-row"><span class="info-label">Margine</span><span class="info-value" style="color:var(--green-text);font-weight:600">euro {{ number_format($saleVehicle->margin,0,',','.') }} ({{ $saleVehicle->margin_percent }}%)</span></div>@endif
-      <form action="{{ route('marketplace.vehicles.updatePrice', $saleVehicle) }}" method="POST" style="display:flex;gap:8px;margin-top:14px">
+      <form action="{{ route('marketplace.update-price', $saleVehicle) }}" method="POST" style="display:flex;gap:8px;margin-top:14px">
         @csrf
         <input type="number" name="asking_price" value="{{ $saleVehicle->asking_price }}" class="form-input" step="100" style="flex:1;margin:0">
         <button type="submit" class="btn btn-ghost btn-sm">Salva prezzo</button>
@@ -121,26 +121,20 @@
     {{-- PUBBLICA --}}
     <div class="card">
       <div class="card-title">Pubblica annuncio</div>
-      @foreach($platforms as $platform)
-      @php $listing = $saleVehicle->getListingFor($platform->code); @endphp
+      @forelse($saleVehicle->listings as $listing)
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
         <div>
-          <div style="font-weight:500;font-size:13px">{{ $platform->name }}</div>
-          @if(!$platform->is_configured)
-            <div style="font-size:11px;color:var(--text3)">(non conf.)</div>
-          @elseif($listing && $listing->status === 'published')
-            <div style="font-size:11px;color:var(--green-text)">Pubblicato</div>
-          @endif
+          <div style="font-weight:500;font-size:13px">{{ ucfirst(str_replace('_',' ',$listing->platform)) }}</div>
+          <div style="font-size:11px;color:var(--{{ $listing->status==='published' ? 'green' : 'amber' }}-text)">{{ ucfirst($listing->status) }}</div>
         </div>
-        @if($platform->is_configured)
-          @if($listing && $listing->status === 'published')
-            <form action="{{ route('marketplace.listings.unpublish', $listing) }}" method="POST">@csrf<button type="submit" class="btn btn-ghost btn-sm" style="color:var(--red-text)">Rimuovi</button></form>
-          @else
-            <form action="{{ route('marketplace.listings.publish', $saleVehicle) }}" method="POST">@csrf<input type="hidden" name="platform" value="{{ $platform->code }}"><button type="submit" class="btn btn-primary btn-sm">Pubblica</button></form>
-          @endif
-        @endif
+        <form action="{{ route('marketplace.unpublish', $listing) }}" method="POST">@csrf<button type="submit" class="btn btn-ghost btn-sm" style="color:var(--red-text)">Rimuovi</button></form>
       </div>
-      @endforeach
+      @empty
+      <div style="font-size:13px;color:var(--text3);padding:10px 0">Nessun annuncio pubblicato</div>
+      @endforelse
+      <div style="margin-top:12px">
+        <a href="{{ route('marketplace.settings') }}" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">Configura piattaforme</a>
+      </div>
     </div>
 
     {{-- STATISTICHE --}}
