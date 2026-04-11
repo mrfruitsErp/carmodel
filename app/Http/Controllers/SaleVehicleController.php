@@ -190,7 +190,15 @@ class SaleVehicleController extends Controller
             ->with('success', 'Veicolo marcato come venduto e rimosso dalle piattaforme.');
     }
 
-    private function authorizeVehicle(SaleVehicle $vehicle): void
+
+    public function changeStatus(Request $request, SaleVehicle $saleVehicle)
+    {
+        $this->authorizeVehicle($saleVehicle);
+        $status = $request->status ?? ($saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo');
+        $saleVehicle->update(['status' => $status]);
+        return redirect()->route('marketplace.vehicles.show', $saleVehicle)
+            ->with('success', 'Stato aggiornato: '.ucfirst($status));
+    }    private function authorizeVehicle(SaleVehicle $vehicle): void
     {
         abort_if($vehicle->tenant_id !== $this->tid(), 403);
     }
