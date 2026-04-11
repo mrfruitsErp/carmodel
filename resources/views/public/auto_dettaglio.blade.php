@@ -9,7 +9,7 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;line-height:1.5}
     .container{max-width:1100px;margin:0 auto;padding:0 16px}
-    .header{background:#1a1a1a;padding:14px 0}
+    .header{background:#fff;border-bottom:3px solid #ff6b00;padding:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
     .header a{color:#ff6b00;font-weight:700;font-size:18px;text-decoration:none}
     .breadcrumb{padding:12px 0;font-size:13px;color:#888}
     .breadcrumb a{color:#ff6b00;text-decoration:none}
@@ -44,15 +44,21 @@
 <body>
 
 <div class="header">
-  <div class="container">
-    <a href="{{ url('/') }}">CarModel</a>
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+    <a href="{{ url('auto-in-vendita') }}">
+      <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:44px;width:auto">
+    </a>
+    <div style="font-size:13px;color:#555;display:flex;gap:20px">
+      <a href="tel:+393278072650" style="color:#1a1a1a;text-decoration:none">+39 327 807 2650</a>
+      <a href="{{ url('auto-in-vendita') }}" style="color:#ff6b00;text-decoration:none">Tutti i veicoli</a>
+    </div>
   </div>
 </div>
 
 <div class="container">
 
   <div class="breadcrumb">
-    <a href="{{ url('auto-in-vendita') }}">Auto in vendita</a> &rsaquo; {{ $vehicle->brand }} {{ $vehicle->model }}
+    <a href="{{ url('auto-in-vendita') }}" style="color:#ff6b00;text-decoration:none">Auto in vendita</a> &rsaquo; {{ $vehicle->brand }} {{ $vehicle->model }}
   </div>
 
   <div class="grid">
@@ -62,7 +68,7 @@
 
       @php $photos = $vehicle->getMedia('sale_photos'); @endphp
       @if($photos->count())
-        <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" class="main-photo" alt="{{ $vehicle->brand }} {{ $vehicle->model }}">
+        <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" class="main-photo" style="object-position:center 60%" alt="{{ $vehicle->brand }} {{ $vehicle->model }}">
         @if($photos->count() > 1)
         <div class="thumbs">
           @foreach($photos as $photo)

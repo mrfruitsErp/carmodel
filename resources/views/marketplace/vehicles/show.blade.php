@@ -2,8 +2,8 @@
 @section('title', $saleVehicle->brand.' '.$saleVehicle->model)
 
 @section('topbar-actions')
+<a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">Modifica</a>
 @if($saleVehicle->status !== 'venduto')
-  <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">Modifica</a>
   <form action="{{ route('marketplace.vehicles.update', $saleVehicle) }}" method="POST" style="display:inline">
     @csrf @method('PUT')
     <input type="hidden" name="brand" value="{{ $saleVehicle->brand }}">
@@ -11,9 +11,9 @@
     <input type="hidden" name="year" value="{{ $saleVehicle->year }}">
     <input type="hidden" name="mileage" value="{{ $saleVehicle->mileage }}">
     <input type="hidden" name="fuel_type" value="{{ $saleVehicle->fuel_type }}">
-    <input type="hidden" name="transmission" value="{{ $saleVehicle->transmission }}">
+    <input type="hidden" name="transmission" value="{{ $saleVehicle->transmission ?? 'manuale' }}">
     <input type="hidden" name="asking_price" value="{{ $saleVehicle->asking_price }}">
-    <input type="hidden" name="condition" value="{{ $saleVehicle->condition }}">
+    <input type="hidden" name="condition" value="{{ $saleVehicle->condition ?? 'buono' }}">
     <input type="hidden" name="status" value="{{ $saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo' }}">
     <input type="hidden" name="action" value="{{ $saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo' }}">
     <button type="submit" class="btn btn-ghost btn-sm" style="color:{{ $saleVehicle->status === 'attivo' ? 'var(--amber-text)' : 'var(--green-text)' }}">
@@ -25,50 +25,16 @@
     <button type="submit" class="btn btn-primary btn-sm">Venduto</button>
   </form>
 @endif
-
-@push('scripts')
-<script>
-var _svid = {{ $saleVehicle->id }};
-var _svcsrf = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
-
-async function uploadFotoShow(files) {
-  var arr = Array.from(files);
-  for (var i = 0; i < arr.length; i++) {
-    var fd = new FormData();
-    fd.append('photo', arr[i]);
-    fd.append('_token', _svcsrf);
-    try {
-      var res = await fetch('/marketplace/vehicles/' + _svid + '/foto', {method:'POST', body:fd});
-      var data = await res.json();
-      // Aggiorna galleria
-      var gallery = document.getElementById('foto-gallery');
-      if (gallery) {
-        var div = document.createElement('div');
-        div.id = 'show-foto-' + data.id;
-        div.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange);cursor:pointer';
-        div.innerHTML = '<img src="'+data.thumb_url+'" style="width:100%;height:100%;object-fit:cover" onclick="document.getElementById('mainPhoto').src=''+data.url+''">'
-          + '<button type="button" onclick="eliminaFotoShow('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
-        gallery.appendChild(div);
-      }
-      // Aggiorna foto principale se e la prima
-      var main = document.getElementById('mainPhoto');
-      if (main && main.src.includes('placeholder')) main.src = data.url;
-    } catch(e) { alert('Errore caricamento foto'); }
-  }
-}
-
-async function eliminaFotoShow(mid) {
-  if (!confirm('Eliminare questa foto?')) return;
-  var res = await fetch('/marketplace/vehicles/' + _svid + '/foto/' + mid, {
-    method: 'DELETE', headers: {'X-CSRF-TOKEN': _svcsrf, 'Accept': 'application/json'}
-  });
-  if (res.ok) { var el = document.getElementById('show-foto-' + mid); if(el) el.remove(); }
-}
-</script>
-@endpush
 @endsection
 
 @section('content')
+
+@if(session('success'))
+<div class="alert alert-green" style="margin-bottom:16px">
+  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  {{ session('success') }}
+</div>
+@endif
 
 <div style="margin-bottom:16px">
   <a href="{{ route('marketplace.vehicles.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">&larr; Veicoli</a>
@@ -89,28 +55,33 @@ async function eliminaFotoShow(mid) {
           <input type="file" id="foto-upload-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="uploadFotoShow(this.files)">
         </div>
       </div>
+
       @php $photos = $saleVehicle->getMedia('sale_photos'); @endphp
       @if($photos->count())
-        <div style="border-radius:8px;overflow:hidden;margin-bottom:10px;max-height:400px">
-          <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" style="width:100%;height:350px;object-fit:cover;object-position:center center" alt="{{ $saleVehicle->brand }}">
+        <div style="border-radius:8px;overflow:hidden;margin-bottom:10px">
+          <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" style="width:100%;height:350px;object-fit:cover;object-position:center 60%" alt="{{ $saleVehicle->brand }}">
         </div>
-        @if($photos->count() > 1)
         <div id="foto-gallery" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
           @foreach($photos as $i => $photo)
-          <div onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" style="width:80px;height:60px;border-radius:6px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid transparent" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='transparent'">
-            <img src="{{ $photo->getUrl('thumb') }}" style="width:100%;height:100%;object-fit:cover">
+          <div id="show-foto-{{ $photo->id }}" style="position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid {{ $i===0 ? 'var(--orange)' : 'var(--border2)' }};transition:.15s" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='{{ $i===0 ? 'var(--orange)' : 'var(--border2)' }}'">
+            <img src="{{ $photo->getUrl('thumb') }}" style="width:100%;height:100%;object-fit:cover;object-position:center 60%" onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'">
+            <button type="button" onclick="eliminaFotoShow({{ $photo->id }})" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center">&times;</button>
           </div>
           @endforeach
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px">{{ $photos->count() }} foto</div>
-        @endif
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">{{ $photos->count() }} foto &mdash; clicca su una foto per ingrandirla</div>
       @else
-        <div style="background:var(--bg3);border:2px dashed var(--border2);border-radius:8px;padding:40px;text-align:center">
+        <div id="foto-gallery" style="display:flex;gap:8px;margin-bottom:10px"></div>
+        <div id="no-foto-msg" style="background:var(--bg3);border:2px dashed var(--border2);border-radius:8px;padding:40px;text-align:center">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:10px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <div style="font-size:13px;color:var(--text3)">Nessuna foto</div>
-          <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm" style="margin-top:10px">+ Aggiungi foto</a>
+          <div style="font-size:13px;color:var(--text3)">Nessuna foto &mdash; clicca "+ Aggiungi foto" per caricare</div>
         </div>
       @endif
+
+      <div id="upload-progress" style="display:none;margin-top:10px">
+        <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden"><div id="progress-bar" style="height:100%;background:var(--orange);width:0%;transition:width .3s"></div></div>
+        <div id="progress-text" style="font-size:11px;color:var(--text3);margin-top:4px">Caricamento...</div>
+      </div>
     </div>
 
     {{-- DATI TECNICI --}}
@@ -203,13 +174,14 @@ async function eliminaFotoShow(mid) {
       <div class="info-row"><span class="info-label">Visualizzazioni totali</span><span class="info-value">{{ $saleVehicle->totalViews() }}</span></div>
       <div class="info-row"><span class="info-label">Lead ricevuti</span><span class="info-value">{{ $saleVehicle->totalContacts() }}</span></div>
       <div class="info-row"><span class="info-label">Annunci live</span><span class="info-value">{{ $saleVehicle->active_listings_count }}</span></div>
-      <div class="info-row"><span class="info-label">Stato</span><span class="info-value"><span class="badge badge-{{ $saleVehicle->status==='attivo'?'green':($saleVehicle->status==='venduto'?'blue':'gray') }}">{{ ucfirst($saleVehicle->status) }}</span></span></div>
+      <div class="info-row"><span class="info-label">Stato</span><span class="info-value">
+        <span class="badge badge-{{ $saleVehicle->status==='attivo'?'green':($saleVehicle->status==='venduto'?'blue':'gray') }}">{{ ucfirst($saleVehicle->status) }}</span>
+      </span></div>
     </div>
 
     {{-- LINK PUBBLICO --}}
     <div class="card">
-      <div class="card-title">Sito proprietario</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Link diretto alla scheda pubblica del veicolo</div>
+      <div class="card-title">Anteprima pubblica</div>
       @php $publicUrl = url('auto-in-vendita/'.$saleVehicle->id.'-'.Str::slug($saleVehicle->brand.'-'.$saleVehicle->model)); @endphp
       <div style="background:var(--bg3);border-radius:6px;padding:8px 10px;font-size:11px;font-family:var(--mono);color:var(--text2);word-break:break-all;margin-bottom:10px">{{ $publicUrl }}</div>
       <div style="display:flex;gap:8px">
@@ -228,6 +200,11 @@ var _svcsrf = document.querySelector('meta[name="csrf-token"]') ? document.query
 
 async function uploadFotoShow(files) {
   var arr = Array.from(files);
+  var prog = document.getElementById('upload-progress');
+  var bar = document.getElementById('progress-bar');
+  var txt = document.getElementById('progress-text');
+  if (prog) prog.style.display = 'block';
+
   for (var i = 0; i < arr.length; i++) {
     var fd = new FormData();
     fd.append('photo', arr[i]);
@@ -235,21 +212,38 @@ async function uploadFotoShow(files) {
     try {
       var res = await fetch('/marketplace/vehicles/' + _svid + '/foto', {method:'POST', body:fd});
       var data = await res.json();
-      // Aggiorna galleria
+      if (bar) bar.style.width = ((i+1)/arr.length*100) + '%';
+      if (txt) txt.textContent = 'Caricato ' + (i+1) + ' di ' + arr.length;
+
+      // Nascondi messaggio "nessuna foto"
+      var noFoto = document.getElementById('no-foto-msg');
+      if (noFoto) noFoto.style.display = 'none';
+
+      // Aggiungi thumbnail alla galleria
       var gallery = document.getElementById('foto-gallery');
       if (gallery) {
         var div = document.createElement('div');
         div.id = 'show-foto-' + data.id;
-        div.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange);cursor:pointer';
-        div.innerHTML = '<img src="'+data.thumb_url+'" style="width:100%;height:100%;object-fit:cover" onclick="document.getElementById('mainPhoto').src=''+data.url+''">'
-          + '<button type="button" onclick="eliminaFotoShow('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
+        div.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange);flex-shrink:0;cursor:pointer';
+        div.innerHTML = '<img src="' + data.thumb_url + '" style="width:100%;height:100%;object-fit:cover;object-position:center 60%" onclick="document.getElementById(\'mainPhoto\').src=\'' + data.url + '\'">'
+          + '<button type="button" onclick="eliminaFotoShow(' + data.id + ')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
         gallery.appendChild(div);
+
+        // Aggiorna foto principale se non esiste
+        var main = document.getElementById('mainPhoto');
+        if (!main) {
+          var photoWrap = gallery.parentNode;
+          var newMain = document.createElement('div');
+          newMain.style.cssText = 'border-radius:8px;overflow:hidden;margin-bottom:10px';
+          newMain.innerHTML = '<img src="' + data.url + '" id="mainPhoto" style="width:100%;height:350px;object-fit:cover;object-position:center 60%">';
+          photoWrap.insertBefore(newMain, gallery);
+        }
       }
-      // Aggiorna foto principale se e la prima
-      var main = document.getElementById('mainPhoto');
-      if (main && main.src.includes('placeholder')) main.src = data.url;
-    } catch(e) { alert('Errore caricamento foto'); }
+    } catch(e) {
+      if (txt) txt.textContent = 'Errore: ' + arr[i].name;
+    }
   }
+  setTimeout(function(){ if(prog) prog.style.display='none'; if(bar) bar.style.width='0%'; }, 2000);
 }
 
 async function eliminaFotoShow(mid) {
@@ -257,7 +251,10 @@ async function eliminaFotoShow(mid) {
   var res = await fetch('/marketplace/vehicles/' + _svid + '/foto/' + mid, {
     method: 'DELETE', headers: {'X-CSRF-TOKEN': _svcsrf, 'Accept': 'application/json'}
   });
-  if (res.ok) { var el = document.getElementById('show-foto-' + mid); if(el) el.remove(); }
+  if (res.ok) {
+    var el = document.getElementById('show-foto-' + mid);
+    if (el) el.remove();
+  }
 }
 </script>
 @endpush
