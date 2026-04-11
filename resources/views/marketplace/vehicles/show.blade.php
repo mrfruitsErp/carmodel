@@ -4,11 +4,68 @@
 @section('topbar-actions')
 @if($saleVehicle->status !== 'venduto')
   <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">Modifica</a>
+  <form action="{{ route('marketplace.vehicles.update', $saleVehicle) }}" method="POST" style="display:inline">
+    @csrf @method('PUT')
+    <input type="hidden" name="brand" value="{{ $saleVehicle->brand }}">
+    <input type="hidden" name="model" value="{{ $saleVehicle->model }}">
+    <input type="hidden" name="year" value="{{ $saleVehicle->year }}">
+    <input type="hidden" name="mileage" value="{{ $saleVehicle->mileage }}">
+    <input type="hidden" name="fuel_type" value="{{ $saleVehicle->fuel_type }}">
+    <input type="hidden" name="transmission" value="{{ $saleVehicle->transmission }}">
+    <input type="hidden" name="asking_price" value="{{ $saleVehicle->asking_price }}">
+    <input type="hidden" name="condition" value="{{ $saleVehicle->condition }}">
+    <input type="hidden" name="status" value="{{ $saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo' }}">
+    <input type="hidden" name="action" value="{{ $saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo' }}">
+    <button type="submit" class="btn btn-ghost btn-sm" style="color:{{ $saleVehicle->status === 'attivo' ? 'var(--amber-text)' : 'var(--green-text)' }}">
+      {{ $saleVehicle->status === 'attivo' ? 'Disattiva' : 'Attiva' }}
+    </button>
+  </form>
   <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST" style="display:inline" onsubmit="return confirm('Segnare come venduto?')">
     @csrf
     <button type="submit" class="btn btn-primary btn-sm">Venduto</button>
   </form>
 @endif
+
+@push('scripts')
+<script>
+var _svid = {{ $saleVehicle->id }};
+var _svcsrf = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+async function uploadFotoShow(files) {
+  var arr = Array.from(files);
+  for (var i = 0; i < arr.length; i++) {
+    var fd = new FormData();
+    fd.append('photo', arr[i]);
+    fd.append('_token', _svcsrf);
+    try {
+      var res = await fetch('/marketplace/vehicles/' + _svid + '/foto', {method:'POST', body:fd});
+      var data = await res.json();
+      // Aggiorna galleria
+      var gallery = document.getElementById('foto-gallery');
+      if (gallery) {
+        var div = document.createElement('div');
+        div.id = 'show-foto-' + data.id;
+        div.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange);cursor:pointer';
+        div.innerHTML = '<img src="'+data.thumb_url+'" style="width:100%;height:100%;object-fit:cover" onclick="document.getElementById('mainPhoto').src=''+data.url+''">'
+          + '<button type="button" onclick="eliminaFotoShow('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
+        gallery.appendChild(div);
+      }
+      // Aggiorna foto principale se e la prima
+      var main = document.getElementById('mainPhoto');
+      if (main && main.src.includes('placeholder')) main.src = data.url;
+    } catch(e) { alert('Errore caricamento foto'); }
+  }
+}
+
+async function eliminaFotoShow(mid) {
+  if (!confirm('Eliminare questa foto?')) return;
+  var res = await fetch('/marketplace/vehicles/' + _svid + '/foto/' + mid, {
+    method: 'DELETE', headers: {'X-CSRF-TOKEN': _svcsrf, 'Accept': 'application/json'}
+  });
+  if (res.ok) { var el = document.getElementById('show-foto-' + mid); if(el) el.remove(); }
+}
+</script>
+@endpush
 @endsection
 
 @section('content')
@@ -27,15 +84,18 @@
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div class="card-title" style="margin:0">Foto</div>
-        <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">+ Aggiungi foto</a>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button type="button" onclick="document.getElementById('foto-upload-input').click()" class="btn btn-ghost btn-sm">+ Aggiungi foto</button>
+          <input type="file" id="foto-upload-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="uploadFotoShow(this.files)">
+        </div>
       </div>
       @php $photos = $saleVehicle->getMedia('sale_photos'); @endphp
       @if($photos->count())
         <div style="border-radius:8px;overflow:hidden;margin-bottom:10px;max-height:400px">
-          <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" style="width:100%;height:350px;object-fit:cover" alt="{{ $saleVehicle->brand }}">
+          <img src="{{ $photos->first()->getUrl() }}" id="mainPhoto" style="width:100%;height:350px;object-fit:cover;object-position:center center" alt="{{ $saleVehicle->brand }}">
         </div>
         @if($photos->count() > 1)
-        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
+        <div id="foto-gallery" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
           @foreach($photos as $i => $photo)
           <div onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" style="width:80px;height:60px;border-radius:6px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid transparent" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='transparent'">
             <img src="{{ $photo->getUrl('thumb') }}" style="width:100%;height:100%;object-fit:cover">
@@ -160,4 +220,45 @@
 
   </div>
 </div>
+
+@push('scripts')
+<script>
+var _svid = {{ $saleVehicle->id }};
+var _svcsrf = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+async function uploadFotoShow(files) {
+  var arr = Array.from(files);
+  for (var i = 0; i < arr.length; i++) {
+    var fd = new FormData();
+    fd.append('photo', arr[i]);
+    fd.append('_token', _svcsrf);
+    try {
+      var res = await fetch('/marketplace/vehicles/' + _svid + '/foto', {method:'POST', body:fd});
+      var data = await res.json();
+      // Aggiorna galleria
+      var gallery = document.getElementById('foto-gallery');
+      if (gallery) {
+        var div = document.createElement('div');
+        div.id = 'show-foto-' + data.id;
+        div.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange);cursor:pointer';
+        div.innerHTML = '<img src="'+data.thumb_url+'" style="width:100%;height:100%;object-fit:cover" onclick="document.getElementById('mainPhoto').src=''+data.url+''">'
+          + '<button type="button" onclick="eliminaFotoShow('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
+        gallery.appendChild(div);
+      }
+      // Aggiorna foto principale se e la prima
+      var main = document.getElementById('mainPhoto');
+      if (main && main.src.includes('placeholder')) main.src = data.url;
+    } catch(e) { alert('Errore caricamento foto'); }
+  }
+}
+
+async function eliminaFotoShow(mid) {
+  if (!confirm('Eliminare questa foto?')) return;
+  var res = await fetch('/marketplace/vehicles/' + _svid + '/foto/' + mid, {
+    method: 'DELETE', headers: {'X-CSRF-TOKEN': _svcsrf, 'Accept': 'application/json'}
+  });
+  if (res.ok) { var el = document.getElementById('show-foto-' + mid); if(el) el.remove(); }
+}
+</script>
+@endpush
 @endsection

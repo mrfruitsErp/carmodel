@@ -62,7 +62,7 @@
     .car-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.12)}
     .car-card a{text-decoration:none;color:inherit;display:block}
     .car-photo{position:relative;height:200px;overflow:hidden;background:#f0f2f5}
-    .car-photo img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+    .car-photo img{width:100%;height:100%;object-fit:cover;object-position:center bottom;transition:transform .3s}
     .car-card:hover .car-photo img{transform:scale(1.04)}
     .no-img{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ccc;gap:8px}
     .no-img span{font-size:12px}
