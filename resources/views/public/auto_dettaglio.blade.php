@@ -16,9 +16,9 @@
     .grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;padding:20px 0 40px}
     @media(max-width:768px){.grid{grid-template-columns:1fr}}
     .card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-    .main-photo{width:100%;height:380px;object-fit:cover;border-radius:10px;margin-bottom:10px}
+    .main-photo{width:100%;height:380px;object-fit:contain;background:#f8f8f8;border-radius:10px;margin-bottom:10px}
     .thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
-    .thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+    .thumb{width:80px;height:60px;object-fit:contain;background:#f8f8f8;border-radius:6px;cursor:pointer;border:2px solid transparent;flex-shrink:0}
     .thumb:hover{border-color:#ff6b00}
     .no-photo{width:100%;height:280px;background:#f0f0f0;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:14px}
     h1{font-size:22px;font-weight:700;margin-bottom:4px}
@@ -72,7 +72,7 @@
         @if($photos->count() > 1)
         <div class="thumbs">
           @foreach($photos as $photo)
-          <img src="{{ $photo->getUrl('thumb') }}" class="thumb" onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" alt="">
+          <img src="{{ $photo->getUrl('thumb') ?: $photo->getUrl() }}" onerror="this.src='{{ $photo->getUrl() }}'" class="thumb" onclick="document.getElementById('mainPhoto').src='{{ $photo->getUrl() }}'" alt="">
           @endforeach
         </div>
         @endif
