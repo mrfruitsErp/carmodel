@@ -17,13 +17,45 @@
     <div id="vin_result" style="margin-top:10px;font-size:13px"></div>
   </div>
 
+  {{-- FOTO VEICOLO --}}
+  <div class="card">
+    <div class="card-title">Foto veicolo</div>
+    @if(!empty($vehicle->id))
+    <div id="foto-esistenti" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      @forelse($vehicle->getMedia('sale_photos') as $photo)
+      <div id="foto-{{ $photo->id }}" style="position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--border2)">
+        <img src="{{ $photo->getUrl('thumb') }}" style="width:100%;height:100%;object-fit:cover">
+        <button type="button" onclick="eliminaFoto({{ $photo->id }})" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px;line-height:1">&times;</button>
+      </div>
+      @empty
+      <div style="color:var(--text3);font-size:12px">Nessuna foto caricata</div>
+      @endforelse
+    </div>
+    @endif
+    <div id="drop-zone" onclick="document.getElementById('foto-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--orange)';this.style.background='var(--orange-bg)'" ondragleave="this.style.borderColor='var(--border2)';this.style.background='var(--bg3)'" ondrop="handleDrop(event)" style="border:2px dashed var(--border2);border-radius:8px;padding:20px;cursor:pointer;background:var(--bg3);transition:.15s;display:flex;align-items:center;justify-content:center;gap:12px">
+      <svg width="28" height="28" fill="none" stroke="var(--text3)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <div>
+        <div style="font-size:13px;color:var(--text2);font-weight:500">Clicca o trascina le foto qui</div>
+        <div style="font-size:11px;color:var(--text3)">JPG PNG WEBP - max 10MB - selezione multipla supportata</div>
+      </div>
+      <input type="file" id="foto-input" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="handleFiles(this.files)">
+    </div>
+    <div id="preview-container" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+    <div id="upload-progress" style="display:none;margin-top:8px">
+      <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+        <div id="progress-bar" style="height:100%;background:var(--orange);width:0%;transition:width .3s"></div>
+      </div>
+      <div id="progress-text" style="font-size:11px;color:var(--text3);margin-top:4px">Caricamento...</div>
+    </div>
+  </div>
+
+  {{-- FORM PRINCIPALE --}}
   <div class="card">
     <div class="card-title">{{ isset($vehicle) ? 'Modifica veicolo' : 'Nuovo veicolo in vendita' }}</div>
-    <form action="{{ isset($vehicle) ? route('marketplace.vehicles.update',$vehicle) : route('marketplace.vehicles.store') }}" method="POST" enctype="multipart/form-data">
-      @csrf @if(isset($vehicle)) @method('PUT') @endif
+    <form action="{{ isset($vehicle) && $vehicle->id ? route('marketplace.vehicles.update',$vehicle) : route('marketplace.vehicles.store') }}" method="POST" enctype="multipart/form-data">
+      @csrf @if(isset($vehicle) && $vehicle->id) @method('PUT') @endif
       @if($errors->any())<div class="alert alert-red">@foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>@endif
 
-      {{-- VIN nascosto --}}
       <input type="hidden" name="vin" id="vin_hidden" value="{{ old('vin', $vehicle->vin ?? '') }}">
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
@@ -216,12 +248,10 @@
 
 @push('scripts')
 <script>
+// ===== VIN DECODER =====
 async function decodeVin() {
   const vin = document.getElementById('vin_input').value.trim();
-  if (vin.length !== 17) {
-    showResult('Il VIN deve essere di esattamente 17 caratteri', 'error');
-    return;
-  }
+  if (vin.length !== 17) { showVinResult('Il VIN deve essere di esattamente 17 caratteri', 'error'); return; }
   const btn = document.getElementById('vin_btn');
   btn.textContent = 'Decodifica in corso...';
   btn.disabled = true;
@@ -234,61 +264,126 @@ async function decodeVin() {
     const json = await res.json();
     if (json.success) {
       const d = json.data;
-      if (d.brand)    setField('f_brand', d.brand);
-      if (d.model)    setField('f_model', d.model);
-      if (d.year)     setField('f_year', d.year);
-      if (d.fuel_type)setSelect('f_fuel', d.fuel_type);
+      if (d.brand)        setField('f_brand', d.brand);
+      if (d.model)        setField('f_model', d.model);
+      if (d.year)         setField('f_year', d.year);
+      if (d.fuel_type)    setSelect('f_fuel', d.fuel_type);
       if (d.transmission) setSelect('f_trans', d.transmission);
-      if (d.body_type)setSelect('f_body', d.body_type);
-      if (d.doors)    setField('f_doors', d.doors);
-      if (d.engine_cc)setField('f_cc', d.engine_cc);
-      if (d.power_kw) setField('f_kw', d.power_kw);
-      if (d.power_hp) setField('f_hp', d.power_hp);
+      if (d.body_type)    setSelect('f_body', d.body_type);
+      if (d.doors)        setField('f_doors', d.doors);
+      if (d.engine_cc)    setField('f_cc', d.engine_cc);
+      if (d.power_kw)     setField('f_kw', d.power_kw);
+      if (d.power_hp)     setField('f_hp', d.power_hp);
       document.getElementById('vin_hidden').value = vin;
-      // Auto-genera titolo
       if (d.brand && d.model && d.year) {
-        const titleField = document.getElementById('f_title');
-        if (!titleField.value) titleField.value = d.brand+' '+d.model+' ('+d.year+')';
+        const tf = document.getElementById('f_title');
+        if (tf && !tf.value) tf.value = d.brand+' '+d.model+' ('+d.year+')';
       }
-      showResult('VIN decodificato: '+[d.brand,d.model,d.year].filter(Boolean).join(' ')+' - Dati compilati automaticamente!', 'success');
+      showVinResult('VIN decodificato: '+[d.brand,d.model,d.year].filter(Boolean).join(' ')+' - Dati compilati!', 'success');
     } else {
-      showResult('Errore: '+(json.error||'VIN non trovato nel database'), 'error');
+      showVinResult('Errore: '+(json.error||'VIN non trovato'), 'error');
     }
   } catch(e) {
-    showResult('Errore connessione API', 'error');
+    showVinResult('Errore connessione API', 'error');
   }
   btn.textContent = 'Decodifica VIN';
   btn.disabled = false;
 }
-
-function setField(id, val) {
-  const el = document.getElementById(id);
-  if (el && val) el.value = val;
-}
-
+function setField(id, val) { const el=document.getElementById(id); if(el&&val) el.value=val; }
 function setSelect(id, val) {
-  const el = document.getElementById(id);
-  if (!el || !val) return;
-  for (let opt of el.options) {
-    if (opt.value === val || opt.value.includes(val)) { opt.selected = true; break; }
-  }
+  const el=document.getElementById(id); if(!el||!val) return;
+  for(let o of el.options) { if(o.value===val||o.value.includes(val.toLowerCase())||val.toLowerCase().includes(o.value)) { o.selected=true; break; } }
 }
-
-function showResult(msg, type) {
-  const el = document.getElementById('vin_result');
-  el.style.color = type === 'success' ? 'var(--green-text)' : 'var(--red-text)';
+function showVinResult(msg, type) {
+  const el=document.getElementById('vin_result');
+  el.style.color = type==='success' ? 'var(--green-text)' : 'var(--red-text)';
   el.textContent = msg;
 }
 
-// Auto-calcola CV da kW
+// ===== AUTO-CALCOLA CV/KW =====
 document.getElementById('f_kw')?.addEventListener('input', function() {
-  const kw = parseFloat(this.value);
-  if (kw > 0) document.getElementById('f_hp').value = Math.round(kw * 1.36);
+  const kw=parseFloat(this.value); if(kw>0) document.getElementById('f_hp').value=Math.round(kw*1.36);
 });
 document.getElementById('f_hp')?.addEventListener('input', function() {
-  const hp = parseFloat(this.value);
-  if (hp > 0) document.getElementById('f_kw').value = Math.round(hp / 1.36);
+  const hp=parseFloat(this.value); if(hp>0) document.getElementById('f_kw').value=Math.round(hp/1.36);
 });
+
+// ===== GESTIONE FOTO =====
+var _vid = {{ !empty($vehicle->id) ? $vehicle->id : 'null' }};
+var _uurl = _vid ? '/marketplace/vehicles/'+_vid+'/foto' : null;
+var _csrf = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+var _pend = [];
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor='var(--border2)';
+  document.getElementById('drop-zone').style.background='var(--bg3)';
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files) {
+  var arr = Array.from(files);
+  if (_vid && _uurl) {
+    uploadAjax(arr);
+  } else {
+    arr.forEach(function(f) { var i=_pend.length; _pend.push(f); showPrev(f,i); });
+  }
+}
+
+function showPrev(file, i) {
+  var r = new FileReader();
+  r.onload = function(e) {
+    var d = document.createElement('div');
+    d.id = 'prev-'+i;
+    d.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange)';
+    d.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">'
+      +'<button type="button" onclick="rmPrev('+i+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
+    document.getElementById('preview-container').appendChild(d);
+  };
+  r.readAsDataURL(file);
+}
+
+function rmPrev(i) { _pend[i]=null; var el=document.getElementById('prev-'+i); if(el) el.remove(); }
+
+async function uploadAjax(files) {
+  var p=document.getElementById('upload-progress'), b=document.getElementById('progress-bar'), t=document.getElementById('progress-text');
+  p.style.display='block';
+  for (var i=0; i<files.length; i++) {
+    var fd = new FormData();
+    fd.append('photo', files[i]);
+    fd.append('_token', _csrf);
+    try {
+      var res = await fetch(_uurl, {method:'POST', body:fd});
+      var data = await res.json();
+      b.style.width = ((i+1)/files.length*100)+'%';
+      t.textContent = 'Caricato '+(i+1)+' di '+files.length;
+      var c = document.getElementById('foto-esistenti');
+      if (c) {
+        // rimuovi messaggio "nessuna foto"
+        var empty = c.querySelector('div[style*="color:var(--text3)"]');
+        if (empty) empty.remove();
+        var d = document.createElement('div');
+        d.id = 'foto-'+data.id;
+        d.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;border:2px solid var(--orange)';
+        d.innerHTML = '<img src="'+data.thumb_url+'" style="width:100%;height:100%;object-fit:cover">'
+          +'<button type="button" onclick="eliminaFoto('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
+        c.appendChild(d);
+      }
+    } catch(err) {
+      t.textContent = 'Errore: '+files[i].name;
+    }
+  }
+  setTimeout(function(){ p.style.display='none'; b.style.width='0%'; }, 2000);
+}
+
+async function eliminaFoto(mid) {
+  if (!confirm('Eliminare questa foto?')) return;
+  var res = await fetch('/marketplace/vehicles/'+_vid+'/foto/'+mid, {
+    method: 'DELETE',
+    headers: {'X-CSRF-TOKEN':_csrf, 'Accept':'application/json'}
+  });
+  if (res.ok) { var el=document.getElementById('foto-'+mid); if(el) el.remove(); }
+}
 </script>
 @endpush
 @endsection
