@@ -21,7 +21,7 @@
   --purple:#a855f7;--purple-bg:rgba(168,85,247,.08);--purple-text:#9333ea;
   --teal:#14b8a6;--teal-bg:rgba(20,184,166,.08);--teal-text:#0d9488;
   --font-display:'Rajdhani',sans-serif;--font-body:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  --radius:6px;--radius-lg:10px;--sidebar:220px;
+  --radius:6px;--radius-lg:10px;--sidebar:190px;
 }
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
 .app{display:flex;min-height:100vh;overflow-x:hidden}
@@ -55,7 +55,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-si
 
 /* TOPBAR */
 .topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 8px rgba(0,0,0,.06)}
-.page-title{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text);letter-spacing:.04em;text-transform:uppercase}
+.page-title{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px}m:uppercase}
 .content{flex:1;padding:22px 24px}
 
 /* BUTTONS */
