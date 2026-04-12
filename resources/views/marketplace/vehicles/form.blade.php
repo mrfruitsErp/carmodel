@@ -275,7 +275,7 @@
       </div>
 
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost">Annulla</a>
+        
         @if(isset($vehicle) && $vehicle->id)
           <button type="submit" name="action" value="{{ $vehicle->status }}" class="btn btn-ghost" style="border-color:var(--orange);color:var(--orange)">
             💾 Salva modifiche
