@@ -28,7 +28,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-si
 
 /* SIDEBAR */
 .sidebar{width:var(--sidebar);min-width:var(--sidebar);background:#111827;border-right:none;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:9999;overflow-y:auto}
-.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1)}
+.sidebar::-webkit-scrollbar{width:10px}.sidebar::-webkit-scrollbar-track{background:#0d1117}.sidebar::-webkit-scrollbar-thumb{background:#ff6b00;border-radius:4px}.sidebar::-webkit-scrollbar-thumb:hover{background:#ff8c00}
 .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
 
 /* LOGO */
