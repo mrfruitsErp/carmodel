@@ -16,28 +16,29 @@ class MarketplaceController extends Controller
 
     private function tid(): int { return Auth::user()->tenant_id; }
 
-    // ── Dashboard ─────────────────────────────────────────────────────────────
-
     public function dashboard()
     {
-        $stats  = $this->manager->dashboardStats($this->tid());
-        $leads  = MarketplaceLead::forTenant($this->tid())
-            ->new()
+        $stats = $this->manager->dashboardStats($this->tid());
+
+        $recentLeads = MarketplaceLead::forTenant($this->tid())
             ->with('saleVehicle')
             ->latest()
             ->take(10)
             ->get();
-        $errors = MarketplaceListing::forTenant($this->tid())
+
+        $errorListings = MarketplaceListing::forTenant($this->tid())
             ->where('status', 'error')
             ->with('saleVehicle')
             ->latest()
             ->take(5)
             ->get();
 
-        return view('marketplace.dashboard', compact('stats', 'leads', 'errors'));
-    }
+        $allVehicles = SaleVehicle::forTenant($this->tid())
+            ->latest()
+            ->get();
 
-    // ── Pubblicazione ─────────────────────────────────────────────────────────
+        return view('marketplace.dashboard', compact('stats', 'recentLeads', 'errorListings', 'allVehicles'));
+    }
 
     public function publish(Request $request, SaleVehicle $saleVehicle)
     {
@@ -79,14 +80,12 @@ class MarketplaceController extends Controller
     public function updatePrice(Request $request, SaleVehicle $saleVehicle)
     {
         abort_if($saleVehicle->tenant_id !== $this->tid(), 403);
-        $request->validate(['price' => 'required|numeric|min:0']);
+        $request->validate(['asking_price' => 'required|numeric|min:0']);
 
-        $this->manager->updatePrice($saleVehicle, $request->price);
+        $saleVehicle->update(['asking_price' => $request->asking_price]);
 
-        return back()->with('success', 'Prezzo aggiornato su tutte le piattaforme.');
+        return back()->with('success', 'Prezzo aggiornato.');
     }
-
-    // ── Lead ──────────────────────────────────────────────────────────────────
 
     public function leads(Request $request)
     {
@@ -121,14 +120,12 @@ class MarketplaceController extends Controller
         return back()->with('success', 'Lead aggiornato.');
     }
 
-    // ── Impostazioni ──────────────────────────────────────────────────────────
-
     public function settings()
     {
         $credentials = MarketplaceCredential::forTenant($this->tid())
             ->get()
             ->keyBy('platform');
-        $platforms   = $this->manager->allPlatforms();
+        $platforms = $this->manager->allPlatforms();
 
         return view('marketplace.settings', compact('credentials', 'platforms'));
     }
@@ -164,8 +161,6 @@ class MarketplaceController extends Controller
 
         return response()->json($result);
     }
-
-    // ── Sync manuali ──────────────────────────────────────────────────────────
 
     public function syncStats()
     {
