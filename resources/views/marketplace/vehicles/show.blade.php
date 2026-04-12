@@ -36,10 +36,6 @@
         </div>
       </form>
     </div>
-  </div>firm('Segnare come venduto?')">
-    @csrf
-    <button type="submit" class="btn btn-primary btn-sm">Venduto</button>
-  </form>
 @endif
 @endsection
 

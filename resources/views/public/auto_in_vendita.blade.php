@@ -242,7 +242,9 @@
             </div>
           @endif
           <span class="badge-anno">{{ $vehicle->year }}</span>
-          @if($vehicle->badge_label)
+          @if($vehicle->status === 'venduto')
+            <span class="badge-tratt" style="background:rgba(59,130,246,.92);color:#fff;border-color:transparent">Venduto</span>
+          @elseif($vehicle->badge_label)
             <span class="badge-tratt">{{ $vehicle->badge_label }}</span>
           @elseif($vehicle->price_negotiable)
             <span class="badge-tratt">Trattabile</span>
