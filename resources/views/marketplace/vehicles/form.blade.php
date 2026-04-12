@@ -190,6 +190,43 @@
             </label>
           </div>
         </div>
+
+        {{-- BADGE PREZZO --}}
+        <div style="margin-top:20px">
+          <label class="form-label" style="margin-bottom:10px;display:block">Etichetta prezzo visibile nell'annuncio</label>
+          @php $currentBadge = old('badge_label', $vehicle->badge_label ?? ''); @endphp
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            @foreach(\App\Models\SaleVehicle::BADGE_PRESETS as $preset)
+            <button type="button" onclick="setBadge('{{ $preset }}', this)" class="badge-btn"
+              style="padding:5px 16px;border-radius:20px;border:1px solid var(--orange);
+                     background:{{ $currentBadge === $preset ? 'var(--orange)' : 'transparent' }};
+                     color:{{ $currentBadge === $preset ? '#000' : 'var(--orange)' }};
+                     font-size:12px;font-weight:600;cursor:pointer;transition:all .15s">
+              {{ $preset }}
+            </button>
+            @endforeach
+            <button type="button" onclick="setBadge('__custom__', this)" class="badge-btn"
+              style="padding:5px 16px;border-radius:20px;border:1px solid var(--border2);
+                     background:{{ !in_array($currentBadge, array_merge([''], \App\Models\SaleVehicle::BADGE_PRESETS)) ? 'var(--orange)' : 'transparent' }};
+                     color:{{ !in_array($currentBadge, array_merge([''], \App\Models\SaleVehicle::BADGE_PRESETS)) ? '#000' : 'var(--text2)' }};
+                     font-size:12px;cursor:pointer;transition:all .15s">
+              ✏ Testo libero
+            </button>
+            <button type="button" onclick="setBadge('', this)" id="badge-none-btn"
+              style="padding:5px 16px;border-radius:20px;border:1px solid var(--border2);
+                     background:{{ $currentBadge === '' ? '#333' : 'transparent' }};
+                     color:var(--text3);font-size:12px;cursor:pointer;transition:all .15s">
+              ✕ Nessuno
+            </button>
+          </div>
+          <div id="badge-custom-wrap" style="display:{{ !in_array($currentBadge, array_merge([''], \App\Models\SaleVehicle::BADGE_PRESETS)) ? 'block' : 'none' }}">
+            <input type="text" id="badge_custom_input" class="form-input"
+              placeholder="Scrivi testo badge..." maxlength="40" style="max-width:300px"
+              value="{{ !in_array($currentBadge, array_merge([''], \App\Models\SaleVehicle::BADGE_PRESETS)) ? $currentBadge : '' }}"
+              oninput="document.getElementById('badge_label_input').value=this.value">
+          </div>
+          <input type="hidden" name="badge_label" id="badge_label_input" value="{{ $currentBadge }}">
+        </div>
       </div>
 
       {{-- OPTIONAL --}}
@@ -248,6 +285,30 @@
 
 @push('scripts')
 <script>
+// ===== BADGE PREZZO =====
+function setBadge(val, btn) {
+  document.querySelectorAll('.badge-btn').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = b.style.borderColor === 'rgb(229, 231, 235)' ? 'var(--text2)' : 'var(--orange)';
+  });
+  document.getElementById('badge-none-btn').style.background = 'transparent';
+  const customWrap = document.getElementById('badge-custom-wrap');
+  const hidden = document.getElementById('badge_label_input');
+  if (val === '__custom__') {
+    customWrap.style.display = 'block';
+    if (btn) { btn.style.background = 'var(--orange)'; btn.style.color = '#000'; }
+    hidden.value = document.getElementById('badge_custom_input').value;
+  } else if (val === '') {
+    customWrap.style.display = 'none';
+    document.getElementById('badge-none-btn').style.background = '#333';
+    hidden.value = '';
+  } else {
+    customWrap.style.display = 'none';
+    if (btn) { btn.style.background = 'var(--orange)'; btn.style.color = '#000'; }
+    hidden.value = val;
+  }
+}
+
 // ===== VIN DECODER =====
 async function decodeVin() {
   const vin = document.getElementById('vin_input').value.trim();
@@ -359,7 +420,6 @@ async function uploadAjax(files) {
       t.textContent = 'Caricato '+(i+1)+' di '+files.length;
       var c = document.getElementById('foto-esistenti');
       if (c) {
-        // rimuovi messaggio "nessuna foto"
         var empty = c.querySelector('div[style*="color:var(--text3)"]');
         if (empty) empty.remove();
         var d = document.createElement('div');

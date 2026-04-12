@@ -22,7 +22,7 @@ class SaleVehicle extends Model implements HasMedia
         'doors', 'seats', 'engine_cc', 'power_kw', 'power_hp', 'body_type',
         'condition', 'previous_owners', 'first_registration', 'features',
         'asking_price', 'min_price', 'price_negotiable', 'vat_deductible',
-        'purchase_price', 'title', 'description', 'internal_notes',
+        'purchase_price', 'badge_label', 'title', 'description', 'internal_notes',
         'status', 'available_from', 'sold_date', 'sold_price',
         'sold_to_customer_id', 'vehicle_id', 'created_by',
     ];
@@ -38,6 +38,13 @@ class SaleVehicle extends Model implements HasMedia
         'min_price'          => 'decimal:2',
         'purchase_price'     => 'decimal:2',
         'sold_price'         => 'decimal:2',
+    ];
+
+    public const BADGE_PRESETS = [
+        'Trattabile',
+        'Occasione del mese',
+        'Introvabile',
+        'Pronta consegna',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -83,10 +90,10 @@ class SaleVehicle extends Model implements HasMedia
     public function scopeSearch($q, string $term)
     {
         return $q->where(fn($s) => $s
-            ->where('brand',   'like', "%{$term}%")
-            ->orWhere('model', 'like', "%{$term}%")
-            ->orWhere('plate', 'like', "%{$term}%")
-            ->orWhere('vin',   'like', "%{$term}%")
+            ->where('brand',    'like', "%{$term}%")
+            ->orWhere('model',  'like', "%{$term}%")
+            ->orWhere('plate',  'like', "%{$term}%")
+            ->orWhere('vin',    'like', "%{$term}%")
             ->orWhere('version','like', "%{$term}%")
         );
     }
@@ -136,7 +143,7 @@ class SaleVehicle extends Model implements HasMedia
         return $this->listings()->where('platform', $platform)->first();
     }
 
-    public function totalViews(): int   { return $this->listings()->sum('views'); }
+    public function totalViews(): int    { return $this->listings()->sum('views'); }
     public function totalContacts(): int { return $this->leads()->count(); }
 
     public function markAsSold(float $price, ?int $customerId = null): void
