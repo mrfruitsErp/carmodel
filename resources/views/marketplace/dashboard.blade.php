@@ -217,8 +217,8 @@
         <label class="form-label">Cliente (opzionale)</label>
         <select name="customer_id" class="form-select">
           <option value="">-- Nessuno --</option>
-          @foreach(\App\Models\Customer::where('tenant_id', auth()->user()->tenant_id)->orderBy('name')->get() as $c)
-          <option value="{{ $c->id }}">{{ $c->name }}</option>
+          @foreach(\App\Models\Customer::where('tenant_id', auth()->user()->tenant_id)->orderBy('last_name')->get() as $c)
+<option value="{{ $c->id }}">{{ trim($c->first_name.' '.$c->last_name) }} {{ $c->company_name ? '('.$c->company_name.')' : '' }}</option>
           @endforeach
         </select>
       </div>
