@@ -117,19 +117,7 @@ tbody tr:hover td{background:var(--bg3)}
 .stato-step.current{background:var(--amber-bg);color:var(--amber-text);border:1px solid rgba(245,158,11,.3)}
 @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}.main-side{grid-template-columns:1fr}}
 @media(max-width:800px){.two-col,.three-col{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){
-  .sidebar{transform:translateX(-100%);transition:transform .3s ease;width:var(--sidebar)!important;min-width:var(--sidebar)!important}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0!important}
-  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998}
-  .sidebar-overlay.show{display:block}
-  .mobile-header{display:flex!important}
-  .topbar{display:none}
-  .content{padding:16px}
-  .two-col,.three-col{grid-template-columns:1fr}
-  .stat-grid{grid-template-columns:repeat(2,1fr)}
-}
-.mobile-header{display:none;background:#111827;padding:12px 16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.06)}
+
 .hamburger{background:none;border:none;cursor:pointer;padding:4px;color:rgba(255,255,255,.7);display:flex;flex-direction:column;gap:4px}
 .hamburger span{display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:all .3s}
 .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
@@ -247,7 +235,7 @@ tbody tr:hover td{background:var(--bg3)}
 <script>
 function toggleSidebar(){const s=document.querySelector('.sidebar'),o=document.getElementById('overlay'),h=document.getElementById('hamburger');s.classList.toggle('open');o.classList.toggle('show');h.classList.toggle('open')}
 function closeSidebar(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');document.getElementById('hamburger').classList.remove('open')}
-document.querySelectorAll('.nav-item').forEach(el=>{el.addEventListener('click',()=>{if(window.innerWidth<=640)closeSidebar()})});
+document.querySelectorAll('.nav-item').forEach(el=>{el.addEventListener('click',()=>{if(window.innerWidth<=480)closeSidebar()})});
 </script>
 </body>
 </html>
