@@ -176,6 +176,8 @@ tbody tr:hover td{background:var(--bg3)}
       <span></span><span></span><span></span>
     </button>
     <div style="display:flex;align-items:center;gap:8px">
+      <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:32px;width:auto;object-fit:contain">
+    </div>
       <div style="width:28px;height:28px;background:var(--orange);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:#000">CM</div>
       <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:#fff;letter-spacing:.06em">CARMODEL</span>
     </div>
@@ -185,12 +187,10 @@ tbody tr:hover td{background:var(--bg3)}
 
 <div class="app">
 <div class="sidebar">
-  <div class="logo">
-    <div class="logo-top">
-      <div class="logo-icon">CM</div>
-      <div class="logo-name">CARMODEL</div>
+<div class="logo">
+    <div style="padding:4px 0">
+      <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:44px;width:auto;object-fit:contain;filter:brightness(1.1)">
     </div>
-    <div class="logo-sub">Software - Automotive</div>
   </div>
   <nav class="nav">
     <div class="nav-section">Principale</div>
