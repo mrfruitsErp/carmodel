@@ -242,7 +242,11 @@
             </div>
           @endif
           <span class="badge-anno">{{ $vehicle->year }}</span>
-          @if($vehicle->price_negotiable)<span class="badge-tratt">Trattabile</span>@endif
+          @if($vehicle->badge_label)
+            <span class="badge-tratt">{{ $vehicle->badge_label }}</span>
+          @elseif($vehicle->price_negotiable)
+            <span class="badge-tratt">Trattabile</span>
+          @endif
           @if($photoCount > 0)<div class="photo-count">{{ $photoCount }} foto</div>@endif
         </div>
         <div class="car-info">
