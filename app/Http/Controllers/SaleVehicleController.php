@@ -45,16 +45,17 @@ class SaleVehicleController extends Controller
             'version'            => 'nullable|string|max:150',
             'year'               => 'required|integer|min:1980|max:2027',
             'mileage'            => 'required|integer|min:0',
-            'fuel_type'          => 'required|in:benzina,diesel,gpl,metano,elettrico,ibrido_benzina,ibrido_diesel,altro',
-            'transmission'       => 'required|in:manuale,automatico,semiautomatico',
+            'fuel_type'          => 'required|string',
+            'transmission'       => 'required|string',
             'color'              => 'nullable|string|max:80',
+            'color_type'         => 'nullable|string|max:30',
             'doors'              => 'nullable|integer|between:2,6',
             'seats'              => 'nullable|integer|between:2,9',
             'engine_cc'          => 'nullable|integer',
             'power_kw'           => 'nullable|integer',
             'power_hp'           => 'nullable|integer',
             'body_type'          => 'nullable|string',
-            'condition'          => 'required|in:eccellente,ottimo,buono,discreto,da_riparare',
+            'condition'          => 'required|string',
             'previous_owners'    => 'nullable|integer|min:0',
             'first_registration' => 'nullable|date',
             'features'           => 'nullable|array',
@@ -63,15 +64,24 @@ class SaleVehicleController extends Controller
             'price_negotiable'   => 'boolean',
             'vat_deductible'     => 'boolean',
             'purchase_price'     => 'nullable|numeric|min:0',
+            'badge_label'        => 'nullable|string|max:40',
             'title'              => 'nullable|string|max:200',
             'description'        => 'nullable|string',
+            'internal_notes'     => 'nullable|string',
             'plate'              => 'nullable|string|max:20',
             'vin'                => 'nullable|string|max:17',
+            'status'             => 'nullable|string',
         ]);
 
-        $data['tenant_id']  = $this->tid();
-        $data['created_by'] = Auth::id();
-        $data['status']     = 'bozza';
+        $data['tenant_id']        = $this->tid();
+        $data['created_by']       = Auth::id();
+        $data['price_negotiable'] = $request->boolean('price_negotiable');
+        $data['vat_deductible']   = $request->boolean('vat_deductible');
+
+        // Stato: usa quello del form oppure forza bozza se non specificato
+        if (empty($data['status'])) {
+            $data['status'] = $request->input('action') === 'attivo' ? 'attivo' : 'bozza';
+        }
 
         $vehicle = SaleVehicle::create($data);
 
@@ -83,7 +93,7 @@ class SaleVehicleController extends Controller
 
         return redirect()
             ->route('marketplace.vehicles.show', $vehicle)
-            ->with('success', 'Veicolo creato. Ora puoi pubblicarlo sulle piattaforme.');
+            ->with('success', 'Veicolo creato con successo.');
     }
 
     public function show(SaleVehicle $saleVehicle)
@@ -109,20 +119,48 @@ class SaleVehicleController extends Controller
         $this->authorizeVehicle($saleVehicle);
 
         $data = $request->validate([
-            'brand'          => 'required|string|max:100',
-            'model'          => 'required|string|max:100',
-            'version'        => 'nullable|string|max:150',
-            'year'           => 'required|integer',
-            'mileage'        => 'required|integer|min:0',
-            'fuel_type'      => 'required',
-            'transmission'   => 'required',
-            'asking_price'   => 'required|numeric|min:0',
-            'description'    => 'nullable|string',
-            'condition'      => 'required',
-            'color'          => 'nullable|string|max:80',
-            'purchase_price' => 'nullable|numeric|min:0',
-            'title'          => 'nullable|string|max:200',
+            'brand'              => 'required|string|max:100',
+            'model'              => 'required|string|max:100',
+            'version'            => 'nullable|string|max:150',
+            'year'               => 'required|integer',
+            'mileage'            => 'required|integer|min:0',
+            'fuel_type'          => 'required|string',
+            'transmission'       => 'required|string',
+            'color'              => 'nullable|string|max:80',
+            'color_type'         => 'nullable|string|max:30',
+            'doors'              => 'nullable|integer',
+            'seats'              => 'nullable|integer',
+            'engine_cc'          => 'nullable|integer',
+            'power_kw'           => 'nullable|integer',
+            'power_hp'           => 'nullable|integer',
+            'body_type'          => 'nullable|string',
+            'condition'          => 'required|string',
+            'previous_owners'    => 'nullable|integer|min:0',
+            'first_registration' => 'nullable|date',
+            'features'           => 'nullable|array',
+            'asking_price'       => 'required|numeric|min:0',
+            'min_price'          => 'nullable|numeric|min:0',
+            'price_negotiable'   => 'boolean',
+            'vat_deductible'     => 'boolean',
+            'purchase_price'     => 'nullable|numeric|min:0',
+            'badge_label'        => 'nullable|string|max:40',
+            'title'              => 'nullable|string|max:200',
+            'description'        => 'nullable|string',
+            'internal_notes'     => 'nullable|string',
+            'plate'              => 'nullable|string|max:20',
+            'vin'                => 'nullable|string|max:17',
+            'status'             => 'nullable|string',
         ]);
+
+        $data['price_negotiable'] = $request->boolean('price_negotiable');
+        $data['vat_deductible']   = $request->boolean('vat_deductible');
+
+        // Gestione tasto: "Salva bozza" o "Pubblica annuncio"
+        if ($request->input('action') === 'attivo') {
+            $data['status'] = 'attivo';
+        } elseif ($request->input('action') === 'bozza') {
+            $data['status'] = 'bozza';
+        }
 
         $saleVehicle->update($data);
 
@@ -138,7 +176,7 @@ class SaleVehicleController extends Controller
 
         return redirect()
             ->route('marketplace.vehicles.show', $saleVehicle)
-            ->with('success', 'Veicolo aggiornato e sincronizzato.');
+            ->with('success', 'Veicolo aggiornato.');
     }
 
     public function destroy(SaleVehicle $saleVehicle)
@@ -148,7 +186,7 @@ class SaleVehicleController extends Controller
         $saleVehicle->delete();
         return redirect()
             ->route('marketplace.vehicles.index')
-            ->with('success', 'Veicolo rimosso da tutte le piattaforme.');
+            ->with('success', 'Veicolo rimosso.');
     }
 
     public function uploadFoto(Request $request, SaleVehicle $saleVehicle)
@@ -187,9 +225,8 @@ class SaleVehicleController extends Controller
         $saleVehicle->markAsSold($request->sold_price, $request->customer_id);
         return redirect()
             ->route('marketplace.vehicles.show', $saleVehicle)
-            ->with('success', 'Veicolo marcato come venduto e rimosso dalle piattaforme.');
+            ->with('success', 'Veicolo marcato come venduto.');
     }
-
 
     public function changeStatus(Request $request, SaleVehicle $saleVehicle)
     {
@@ -197,8 +234,10 @@ class SaleVehicleController extends Controller
         $status = $request->status ?? ($saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo');
         $saleVehicle->update(['status' => $status]);
         return redirect()->route('marketplace.vehicles.show', $saleVehicle)
-            ->with('success', 'Stato aggiornato: '.ucfirst($status));
-    }    private function authorizeVehicle(SaleVehicle $vehicle): void
+            ->with('success', 'Stato aggiornato: ' . ucfirst($status));
+    }
+
+    private function authorizeVehicle(SaleVehicle $vehicle): void
     {
         abort_if($vehicle->tenant_id !== $this->tid(), 403);
     }
