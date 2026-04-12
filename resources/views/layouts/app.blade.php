@@ -40,7 +40,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-si
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
 .user-area{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
 .avatar{width:28px;height:28px;border-radius:50%;background:var(--orange-bg);border:1.5px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:11px;font-weight:700;color:var(--orange);flex-shrink:0}
-.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 8px rgba(0,0,0,.06);min-width:0}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);min-width:0}
 .page-title{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--text);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;margin-right:12px}
 .topbar-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .content{flex:1;padding:20px 22px}
