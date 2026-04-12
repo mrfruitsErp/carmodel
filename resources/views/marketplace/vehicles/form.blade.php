@@ -284,10 +284,6 @@
         <button type="submit" name="action" value="bozza" class="btn btn-ghost">Salva bozza</button>
         <button type="submit" name="action" value="attivo" class="btn btn-primary">Pubblica annuncio</button>
       </div>
-        <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost">Annulla</a>
-        <button type="submit" name="action" value="bozza" class="btn btn-ghost">Salva bozza</button>
-        <button type="submit" name="action" value="attivo" class="btn btn-primary">Pubblica annuncio</button>
-      </div>
     </form>
   </div>
 </div>
