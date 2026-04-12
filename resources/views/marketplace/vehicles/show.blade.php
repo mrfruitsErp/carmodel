@@ -11,7 +11,32 @@
       {{ $saleVehicle->status === 'attivo' ? 'Disattiva' : 'Attiva' }}
     </button>
   </form>
-  <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST" style="display:inline" onsubmit="return confirm('Segnare come venduto?')">
+  <button type="button" onclick="document.getElementById('modal-venduto').style.display='flex'" class="btn btn-primary btn-sm">Venduto</button>
+  <div id="modal-venduto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border-radius:12px;padding:24px;width:340px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:16px">Segna come venduto</div>
+      <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST">
+        @csrf
+        <div class="form-group">
+          <label class="form-label">Prezzo di vendita (euro) *</label>
+          <input type="number" name="sold_price" class="form-input" value="{{ $saleVehicle->asking_price }}" step="100" min="0" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cliente (opzionale)</label>
+          <select name="customer_id" class="form-select">
+            <option value="">-- Nessuno --</option>
+            @foreach(\App\Models\Customer::where('tenant_id', auth()->user()->tenant_id)->orderBy('name')->get() as $c)
+            <option value="{{ $c->id }}">{{ $c->name }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+          <button type="button" onclick="document.getElementById('modal-venduto').style.display='none'" class="btn btn-ghost btn-sm">Annulla</button>
+          <button type="submit" class="btn btn-primary btn-sm">Conferma vendita</button>
+        </div>
+      </form>
+    </div>
+  </div>firm('Segnare come venduto?')">
     @csrf
     <button type="submit" class="btn btn-primary btn-sm">Venduto</button>
   </form>
