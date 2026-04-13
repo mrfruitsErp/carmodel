@@ -6,7 +6,8 @@ use App\Http\Controllers\{
     ClaimController, PersonalInjuryController, ExpertController,
     WorkOrderController, QuoteController, FleetVehicleController,
     RentalController, DocumentController, MailController,
-    SparePartController, WincarImportController, VinDecoderController
+    SparePartController, WincarImportController, VinDecoderController,
+    ProfileController
 };
 
 require __DIR__.'/auth.php';
@@ -64,7 +65,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('import/wincar', [WincarImportController::class, 'upload'])->name('import.wincar.upload');
 
     // Profile
-    Route::get('/profile', function() { return redirect()->route('dashboard'); })->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // VIN Decoder API (NHTSA)
     Route::post('/api/vin/decode', [VinDecoderController::class, 'decode'])->name('vin.decode');
