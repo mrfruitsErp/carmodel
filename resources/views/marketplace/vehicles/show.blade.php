@@ -9,17 +9,13 @@
   @csrf
   <input type="hidden" name="status" value="archiviato">
   <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--red-text)"
-    onclick="return confirm('Archiviare questo veicolo?')">
-    Archivia
-  </button>
+    onclick="return confirm('Archiviare questo veicolo?')">Archivia</button>
 </form>
 @else
 <form action="{{ route('marketplace.vehicles.status', $saleVehicle) }}" method="POST" style="display:inline">
   @csrf
   <input type="hidden" name="status" value="bozza">
-  <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--green-text)">
-    Recupera
-  </button>
+  <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--green-text)">Recupera</button>
 </form>
 <form action="{{ route('marketplace.vehicles.destroy', $saleVehicle) }}" method="POST" style="display:inline"
   onsubmit="return confirm('Eliminare definitivamente? Azione irreversibile.')">
@@ -37,6 +33,7 @@
   </select>
 </form>
 @endsection
+
 @section('content')
 
 <div style="margin-bottom:16px">
@@ -52,7 +49,10 @@
     {{-- FOTO --}}
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div class="card-title" style="margin:0">Foto ({{ $saleVehicle->getMedia('sale_photos')->count() }})</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="card-title" style="margin:0">Foto ({{ $saleVehicle->getMedia('sale_photos')->count() }})</div>
+          <span style="font-size:11px;color:var(--text3)">↔ trascina per riordinare</span>
+        </div>
         <div style="display:flex;gap:8px;align-items:center">
           <button type="button" onclick="document.getElementById('foto-upload-input').click()" class="btn btn-ghost btn-sm">+ Aggiungi foto</button>
           <input type="file" id="foto-upload-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="uploadFotoShow(this.files)">
@@ -70,19 +70,19 @@
           @foreach($photos as $i => $photo)
           @php $thumbUrl = $photo->getUrl('thumb') ?: $photo->getUrl(); @endphp
           <div id="show-foto-{{ $photo->id }}"
-               style="position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;flex-shrink:0;border:2px solid {{ $i===0 ? 'var(--orange)' : 'var(--border2)' }};cursor:pointer;background:var(--bg3)"
+               style="position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;flex-shrink:0;border:2px solid {{ $i===0 ? 'var(--orange)' : 'var(--border2)' }};cursor:grab;background:var(--bg3)"
                onclick="selectFoto(this, '{{ $photo->getUrl() }}')"
                onmouseover="this.style.borderColor='var(--orange)'"
                onmouseout="if(!this.classList.contains('selected'))this.style.borderColor='var(--border2)'">
             <img src="{{ $thumbUrl }}"
-                 style="width:100%;height:100%;object-fit:contain;background:#f8f8f8"
+                 style="width:100%;height:100%;object-fit:contain;background:#f8f8f8;pointer-events:none"
                  onerror="this.src='{{ $photo->getUrl() }}'">
             <button type="button" onclick="event.stopPropagation();eliminaFotoShow({{ $photo->id }})"
                     style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center">&times;</button>
           </div>
           @endforeach
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px">{{ $photos->count() }} foto &mdash; clicca per ingrandire</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">{{ $photos->count() }} foto &mdash; clicca per ingrandire, trascina per riordinare</div>
       @else
         <div id="foto-gallery" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
         <div id="no-foto-msg" style="background:var(--bg3);border:2px dashed var(--border2);border-radius:8px;padding:40px;text-align:center">
@@ -216,9 +216,44 @@
 </div>
 
 @push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<style>
+.sortable-ghost { opacity: 0.4; border: 2px dashed var(--orange) !important; }
+.sortable-drag { cursor: grabbing !important; }
+</style>
 <script>
 var _svid = {{ $saleVehicle->id }};
 var _svcsrf = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+// DRAG & DROP RIORDINO FOTO
+document.addEventListener('DOMContentLoaded', function() {
+  var gallery = document.getElementById('foto-gallery');
+  if (gallery) {
+    Sortable.create(gallery, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      dragClass: 'sortable-drag',
+      onEnd: function() {
+        var order = [];
+        gallery.querySelectorAll('[id^="show-foto-"]').forEach(function(el) {
+          order.push(el.id.replace('show-foto-', ''));
+        });
+        // Aggiorna foto principale con la prima
+        var first = gallery.querySelector('[id^="show-foto-"] img');
+        var mainPhoto = document.getElementById('mainPhoto');
+        if (first && mainPhoto) {
+          mainPhoto.src = first.src;
+        }
+        // Salva ordine sul server
+        fetch('/marketplace/vehicles/' + _svid + '/foto/reorder', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json','X-CSRF-TOKEN':_svcsrf},
+          body: JSON.stringify({order: order})
+        });
+      }
+    });
+  }
+});
 
 function selectFoto(el, url) {
   document.querySelectorAll('#foto-gallery > div').forEach(function(d){ d.style.borderColor='var(--border2)'; });
@@ -231,52 +266,4 @@ async function uploadFotoShow(files) {
   var arr = Array.from(files);
   var prog = document.getElementById('upload-progress');
   var bar = document.getElementById('progress-bar');
-  var txt = document.getElementById('progress-text');
-  if (prog) prog.style.display = 'block';
-  for (var i = 0; i < arr.length; i++) {
-    var fd = new FormData();
-    fd.append('photo', arr[i]);
-    fd.append('_token', _svcsrf);
-    try {
-      var res = await fetch('/marketplace/vehicles/' + _svid + '/foto', {method:'POST', body:fd});
-      var data = await res.json();
-      if (bar) bar.style.width = ((i+1)/arr.length*100) + '%';
-      if (txt) txt.textContent = 'Caricato ' + (i+1) + ' di ' + arr.length;
-      var noFoto = document.getElementById('no-foto-msg');
-      if (noFoto) noFoto.style.display = 'none';
-      var gallery = document.getElementById('foto-gallery');
-      if (!document.getElementById('mainPhoto')) {
-        var wrap = document.createElement('div');
-        wrap.style.cssText = 'border-radius:8px;overflow:hidden;margin-bottom:10px;background:var(--bg3)';
-        wrap.innerHTML = '<img src="' + data.url + '" id="mainPhoto" style="width:100%;height:360px;object-fit:contain;background:#f8f8f8">';
-        gallery.parentNode.insertBefore(wrap, gallery);
-      }
-      if (gallery) {
-        var div = document.createElement('div');
-        div.id = 'show-foto-' + data.id;
-        div.style.cssText = 'position:relative;width:80px;height:60px;border-radius:6px;overflow:hidden;flex-shrink:0;border:2px solid var(--orange);cursor:pointer;background:var(--bg3)';
-        var thumbSrc = data.thumb_url || data.url;
-        div.innerHTML = '<img src="' + thumbSrc + '" style="width:100%;height:100%;object-fit:contain;background:#f8f8f8" onerror="this.src=\'' + data.url + '\'" onclick="selectFoto(this.parentNode,\'' + data.url + '\')">'
-          + '<button type="button" onclick="event.stopPropagation();eliminaFotoShow(' + data.id + ')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
-        gallery.appendChild(div);
-      }
-    } catch(e) {
-      if (txt) txt.textContent = 'Errore: ' + arr[i].name;
-    }
-  }
-  setTimeout(function(){ if(prog) prog.style.display='none'; if(bar) bar.style.width='0%'; }, 2000);
-}
-
-async function eliminaFotoShow(mid) {
-  if (!confirm('Eliminare questa foto?')) return;
-  var res = await fetch('/marketplace/vehicles/' + _svid + '/foto/' + mid, {
-    method: 'DELETE', headers: {'X-CSRF-TOKEN': _svcsrf, 'Accept': 'application/json'}
-  });
-  if (res.ok) {
-    var el = document.getElementById('show-foto-' + mid);
-    if (el) el.remove();
-  }
-}
-</script>
-@endpush
-@endsection
+  var txt = document.getElementById('progress-t
