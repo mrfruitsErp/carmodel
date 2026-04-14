@@ -25,21 +25,11 @@
 }
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
 .app{display:flex;min-height:100vh;overflow-x:hidden}
-
-/* SIDEBAR */
 .sidebar{width:var(--sidebar);min-width:var(--sidebar);background:#111827;border-right:none;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:9999;overflow-y:auto}
 .sidebar::-webkit-scrollbar{width:10px}.sidebar::-webkit-scrollbar-track{background:#0d1117}.sidebar::-webkit-scrollbar-thumb{background:#ff6b00;border-radius:4px}.sidebar::-webkit-scrollbar-thumb:hover{background:#ff8c00}
 .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
-
-/* LOGO */
 .logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06);position:relative}
 .logo::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--orange),transparent)}
-.logo-top{display:flex;align-items:center;gap:10px;margin-bottom:3px}
-.logo-icon{width:32px;height:32px;background:var(--orange);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;font-weight:700;color:#000;flex-shrink:0;box-shadow:0 0 20px rgba(255,107,0,.4)}
-.logo-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:#fff;letter-spacing:.08em}
-.logo-sub{font-size:9px;color:rgba(255,255,255,.3);padding-left:42px;letter-spacing:.15em;text-transform:uppercase}
-
-/* NAV */
 .nav{flex:1;padding:6px 0}
 .nav-section{color:rgba(255,255,255,.25);font-size:9px;font-weight:600;padding:14px 16px 4px;letter-spacing:.18em;text-transform:uppercase}
 .nav-item{display:flex;align-items:center;gap:9px;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.55);transition:all .15s;border-left:2px solid transparent;text-decoration:none;margin:0 4px;border-radius:6px}
@@ -48,24 +38,16 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-si
 .nav-item svg{opacity:.6;flex-shrink:0}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center}
-
-/* USER */
 .user-area{padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
 .avatar{width:30px;height:30px;border-radius:50%;background:var(--orange-bg);border:1.5px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--orange);flex-shrink:0}
-
-/* TOPBAR */
-.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06)}
 .page-title{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text);letter-spacing:.04em;text-transform:uppercase}
 .content{flex:1;padding:22px 24px}
-
-/* BUTTONS */
 .btn{padding:7px 16px;font-size:13px;border-radius:var(--radius);cursor:pointer;font-family:var(--font-body);font-weight:500;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .btn-primary{background:var(--orange);color:#000;font-weight:600;box-shadow:0 0 12px rgba(255,107,0,.3)}.btn-primary:hover{background:var(--orange2);box-shadow:0 0 20px rgba(255,107,0,.5)}
 .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}.btn-ghost:hover{background:var(--bg3);color:var(--text);border-color:var(--border3)}
 .btn-danger{background:var(--red-bg);border:1px solid rgba(239,68,68,.3);color:var(--red-text)}
 .btn-sm{padding:5px 11px;font-size:12px}
-
-/* CARDS */
 .card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border3),transparent)}
 .card-title{font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;letter-spacing:.06em;text-transform:uppercase}
@@ -77,16 +59,12 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-si
 .stat-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
 .stat-value{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1}
 .stat-sub{font-size:11px;color:var(--text3);margin-top:6px}
-
-/* TABLE */
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:9px 12px;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--border2);white-space:nowrap}
 td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tbody tr{transition:background .1s}
 tbody tr:hover td{background:var(--bg3)}
-
-/* BADGES */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:.02em}
 .badge-green{background:var(--green-bg);color:var(--green-text);border:1px solid rgba(34,197,94,.2)}
 .badge-amber{background:var(--amber-bg);color:var(--amber-text);border:1px solid rgba(245,158,11,.2)}
@@ -97,8 +75,6 @@ tbody tr:hover td{background:var(--bg3)}
 .badge-orange{background:var(--orange-bg);color:var(--orange-text);border:1px solid var(--orange-border)}
 .badge-gray{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
 .targa{font-family:var(--mono);font-size:12px;background:var(--bg4);color:var(--text);padding:3px 8px;border-radius:4px;border:1px solid var(--border3);letter-spacing:.1em;font-weight:500}
-
-/* FORMS */
 .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
 .form-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
 .form-input,.form-select,.form-textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 11px;color:var(--text);font-size:13px;font-family:var(--font-body);outline:none;width:100%;transition:border-color .15s}
@@ -110,15 +86,11 @@ tbody tr:hover td{background:var(--bg3)}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .main-side{display:grid;grid-template-columns:2fr 1fr;gap:16px}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-
-/* ALERTS */
 .alert{padding:10px 14px;border-radius:var(--radius);margin-bottom:16px;font-size:13px;display:flex;align-items:flex-start;gap:10px;border-left:3px solid}
 .alert-amber{background:var(--amber-bg);border-color:var(--amber);color:var(--amber-text)}
 .alert-red{background:var(--red-bg);border-color:var(--red);color:var(--red-text)}
 .alert-green{background:var(--green-bg);border-color:var(--green);color:var(--green-text)}
 .alert-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-text)}
-
-/* MISC */
 .info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .info-row:last-child{border-bottom:none}
 .info-label{color:var(--text3)}.info-value{color:var(--text);font-weight:500;text-align:right}
@@ -145,7 +117,6 @@ tbody tr:hover td{background:var(--bg3)}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--orange)}
 @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}.main-side{grid-template-columns:1fr}}
 @media(max-width:800px){.two-col,.three-col{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}}
-/* MOBILE */
 @media(max-width:640px){
   .sidebar{transform:translateX(-100%);transition:transform .3s ease;width:var(--sidebar)!important;min-width:var(--sidebar)!important}
   .sidebar.open{transform:translateX(0)}
@@ -168,114 +139,132 @@ tbody tr:hover td{background:var(--bg3)}
 </head>
 <body>
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
-
-<!-- Mobile header -->
 <div class="mobile-header">
   <div style="display:flex;align-items:center;gap:10px">
-    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
-      <span></span><span></span><span></span>
-    </button>
-    <div style="display:flex;align-items:center;gap:8px">
-      <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:32px;width:auto;object-fit:contain">
-    </div>
-      <div style="width:28px;height:28px;background:var(--orange);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:#000">CM</div>
-      <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:#fff;letter-spacing:.06em">CARMODEL</span>
-    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+    <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:28px;width:auto;object-fit:contain">
   </div>
   <span style="font-size:12px;color:rgba(255,255,255,.4)">@yield('title', 'Dashboard')</span>
 </div>
-
 <div class="app">
 <div class="sidebar">
-<div class="logo">
-    <div style="padding:4px 0">
-      <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:44px;width:auto;object-fit:contain;filter:brightness(1.1)">
-    </div>
+  <div class="logo">
+    <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:44px;width:auto;object-fit:contain;filter:brightness(1.1);display:block">
   </div>
   <nav class="nav">
+
+    {{-- PRINCIPALE --}}
     <div class="nav-section">Principale</div>
     <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
     </a>
+
+    {{-- ANAGRAFICA --}}
+    @if(auth()->user()->canDo('clienti.view') || auth()->user()->canDo('veicoli.view'))
     <div class="nav-section">Anagrafica</div>
+    @if(auth()->user()->canDo('clienti.view'))
     <a href="{{ route('clienti.index') }}" class="nav-item {{ request()->routeIs('clienti.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      Clienti
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Clienti
     </a>
+    @endif
+    @if(auth()->user()->canDo('veicoli.view'))
     <a href="{{ route('veicoli.index') }}" class="nav-item {{ request()->routeIs('veicoli.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
-      Veicoli
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>Veicoli
     </a>
+    @endif
+    @endif
+
+    {{-- SINISTRI --}}
+    @if(auth()->user()->canDo('sinistri.view') || auth()->user()->canDo('lesioni.view') || auth()->user()->canDo('periti.view'))
     <div class="nav-section">Sinistri & Lesioni</div>
+    @if(auth()->user()->canDo('sinistri.view'))
     <a href="{{ route('sinistri.index') }}" class="nav-item {{ request()->routeIs('sinistri.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Sinistri
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Sinistri
     </a>
+    @endif
+    @if(auth()->user()->canDo('lesioni.view'))
     <a href="{{ route('lesioni.index') }}" class="nav-item {{ request()->routeIs('lesioni.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Lesioni Personali
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Lesioni Personali
     </a>
+    @endif
+    @if(auth()->user()->canDo('periti.view'))
     <a href="{{ route('periti.index') }}" class="nav-item {{ request()->routeIs('periti.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
-      Periti & Avvocati
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>Periti & Avvocati
     </a>
+    @endif
+    @endif
+
+    {{-- OFFICINA --}}
+    @if(auth()->user()->canDo('lavorazioni.view') || auth()->user()->canDo('preventivi.view'))
     <div class="nav-section">Officina</div>
+    @if(auth()->user()->canDo('lavorazioni.view'))
     <a href="{{ route('lavorazioni.index') }}" class="nav-item {{ request()->routeIs('lavorazioni.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-      Lavorazioni
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Lavorazioni
     </a>
+    @endif
+    @if(auth()->user()->canDo('preventivi.view'))
     <a href="{{ route('preventivi.index') }}" class="nav-item {{ request()->routeIs('preventivi.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
-      Preventivi
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>Preventivi
     </a>
+    @endif
+    @endif
+
+    {{-- NOLEGGIO --}}
+    @if(auth()->user()->canDo('noleggio.view'))
     <div class="nav-section">Noleggio</div>
     <a href="{{ route('flotta.index') }}" class="nav-item {{ request()->routeIs('flotta.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-      Flotta Veicoli
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Flotta Veicoli
     </a>
     <a href="{{ route('noleggio.index') }}" class="nav-item {{ request()->routeIs('noleggio.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Contratti Noleggio
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Contratti Noleggio
     </a>
     <a href="{{ route('sostitutive.index') }}" class="nav-item {{ request()->routeIs('sostitutive.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-      Auto Sostitutive
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Auto Sostitutive
     </a>
+    @endif
+
+    {{-- AMMINISTRAZIONE --}}
+    @if(auth()->user()->canDo('fatture.view') || auth()->user()->canDo('ricambi.view') || auth()->user()->canDo('utenti.manage'))
     <div class="nav-section">Amministrazione</div>
-    <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Utenti
-    </a>
+    @if(auth()->user()->canDo('fatture.view'))
     <a href="{{ route('documenti.index') }}" class="nav-item {{ request()->routeIs('documenti.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Fatture & DDT
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Fatture & DDT
     </a>
+    @endif
     <a href="{{ route('mail.index') }}" class="nav-item {{ request()->routeIs('mail.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Mail & Notifiche
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mail & Notifiche
     </a>
+    @if(auth()->user()->canDo('ricambi.view'))
     <a href="{{ route('ricambi.index') }}" class="nav-item {{ request()->routeIs('ricambi.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-      Ricambi
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Ricambi
     </a>
+    @endif
+    @if(auth()->user()->canDo('utenti.manage'))
+    <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utenti
+    </a>
+    @endif
+    @endif
+
+    {{-- VENDITA AUTO --}}
+    @if(auth()->user()->canDo('marketplace.view'))
     <div class="nav-section" style="color:rgba(255,107,0,.5)">Vendita Auto</div>
     <a href="{{ route('marketplace.dashboard') }}" class="nav-item {{ request()->routeIs('marketplace.dashboard') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
     </a>
     <a href="{{ route('marketplace.vehicles.index') }}" class="nav-item {{ request()->routeIs('marketplace.vehicles.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
-      Veicoli in vendita
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>Veicoli in vendita
     </a>
     <a href="{{ route('marketplace.leads.index') }}" class="nav-item {{ request()->routeIs('marketplace.leads.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Lead
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Lead
     </a>
+    @if(auth()->user()->canDo('impostazioni.manage'))
     <a href="{{ route('marketplace.settings') }}" class="nav-item {{ request()->routeIs('marketplace.settings*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Piattaforme
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Piattaforme
     </a>
+    @endif
+    @endif
+
   </nav>
   <div class="user-area">
     <div style="display:flex;align-items:center;gap:10px">
@@ -286,7 +275,9 @@ tbody tr:hover td{background:var(--bg3)}
       </div>
       <form method="POST" action="{{ route('logout') }}">
         @csrf
-        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;padding:4px;transition:color .15s;display:flex;align-items:center" onmouseover="this.style.color='#ff6b00'" onmouseout="this.style.color='rgba(255,255,255,.3)'" title="Logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+        <button type="submit" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;padding:4px;transition:color .15s;display:flex;align-items:center" onmouseover="this.style.color='#ff6b00'" onmouseout="this.style.color='rgba(255,255,255,.3)'" title="Logout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
       </form>
     </div>
   </div>
@@ -306,25 +297,9 @@ tbody tr:hover td{background:var(--bg3)}
 </div>
 @stack('scripts')
 <script>
-function toggleSidebar() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.getElementById('overlay');
-  const hamburger = document.getElementById('hamburger');
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('show');
-  hamburger.classList.toggle('open');
-}
-function closeSidebar() {
-  document.querySelector('.sidebar').classList.remove('open');
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('hamburger').classList.remove('open');
-}
-// Chiudi sidebar quando si clicca un link (mobile)
-document.querySelectorAll('.nav-item').forEach(el => {
-  el.addEventListener('click', () => {
-    if (window.innerWidth <= 640) closeSidebar();
-  });
-});
+function toggleSidebar(){const s=document.querySelector('.sidebar'),o=document.getElementById('overlay'),h=document.getElementById('hamburger');s.classList.toggle('open');o.classList.toggle('show');h.classList.toggle('open')}
+function closeSidebar(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');document.getElementById('hamburger').classList.remove('open')}
+document.querySelectorAll('.nav-item').forEach(el=>{el.addEventListener('click',()=>{if(window.innerWidth<=640)closeSidebar()})});
 </script>
 </body>
 </html>
