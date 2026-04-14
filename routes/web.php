@@ -6,7 +6,8 @@ use App\Http\Controllers\{
     ClaimController, PersonalInjuryController, ExpertController,
     WorkOrderController, QuoteController, FleetVehicleController,
     RentalController, DocumentController, MailController,
-    SparePartController, WincarImportController, VinDecoderController
+    SparePartController, WincarImportController, VinDecoderController,
+    UserController
 };
 
 require __DIR__.'/auth.php';
@@ -66,23 +67,18 @@ Route::middleware(['auth'])->group(function () {
     // Profile
     Route::get('/profile', function() { return redirect()->route('dashboard'); })->name('profile.edit');
 
-    // VIN Decoder API (NHTSA)
+    // VIN Decoder API
     Route::post('/api/vin/decode', [VinDecoderController::class, 'decode'])->name('vin.decode');
 
     // Utenti & Accessi
-    Route::get('utenti/accessi', [\App\Http\Controllers\UserController::class, 'accessLog'])->name('users.access_log');
-    Route::post('utenti/{user}/toggle', [\App\Http\Controllers\UserController::class, 'toggleActive'])->name('users.toggle');
-    Route::resource('utenti', \App\Http\Controllers\UserController::class, ['as' => 'users']);
-
-    // Utenti & Accessi
-    Route::get('utenti', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
-    Route::get('utenti/create', [App\Http\Controllers\UserController::class, 'create'])->name('users.create');
-    Route::post('utenti', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
-    Route::get('utenti/{user}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
-    Route::put('utenti/{user}', [App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-    Route::delete('utenti/{user}', [App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
-    Route::post('utenti/{user}/toggle', [App\Http\Controllers\UserController::class, 'toggleActive'])->name('users.toggle');
-    Route::get('utenti/accessi', [App\Http\Controllers\UserController::class, 'accessLog'])->name('users.access_log');
+    Route::get('utenti/accessi', [UserController::class, 'accessLog'])->name('users.access_log');
+    Route::get('utenti/create', [UserController::class, 'create'])->name('users.create');
+    Route::get('utenti', [UserController::class, 'index'])->name('users.index');
+    Route::post('utenti', [UserController::class, 'store'])->name('users.store');
+    Route::get('utenti/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('utenti/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('utenti/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::post('utenti/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
 
     // Marketplace
     require __DIR__.'/marketplace.php';
