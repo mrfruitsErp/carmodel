@@ -7,34 +7,54 @@
 
 @section('content')
 
+{{-- STAT CLICCABILI --}}
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
   @foreach([
-    ['Totale stock', $vehicles->total(), 'var(--blue)'],
-    ['Attivi', $stats['vehicles_active'], 'var(--green)'],
-    ['Bozze', $stats['vehicles_draft'], 'var(--amber)'],
-    ['Venduti', $stats['vehicles_sold'], 'var(--orange)'],
-  ] as [$label, $val, $color])
-  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden">
-    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:{{ $color }}"></div>
-    <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">{{ $label }}</div>
-    <div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--text);line-height:1">{{ $val }}</div>
-  </div>
+    ['Totale stock', $vehicles->total(), 'var(--blue)', ''],
+    ['Attivi', $stats['vehicles_active'], 'var(--green)', 'attivo'],
+    ['Bozze', $stats['vehicles_draft'], 'var(--amber)', 'bozza'],
+    ['Venduti', $stats['vehicles_sold'], 'var(--orange)', 'venduto'],
+  ] as [$label, $val, $color, $filter])
+  <a href="{{ route('marketplace.vehicles.index', $filter ? ['status'=>$filter] : []) }}" style="text-decoration:none">
+    <div style="background:var(--bg2);border:1px solid {{ request('status')===$filter && $filter ? $color : 'var(--border2)' }};border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;transition:.15s" onmouseover="this.style.borderColor='{{ $color }}'" onmouseout="this.style.borderColor='{{ request('status')===$filter && $filter ? $color : 'var(--border2)' }}'">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:{{ $color }}"></div>
+      <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">{{ $label }}</div>
+      <div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--text);line-height:1">{{ $val }}</div>
+    </div>
+  </a>
   @endforeach
 </div>
 
+{{-- TAB STATI RAPIDI --}}
+<div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+  @foreach([
+    ''=>'Tutti',
+    'attivo'=>'● Attivi',
+    'bozza'=>'● Bozze',
+    'sospeso'=>'● Sospesi',
+    'venduto'=>'● Venduti',
+    'archiviato'=>'● Archiviati',
+  ] as $val=>$label)
+  <a href="{{ route('marketplace.vehicles.index', array_merge(request()->except('status','page'), $val ? ['status'=>$val] : [])) }}"
+    style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;text-decoration:none;transition:.15s;
+      border:1px solid {{ request('status')===$val ? 'var(--orange)' : 'var(--border2)' }};
+      background:{{ request('status')===$val ? 'var(--orange)' : 'var(--bg2)' }};
+      color:{{ request('status')===$val ? '#000' : 'var(--text2)' }}">
+    {{ $label }}
+  </a>
+  @endforeach
+</div>
+
+{{-- SEARCH --}}
 <form method="GET" style="display:flex;gap:10px;margin-bottom:20px;align-items:center;flex-wrap:wrap">
+  @if(request('status'))<input type="hidden" name="status" value="{{ request('status') }}">@endif
   <div class="search-bar" style="max-width:280px">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" name="search" value="{{ request('search') }}" placeholder="Marca, modello, targa...">
   </div>
-  <select name="status" onchange="this.form.submit()" style="background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:7px 12px;font-size:13px;color:var(--text);outline:none;cursor:pointer">
-    <option value="">Tutti gli stati</option>
-    @foreach(['bozza'=>'Bozze','attivo'=>'Attivi','venduto'=>'Venduti','sospeso'=>'Sospesi'] as $v=>$l)
-      <option value="{{ $v }}" {{ request('status')===$v?'selected':'' }}>{{ $l }}</option>
-    @endforeach
-  </select>
+  <button type="submit" class="btn btn-ghost btn-sm">Cerca</button>
   @if(request()->hasAny(['search','status']))
-    <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost btn-sm">Reset</a>
+    <a href="{{ route('marketplace.vehicles.index') }}" class="btn btn-ghost btn-sm">✕ Reset</a>
   @endif
   <div style="margin-left:auto;font-size:12px;color:var(--text3)">{{ $vehicles->total() }} veicoli</div>
 </form>
@@ -44,8 +64,8 @@
     <div style="margin-bottom:16px">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>
     </div>
-    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Nessun veicolo in stock</div>
-    <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Aggiungi il primo veicolo per iniziare a vendere</div>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Nessun veicolo trovato</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:20px">Prova a cambiare i filtri oppure aggiungi un nuovo veicolo</div>
     <a href="{{ route('marketplace.vehicles.create') }}" class="btn btn-primary">+ Aggiungi veicolo</a>
   </div>
 @else
@@ -54,10 +74,11 @@
   @foreach($vehicles as $vehicle)
   @php
     $statusCfg = match($vehicle->status) {
-      'attivo'  => ['bg'=>'var(--green-bg)', 'color'=>'var(--green-text)', 'label'=>'Attivo',  'dot'=>'var(--green)'],
-      'venduto' => ['bg'=>'var(--blue-bg)',  'color'=>'var(--blue-text)',  'label'=>'Venduto', 'dot'=>'var(--blue)'],
-      'sospeso' => ['bg'=>'var(--amber-bg)', 'color'=>'var(--amber-text)', 'label'=>'Sospeso', 'dot'=>'var(--amber)'],
-      default   => ['bg'=>'var(--bg4)',       'color'=>'var(--text3)',      'label'=>'Bozza',   'dot'=>'var(--border3)'],
+      'attivo'    => ['bg'=>'var(--green-bg)',  'color'=>'var(--green-text)',  'label'=>'Attivo',     'dot'=>'var(--green)'],
+      'venduto'   => ['bg'=>'var(--blue-bg)',   'color'=>'var(--blue-text)',   'label'=>'Venduto',    'dot'=>'var(--blue)'],
+      'sospeso'   => ['bg'=>'var(--amber-bg)',  'color'=>'var(--amber-text)',  'label'=>'Sospeso',    'dot'=>'var(--amber)'],
+      'archiviato'=> ['bg'=>'var(--bg4)',       'color'=>'var(--text3)',       'label'=>'Archiviato', 'dot'=>'var(--border3)'],
+      default     => ['bg'=>'var(--bg4)',       'color'=>'var(--text3)',       'label'=>'Bozza',      'dot'=>'var(--border3)'],
     };
     $publishedCount = $vehicle->listings->where('status','published')->count();
     $totalViews = $vehicle->listings->sum('views');
