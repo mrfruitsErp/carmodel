@@ -69,6 +69,16 @@ Route::middleware(['auth'])->group(function () {
     // VIN Decoder API (NHTSA)
     Route::post('/api/vin/decode', [VinDecoderController::class, 'decode'])->name('vin.decode');
 
+    // Utenti & Accessi
+    Route::get('utenti', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('utenti/create', [App\Http\Controllers\UserController::class, 'create'])->name('users.create');
+    Route::post('utenti', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
+    Route::get('utenti/{user}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
+    Route::put('utenti/{user}', [App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+    Route::delete('utenti/{user}', [App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
+    Route::post('utenti/{user}/toggle', [App\Http\Controllers\UserController::class, 'toggleActive'])->name('users.toggle');
+    Route::get('utenti/accessi', [App\Http\Controllers\UserController::class, 'accessLog'])->name('users.access_log');
+
     // Marketplace
     require __DIR__.'/marketplace.php';
 });
