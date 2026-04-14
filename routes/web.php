@@ -70,6 +70,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/vin/decode', [VinDecoderController::class, 'decode'])->name('vin.decode');
 
     // Utenti & Accessi
+    Route::get('utenti/accessi', [\App\Http\Controllers\UserController::class, 'accessLog'])->name('users.access_log');
+    Route::post('utenti/{user}/toggle', [\App\Http\Controllers\UserController::class, 'toggleActive'])->name('users.toggle');
+    Route::resource('utenti', \App\Http\Controllers\UserController::class, ['as' => 'users']);
+
+    // Utenti & Accessi
     Route::get('utenti', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
     Route::get('utenti/create', [App\Http\Controllers\UserController::class, 'create'])->name('users.create');
     Route::post('utenti', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
