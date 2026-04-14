@@ -3,48 +3,17 @@
 
 @section('topbar-actions')
 <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">Modifica</a>
-@if($saleVehicle->status !== 'venduto')
-  <form action="{{ route('marketplace.vehicles.status', $saleVehicle) }}" method="POST" style="display:inline">
-    @csrf
-    <input type="hidden" name="status" value="{{ $saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo' }}">
-    <button type="submit" class="btn btn-ghost btn-sm" style="color:{{ $saleVehicle->status === 'attivo' ? 'var(--amber-text)' : 'var(--green-text)' }}">
-      {{ $saleVehicle->status === 'attivo' ? 'Disattiva' : 'Attiva' }}
-    </button>
-  </form>
-  <button type="button" onclick="document.getElementById('modal-venduto').style.display='flex'" class="btn btn-primary btn-sm">Venduto</button>
-@endif
+<form action="{{ route('marketplace.vehicles.status', $saleVehicle) }}" method="POST" style="display:flex;align-items:center;gap:8px">
+  @csrf
+  <select name="status" onchange="this.form.submit()" class="form-select" style="padding:5px 10px;font-size:12px;width:auto">
+    @foreach(['attivo'=>'Attivo','sospeso'=>'Sospeso','venduto'=>'Venduto','bozza'=>'Bozza','archiviato'=>'Archiviato'] as $val=>$label)
+    <option value="{{ $val }}" {{ $saleVehicle->status===$val ? 'selected' : '' }}>{{ $label }}</option>
+    @endforeach
+  </select>
+</form>
 @endsection
 
 @section('content')
-
-{{-- MODAL VENDUTO --}}
-@if($saleVehicle->status !== 'venduto')
-<div id="modal-venduto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:var(--bg2);border-radius:12px;padding:24px;width:340px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:16px">Segna come venduto</div>
-    <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST">
-      @csrf
-      <div class="form-group">
-        <label class="form-label">Prezzo di vendita (euro) *</label>
-        <input type="number" name="sold_price" class="form-input" value="{{ $saleVehicle->asking_price }}" step="100" min="0" required>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Cliente (opzionale)</label>
-        <select name="customer_id" class="form-select">
-          <option value="">-- Nessuno --</option>
-          @foreach(\App\Models\Customer::where('tenant_id', auth()->user()->tenant_id)->orderBy('last_name')->get() as $c)
-          <option value="{{ $c->id }}">{{ trim($c->first_name.' '.$c->last_name) }} {{ $c->company_name ? '('.$c->company_name.')' : '' }}</option>
-          @endforeach
-        </select>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-        <button type="button" onclick="document.getElementById('modal-venduto').style.display='none'" class="btn btn-ghost btn-sm">Annulla</button>
-        <button type="submit" class="btn btn-primary btn-sm">Conferma vendita</button>
-      </div>
-    </form>
-  </div>
-</div>
-@endif
 
 <div style="margin-bottom:16px">
   <a href="{{ route('marketplace.vehicles.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">&larr; Veicoli</a>
@@ -165,7 +134,7 @@
     </div>
 
     {{-- PREZZI --}}
-    <div class="card" style="background:var(--bg2)">
+    <div class="card">
       <div class="card-title">Prezzi</div>
       <div style="background:var(--orange-bg);border:1px solid var(--orange-border);border-radius:8px;padding:16px;margin-bottom:14px;text-align:center">
         <div style="font-size:10px;color:var(--orange);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Prezzo richiesta</div>
