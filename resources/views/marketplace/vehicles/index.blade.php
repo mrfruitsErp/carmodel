@@ -8,15 +8,16 @@
 @section('content')
 
 {{-- STAT CLICCABILI --}}
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
   @foreach([
     ['Totale stock', $vehicles->total(), 'var(--blue)', ''],
     ['Attivi', $stats['vehicles_active'], 'var(--green)', 'attivo'],
     ['Bozze', $stats['vehicles_draft'], 'var(--amber)', 'bozza'],
     ['Venduti', $stats['vehicles_sold'], 'var(--orange)', 'venduto'],
+    ['Archiviati', $stats['vehicles_archived'], 'var(--red)', 'archiviato'],
   ] as [$label, $val, $color, $filter])
   <a href="{{ route('marketplace.vehicles.index', $filter ? ['status'=>$filter] : []) }}" style="text-decoration:none">
-    <div style="background:var(--bg2);border:1px solid {{ request('status')===$filter && $filter ? $color : 'var(--border2)' }};border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;transition:.15s" onmouseover="this.style.borderColor='{{ $color }}'" onmouseout="this.style.borderColor='{{ request('status')===$filter && $filter ? $color : 'var(--border2)' }}'">
+    <div style="background:var(--bg2);border:1px solid {{ request('status')===$filter && $filter ? $color : 'var(--border2)' }};border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;transition:.15s">
       <div style="position:absolute;top:0;left:0;right:0;height:2px;background:{{ $color }}"></div>
       <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">{{ $label }}</div>
       <div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--text);line-height:1">{{ $val }}</div>
@@ -29,11 +30,11 @@
 <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
   @foreach([
     ''=>'Tutti',
-    'attivo'=>'● Attivi',
-    'bozza'=>'● Bozze',
-    'sospeso'=>'● Sospesi',
-    'venduto'=>'● Venduti',
-    'archiviato'=>'● Archiviati',
+    'attivo'=>'Attivi',
+    'bozza'=>'Bozze',
+    'sospeso'=>'Sospesi',
+    'venduto'=>'Venduti',
+    'archiviato'=>'Archiviati',
   ] as $val=>$label)
   <a href="{{ route('marketplace.vehicles.index', array_merge(request()->except('status','page'), $val ? ['status'=>$val] : [])) }}"
     style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;text-decoration:none;transition:.15s;
@@ -74,17 +75,17 @@
   @foreach($vehicles as $vehicle)
   @php
     $statusCfg = match($vehicle->status) {
-      'attivo'    => ['bg'=>'var(--green-bg)',  'color'=>'var(--green-text)',  'label'=>'Attivo',     'dot'=>'var(--green)'],
-      'venduto'   => ['bg'=>'var(--blue-bg)',   'color'=>'var(--blue-text)',   'label'=>'Venduto',    'dot'=>'var(--blue)'],
-      'sospeso'   => ['bg'=>'var(--amber-bg)',  'color'=>'var(--amber-text)',  'label'=>'Sospeso',    'dot'=>'var(--amber)'],
-      'archiviato'=> ['bg'=>'var(--bg4)',       'color'=>'var(--text3)',       'label'=>'Archiviato', 'dot'=>'var(--border3)'],
-      default     => ['bg'=>'var(--bg4)',       'color'=>'var(--text3)',       'label'=>'Bozza',      'dot'=>'var(--border3)'],
+      'attivo'     => ['bg'=>'var(--green-bg)',  'color'=>'var(--green-text)',  'label'=>'Attivo',     'dot'=>'var(--green)'],
+      'venduto'    => ['bg'=>'var(--blue-bg)',   'color'=>'var(--blue-text)',   'label'=>'Venduto',    'dot'=>'var(--blue)'],
+      'sospeso'    => ['bg'=>'var(--amber-bg)',  'color'=>'var(--amber-text)',  'label'=>'Sospeso',    'dot'=>'var(--amber)'],
+      'archiviato' => ['bg'=>'var(--red-bg)',    'color'=>'var(--red-text)',    'label'=>'Archiviato', 'dot'=>'var(--red)'],
+      default      => ['bg'=>'var(--bg4)',       'color'=>'var(--text3)',       'label'=>'Bozza',      'dot'=>'var(--border3)'],
     };
     $publishedCount = $vehicle->listings->where('status','published')->count();
-    $totalViews = $vehicle->listings->sum('views');
-    $leadsCount = $vehicle->leads()->count();
-    $photoUrl = $vehicle->getFirstMediaUrl('sale_photos', 'thumb');
-    $photoCount = $vehicle->getMedia('sale_photos')->count();
+    $totalViews     = $vehicle->listings->sum('views');
+    $leadsCount     = $vehicle->leads()->count();
+    $photoUrl       = $vehicle->getFirstMediaUrl('sale_photos', 'thumb');
+    $photoCount     = $vehicle->getMedia('sale_photos')->count();
   @endphp
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;transition:all .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.1)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
 
@@ -102,14 +103,10 @@
         {{ $statusCfg['label'] }}
       </div>
       @if($photoCount > 0)
-        <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:3px 8px;border-radius:10px">
-          {{ $photoCount }} foto
-        </div>
+        <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:3px 8px;border-radius:10px">{{ $photoCount }} foto</div>
       @endif
       @if($publishedCount > 0)
-        <div style="position:absolute;top:10px;right:10px;background:rgba(255,107,0,.9);color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px">
-          {{ $publishedCount }} live
-        </div>
+        <div style="position:absolute;top:10px;right:10px;background:rgba(255,107,0,.9);color:#000;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px">{{ $publishedCount }} live</div>
       @endif
     </a>
 
@@ -142,12 +139,21 @@
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)">
-        <div style="display:flex;gap:12px">
+        <div style="display:flex;gap:12px;align-items:center">
           @if($totalViews > 0)
             <span style="font-size:11px;color:var(--text3)">{{ number_format($totalViews,0,',','.') }} views</span>
           @endif
           @if($leadsCount > 0)
             <span style="font-size:11px;color:var(--green-text);font-weight:600">{{ $leadsCount }} lead</span>
+          @endif
+          @if($vehicle->status === 'archiviato')
+          <form action="{{ route('marketplace.vehicles.destroy', $vehicle) }}" method="POST"
+            onsubmit="return confirm('Eliminare definitivamente {{ addslashes($vehicle->brand) }} {{ addslashes($vehicle->model) }}?\nQuesta azione è irreversibile.')">
+            @csrf @method('DELETE')
+            <button type="submit" style="font-size:11px;font-weight:600;color:var(--red-text);background:none;border:1px solid var(--red-text);border-radius:4px;cursor:pointer;padding:2px 8px">
+              🗑 Elimina
+            </button>
+          </form>
           @endif
         </div>
         <a href="{{ route('marketplace.vehicles.show', $vehicle) }}" style="font-size:12px;font-weight:600;color:var(--orange);text-decoration:none">
