@@ -3,16 +3,40 @@
 
 @section('topbar-actions')
 <a href="{{ route('marketplace.vehicles.edit', $saleVehicle) }}" class="btn btn-ghost btn-sm">Modifica</a>
+
+@if($saleVehicle->status !== 'archiviato')
+<form action="{{ route('marketplace.vehicles.status', $saleVehicle) }}" method="POST" style="display:inline">
+  @csrf
+  <input type="hidden" name="status" value="archiviato">
+  <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--red-text)"
+    onclick="return confirm('Archiviare questo veicolo?')">
+    Archivia
+  </button>
+</form>
+@else
+<form action="{{ route('marketplace.vehicles.status', $saleVehicle) }}" method="POST" style="display:inline">
+  @csrf
+  <input type="hidden" name="status" value="bozza">
+  <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--green-text)">
+    Recupera
+  </button>
+</form>
+<form action="{{ route('marketplace.vehicles.destroy', $saleVehicle) }}" method="POST" style="display:inline"
+  onsubmit="return confirm('Eliminare definitivamente? Azione irreversibile.')">
+  @csrf @method('DELETE')
+  <button type="submit" class="btn btn-danger btn-sm">🗑 Elimina</button>
+</form>
+@endif
+
 <form action="{{ route('marketplace.vehicles.status', $saleVehicle) }}" method="POST" style="display:flex;align-items:center;gap:8px">
   @csrf
   <select name="status" onchange="this.form.submit()" class="form-select" style="padding:5px 10px;font-size:12px;width:auto">
-    @foreach(['attivo'=>'Attivo','sospeso'=>'Sospeso','venduto'=>'Venduto','bozza'=>'Bozza','archiviato'=>'Archiviato'] as $val=>$label)
+    @foreach(['attivo'=>'Attivo','sospeso'=>'Sospeso','venduto'=>'Venduto','bozza'=>'Bozza'] as $val=>$label)
     <option value="{{ $val }}" {{ $saleVehicle->status===$val ? 'selected' : '' }}>{{ $label }}</option>
     @endforeach
   </select>
 </form>
 @endsection
-
 @section('content')
 
 <div style="margin-bottom:16px">

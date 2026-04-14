@@ -231,7 +231,10 @@ class SaleVehicleController extends Controller
     public function changeStatus(Request $request, SaleVehicle $saleVehicle)
     {
         $this->authorizeVehicle($saleVehicle);
-        $status = $request->status ?? ($saleVehicle->status === 'attivo' ? 'sospeso' : 'attivo');
+        $request->validate([
+            'status' => 'required|in:attivo,sospeso,venduto,bozza,archiviato',
+        ]);
+        $status = $request->status;
         $saleVehicle->update(['status' => $status]);
         return redirect()->route('marketplace.vehicles.show', $saleVehicle)
             ->with('success', 'Stato aggiornato: ' . ucfirst($status));
