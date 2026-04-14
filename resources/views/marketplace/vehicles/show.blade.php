@@ -12,34 +12,39 @@
     </button>
   </form>
   <button type="button" onclick="document.getElementById('modal-venduto').style.display='flex'" class="btn btn-primary btn-sm">Venduto</button>
-  <div id="modal-venduto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
-    <div style="background:var(--bg2);border-radius:12px;padding:24px;width:340px">
-      <div style="font-size:16px;font-weight:700;margin-bottom:16px">Segna come venduto</div>
-      <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST">
-        @csrf
-        <div class="form-group">
-          <label class="form-label">Prezzo di vendita (euro) *</label>
-          <input type="number" name="sold_price" class="form-input" value="{{ $saleVehicle->asking_price }}" step="100" min="0" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Cliente (opzionale)</label>
-          <select name="customer_id" class="form-select">
-            <option value="">-- Nessuno --</option>
-            @foreach(\App\Models\Customer::where('tenant_id', auth()->user()->tenant_id)->orderBy('last_name')->get() as $c)
-<option value="{{ $c->id }}">{{ trim($c->first_name.' '.$c->last_name) }} {{ $c->company_name ? '('.$c->company_name.')' : '' }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-          <button type="button" onclick="document.getElementById('modal-venduto').style.display='none'" class="btn btn-ghost btn-sm">Annulla</button>
-          <button type="submit" class="btn btn-primary btn-sm">Conferma vendita</button>
-        </div>
-      </form>
-    </div>
 @endif
 @endsection
 
 @section('content')
+
+{{-- MODAL VENDUTO --}}
+@if($saleVehicle->status !== 'venduto')
+<div id="modal-venduto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border-radius:12px;padding:24px;width:340px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px">Segna come venduto</div>
+    <form action="{{ route('marketplace.vehicles.sold', $saleVehicle) }}" method="POST">
+      @csrf
+      <div class="form-group">
+        <label class="form-label">Prezzo di vendita (euro) *</label>
+        <input type="number" name="sold_price" class="form-input" value="{{ $saleVehicle->asking_price }}" step="100" min="0" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cliente (opzionale)</label>
+        <select name="customer_id" class="form-select">
+          <option value="">-- Nessuno --</option>
+          @foreach(\App\Models\Customer::where('tenant_id', auth()->user()->tenant_id)->orderBy('last_name')->get() as $c)
+          <option value="{{ $c->id }}">{{ trim($c->first_name.' '.$c->last_name) }} {{ $c->company_name ? '('.$c->company_name.')' : '' }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button type="button" onclick="document.getElementById('modal-venduto').style.display='none'" class="btn btn-ghost btn-sm">Annulla</button>
+        <button type="submit" class="btn btn-primary btn-sm">Conferma vendita</button>
+      </div>
+    </form>
+  </div>
+</div>
+@endif
 
 <div style="margin-bottom:16px">
   <a href="{{ route('marketplace.vehicles.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">&larr; Veicoli</a>
@@ -235,7 +240,6 @@ async function uploadFotoShow(files) {
   var bar = document.getElementById('progress-bar');
   var txt = document.getElementById('progress-text');
   if (prog) prog.style.display = 'block';
-
   for (var i = 0; i < arr.length; i++) {
     var fd = new FormData();
     fd.append('photo', arr[i]);
@@ -245,20 +249,15 @@ async function uploadFotoShow(files) {
       var data = await res.json();
       if (bar) bar.style.width = ((i+1)/arr.length*100) + '%';
       if (txt) txt.textContent = 'Caricato ' + (i+1) + ' di ' + arr.length;
-
       var noFoto = document.getElementById('no-foto-msg');
       if (noFoto) noFoto.style.display = 'none';
-
       var gallery = document.getElementById('foto-gallery');
-
-      // Se non c'e foto principale, creala
       if (!document.getElementById('mainPhoto')) {
         var wrap = document.createElement('div');
         wrap.style.cssText = 'border-radius:8px;overflow:hidden;margin-bottom:10px;background:var(--bg3)';
         wrap.innerHTML = '<img src="' + data.url + '" id="mainPhoto" style="width:100%;height:360px;object-fit:contain;background:#f8f8f8">';
         gallery.parentNode.insertBefore(wrap, gallery);
       }
-
       if (gallery) {
         var div = document.createElement('div');
         div.id = 'show-foto-' + data.id;
