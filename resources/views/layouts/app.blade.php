@@ -136,7 +136,6 @@ tbody tr:hover td{background:var(--bg3)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
 </style>
-@vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
