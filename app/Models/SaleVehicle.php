@@ -21,8 +21,9 @@ class SaleVehicle extends Model implements HasMedia
         'year', 'mileage', 'fuel_type', 'transmission', 'color', 'color_type',
         'doors', 'seats', 'engine_cc', 'power_kw', 'power_hp', 'body_type',
         'condition', 'previous_owners', 'first_registration', 'features',
-        'asking_price', 'min_price', 'price_negotiable', 'vat_deductible',
-        'purchase_price', 'badge_label', 'title', 'description', 'internal_notes',
+        'asking_price', 'price_visible', 'price_label', 'min_price',
+        'price_negotiable', 'vat_deductible', 'purchase_price',
+        'badge_label', 'title', 'description', 'internal_notes',
         'status', 'available_from', 'sold_date', 'sold_price',
         'sold_to_customer_id', 'vehicle_id', 'created_by',
     ];
@@ -33,6 +34,7 @@ class SaleVehicle extends Model implements HasMedia
         'available_from'     => 'date',
         'sold_date'          => 'date',
         'price_negotiable'   => 'boolean',
+        'price_visible'      => 'boolean',
         'vat_deductible'     => 'boolean',
         'asking_price'       => 'decimal:2',
         'min_price'          => 'decimal:2',
@@ -165,5 +167,19 @@ class SaleVehicle extends Model implements HasMedia
         $parts = [$this->brand, $this->model, $this->version, $this->year,
                   '–', number_format($this->mileage, 0, ',', '.') . ' km'];
         return implode(' ', array_filter($parts));
+    }
+
+    /**
+     * Restituisce il testo da mostrare per il prezzo nella card pubblica.
+     * - Se price_visible = false → null (niente prezzo)
+     * - Se price_label è valorizzato → mostra price_label (es. "Chiedi prezzo")
+     * - Altrimenti → mostra asking_price formattato
+     */
+    public function getDisplayPriceAttribute(): ?string
+    {
+        if (!$this->price_visible) return null;
+        if ($this->price_label) return $this->price_label;
+        if ($this->asking_price) return '€ ' . number_format($this->asking_price, 0, ',', '.');
+        return null;
     }
 }

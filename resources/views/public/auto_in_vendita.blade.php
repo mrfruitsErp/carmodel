@@ -76,6 +76,7 @@
     .spec-tag{background:#f0f2f5;color:#555;font-size:12px;padding:3px 9px;border-radius:6px;font-weight:500}
     .car-price-row{display:flex;align-items:flex-end;justify-content:space-between}
     .car-price{font-size:22px;font-weight:800;color:#ff6b00}
+    .car-price-label{font-size:14px;font-weight:600;color:#888;font-style:italic}
     .btn-detail{background:#1a1a2e;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:.2s}
     .btn-detail:hover{background:#ff6b00}
 
@@ -241,14 +242,19 @@
               <span>Nessuna foto</span>
             </div>
           @endif
-          <span class="badge-anno">{{ $vehicle->year }}</span>
+
+          {{-- BADGE SINISTRO: testo libero dal gestionale --}}
+          @if($vehicle->badge_label)
+            <span class="badge-anno">{{ $vehicle->badge_label }}</span>
+          @endif
+
+          {{-- BADGE DESTRO: venduto o trattabile --}}
           @if($vehicle->status === 'venduto')
             <span class="badge-tratt" style="background:rgba(59,130,246,.92);color:#fff;border-color:transparent">Venduto</span>
-          @elseif($vehicle->badge_label)
-            <span class="badge-tratt">{{ $vehicle->badge_label }}</span>
           @elseif($vehicle->price_negotiable)
             <span class="badge-tratt">Trattabile</span>
           @endif
+
           @if($photoCount > 0)<div class="photo-count">{{ $photoCount }} foto</div>@endif
         </div>
         <div class="car-info">
@@ -261,13 +267,24 @@
             @if($vehicle->power_hp)<span class="spec-tag">{{ $vehicle->power_hp }} CV</span>@endif
             @if($vehicle->color)<span class="spec-tag">{{ $vehicle->color }}</span>@endif
           </div>
+
+          {{-- PREZZO: usa accessor display_price (on/off + testo libero) --}}
           <div class="car-price-row">
             <div>
-              <div class="car-price">{{ number_format($vehicle->asking_price,0,',','.') }} euro</div>
-              @if($vehicle->vat_deductible)<div style="font-size:11px;color:#2e7d32;font-weight:600">IVA detraibile</div>@endif
+              @if($vehicle->display_price)
+                @if($vehicle->price_visible && !$vehicle->price_label && $vehicle->asking_price)
+                  <div class="car-price">{{ $vehicle->display_price }}</div>
+                @else
+                  <div class="car-price-label">{{ $vehicle->display_price }}</div>
+                @endif
+                @if($vehicle->vat_deductible && $vehicle->price_visible && !$vehicle->price_label)
+                  <div style="font-size:11px;color:#2e7d32;font-weight:600">IVA detraibile</div>
+                @endif
+              @endif
             </div>
             <span class="btn-detail">Scopri di piu</span>
           </div>
+
         </div>
       </a>
     </div>

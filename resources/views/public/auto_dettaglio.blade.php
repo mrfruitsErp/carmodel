@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->version }} - {{ $vehicle->year }}</title>
-  <meta name="description" content="{{ $vehicle->description ? Str::limit($vehicle->description, 160) : $vehicle->brand.' '.$vehicle->model.' '.$vehicle->year.' - '.number_format($vehicle->asking_price,0,',','.').' euro' }}">
+  <meta name="description" content="{{ $vehicle->description ? Str::limit($vehicle->description, 160) : $vehicle->brand.' '.$vehicle->model.' '.$vehicle->year }}">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;line-height:1.5}
@@ -23,6 +23,7 @@
     .no-photo{width:100%;height:280px;background:#f0f0f0;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:14px}
     h1{font-size:22px;font-weight:700;margin-bottom:4px}
     .price{font-size:32px;font-weight:800;color:#ff6b00;margin:12px 0}
+    .price-label{font-size:20px;font-weight:600;color:#888;font-style:italic;margin:12px 0}
     .badge{display:inline-block;background:#f0f0f0;border-radius:6px;padding:4px 10px;font-size:12px;margin:2px}
     .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
     .spec-item .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.05em}
@@ -39,6 +40,7 @@
     .features{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
     .feature{background:#f5f5f5;border:1px solid #e0e0e0;border-radius:6px;padding:4px 10px;font-size:12px}
     .back-link{display:inline-block;margin-bottom:16px;color:#ff6b00;text-decoration:none;font-size:14px}
+    .badge-stato{display:inline-block;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:8px}
   </style>
 </head>
 <body>
@@ -128,10 +130,30 @@
 
       <div class="card">
         <h1>{{ $vehicle->brand }} {{ $vehicle->model }}</h1>
-        @if($vehicle->version)<div style="color:#666;font-size:14px">{{ $vehicle->version }}</div>@endif
-        <div class="price">euro {{ number_format($vehicle->asking_price,0,',','.') }}</div>
-        @if($vehicle->price_negotiable)<div style="font-size:13px;color:#888;margin-bottom:8px">Prezzo trattabile</div>@endif
-        @if($vehicle->vat_deductible)<span class="badge" style="background:#e8f5e9;color:#2e7d32">IVA detraibile</span>@endif
+        @if($vehicle->version)<div style="color:#666;font-size:14px;margin-bottom:8px">{{ $vehicle->version }}</div>@endif
+
+        {{-- BADGE STATO (venduto / testo libero) --}}
+        @if($vehicle->status === 'venduto')
+          <div><span class="badge-stato" style="background:#dbeafe;color:#1e40af">Venduto</span></div>
+        @elseif($vehicle->badge_label)
+          <div><span class="badge-stato" style="background:#fff3e0;color:#ff6b00;border:1px solid #ffcc80">{{ $vehicle->badge_label }}</span></div>
+        @endif
+
+        {{-- PREZZO: usa accessor display_price --}}
+        @if($vehicle->display_price)
+          @if($vehicle->price_visible && !$vehicle->price_label && $vehicle->asking_price)
+            <div class="price">euro {{ $vehicle->display_price }}</div>
+          @else
+            <div class="price-label">{{ $vehicle->display_price }}</div>
+          @endif
+        @endif
+
+        @if($vehicle->price_negotiable && $vehicle->price_visible)
+          <div style="font-size:13px;color:#888;margin-bottom:8px">Prezzo trattabile</div>
+        @endif
+        @if($vehicle->vat_deductible && $vehicle->price_visible && !$vehicle->price_label)
+          <span class="badge" style="background:#e8f5e9;color:#2e7d32">IVA detraibile</span>
+        @endif
 
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px">
           <span class="badge">{{ $vehicle->year }}</span>
