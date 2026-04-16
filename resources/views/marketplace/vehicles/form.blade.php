@@ -76,7 +76,19 @@
           <input type="number" name="year" id="f_year" value="{{ old('year', $vehicle->year ?? date('Y')) }}" class="form-input" required min="1990" max="{{ date('Y')+1 }}">
         </div>
         <div class="form-group">
-          <label class="form-label">Targa</label>
+          <label class="form-label">
+            Targa
+            {{-- TOGGLE VISIBILITÀ TARGA --}}
+            <span style="margin-left:10px;font-weight:400;font-size:11px;color:var(--text3)">
+              <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
+                <input type="hidden" name="plate_visible" value="0">
+                <input type="checkbox" name="plate_visible" value="1"
+                  {{ old('plate_visible', $vehicle->plate_visible ?? true) ? 'checked' : '' }}
+                  style="width:13px;height:13px;accent-color:var(--orange)">
+                Mostra nel pubblico
+              </label>
+            </span>
+          </label>
           <input type="text" name="plate" value="{{ old('plate', $vehicle->plate ?? '') }}" class="form-input" style="font-family:var(--mono);text-transform:uppercase" placeholder="AB123CD">
         </div>
         <div class="form-group">
@@ -191,9 +203,47 @@
           </div>
         </div>
 
-        {{-- BADGE PREZZO --}}
+        {{-- VISIBILITÀ PREZZO --}}
+        <div style="margin-top:16px;padding:16px;background:var(--bg3);border-radius:10px;border:1px solid var(--border2)">
+          <div style="font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Visibilità prezzo nel pubblico</div>
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end">
+
+            {{-- TOGGLE MOSTRA/NASCONDI --}}
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600">
+              <input type="hidden" name="price_visible" value="0">
+              <input type="checkbox" name="price_visible" value="1" id="price_visible_chk"
+                {{ old('price_visible', $vehicle->price_visible ?? true) ? 'checked' : '' }}
+                style="width:16px;height:16px;accent-color:var(--orange)"
+                onchange="togglePriceLabel(this.checked)">
+              Mostra prezzo
+            </label>
+
+            {{-- TESTO LIBERO PREZZO --}}
+            <div id="price_label_wrap" style="flex:1;min-width:220px;display:{{ old('price_visible', $vehicle->price_visible ?? true) ? 'block' : 'none' }}">
+              <label class="form-label" style="font-size:11px">Testo alternativo (lascia vuoto per mostrare il numero)</label>
+              <input type="text" name="price_label" id="price_label_input" class="form-input"
+                placeholder='es. "Chiedi prezzo", "Trattabile", "Chiamaci"'
+                maxlength="60"
+                value="{{ old('price_label', $vehicle->price_label ?? '') }}"
+                style="max-width:360px">
+              <div style="font-size:11px;color:var(--text3);margin-top:4px">
+                Se compilato, mostra questo testo al posto del numero. Se vuoto, mostra il prezzo numerico.
+              </div>
+            </div>
+
+          </div>
+
+          {{-- ANTEPRIMA --}}
+          <div style="margin-top:12px;font-size:12px;color:var(--text3)">
+            Anteprima pubblica:
+            <span id="price_preview" style="font-weight:700;color:var(--orange);margin-left:6px"></span>
+            <span id="price_hidden_preview" style="font-weight:700;color:var(--text3);margin-left:6px;display:none">— (prezzo nascosto)</span>
+          </div>
+        </div>
+
+        {{-- BADGE ETICHETTA --}}
         <div style="margin-top:20px">
-          <label class="form-label" style="margin-bottom:10px;display:block">Etichetta prezzo visibile nell'annuncio</label>
+          <label class="form-label" style="margin-bottom:10px;display:block">Etichetta badge visibile nell'annuncio</label>
           @php $currentBadge = old('badge_label', $vehicle->badge_label ?? ''); @endphp
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
             @foreach(\App\Models\SaleVehicle::BADGE_PRESETS as $preset)
@@ -275,7 +325,6 @@
       </div>
 
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        
         @if(isset($vehicle) && $vehicle->id)
           <button type="submit" name="action" value="{{ $vehicle->status }}" class="btn btn-ghost" style="border-color:var(--orange);color:var(--orange)">
             💾 Salva modifiche
@@ -313,6 +362,49 @@ function setBadge(val, btn) {
     hidden.value = val;
   }
 }
+
+// ===== VISIBILITÀ PREZZO =====
+function togglePriceLabel(visible) {
+  document.getElementById('price_label_wrap').style.display = visible ? 'block' : 'none';
+  updatePricePreview();
+}
+
+function updatePricePreview() {
+  const visible = document.getElementById('price_visible_chk').checked;
+  const label = document.getElementById('price_label_input').value.trim();
+  const askingEl = document.querySelector('input[name="asking_price"]');
+  const asking = askingEl ? parseFloat(askingEl.value) : 0;
+  const preview = document.getElementById('price_preview');
+  const hiddenPreview = document.getElementById('price_hidden_preview');
+
+  if (!visible) {
+    preview.style.display = 'none';
+    hiddenPreview.style.display = 'inline';
+    return;
+  }
+  hiddenPreview.style.display = 'none';
+  preview.style.display = 'inline';
+  if (label) {
+    preview.textContent = label;
+    preview.style.color = 'var(--text2)';
+    preview.style.fontStyle = 'italic';
+  } else if (asking > 0) {
+    preview.textContent = '€ ' + asking.toLocaleString('it-IT', {maximumFractionDigits:0});
+    preview.style.color = 'var(--orange)';
+    preview.style.fontStyle = 'normal';
+  } else {
+    preview.textContent = '—';
+    preview.style.color = 'var(--text3)';
+  }
+}
+
+// Aggiorna anteprima al cambio dei campi
+document.getElementById('price_label_input')?.addEventListener('input', updatePricePreview);
+document.querySelector('input[name="asking_price"]')?.addEventListener('input', updatePricePreview);
+document.getElementById('price_visible_chk')?.addEventListener('change', updatePricePreview);
+
+// Init anteprima al caricamento
+document.addEventListener('DOMContentLoaded', updatePricePreview);
 
 // ===== VIN DECODER =====
 async function decodeVin() {

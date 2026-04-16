@@ -10,7 +10,6 @@
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;line-height:1.5}
     .container{max-width:1100px;margin:0 auto;padding:0 16px}
     .header{background:#fff;border-bottom:3px solid #ff6b00;padding:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-    .header a{color:#ff6b00;font-weight:700;font-size:18px;text-decoration:none}
     .breadcrumb{padding:12px 0;font-size:13px;color:#888}
     .breadcrumb a{color:#ff6b00;text-decoration:none}
     .grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;padding:20px 0 40px}
@@ -31,7 +30,7 @@
     .section-title{font-size:16px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #ff6b00}
     .form-group{margin-bottom:14px}
     .form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#444}
-    .form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none}
+    .form-group input,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none}
     .form-group input:focus,.form-group textarea:focus{border-color:#ff6b00}
     .btn{width:100%;padding:13px;background:#ff6b00;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
     .btn:hover{background:#e05e00}
@@ -39,7 +38,6 @@
     .targa{font-family:monospace;background:#1a1a1a;color:#fff;padding:2px 8px;border-radius:4px;font-size:13px}
     .features{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
     .feature{background:#f5f5f5;border:1px solid #e0e0e0;border-radius:6px;padding:4px 10px;font-size:12px}
-    .back-link{display:inline-block;margin-bottom:16px;color:#ff6b00;text-decoration:none;font-size:14px}
     .badge-stato{display:inline-block;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:8px}
   </style>
 </head>
@@ -60,7 +58,7 @@
 <div class="container">
 
   <div class="breadcrumb">
-    <a href="{{ url('auto-in-vendita') }}" style="color:#ff6b00;text-decoration:none">Auto in vendita</a> &rsaquo; {{ $vehicle->brand }} {{ $vehicle->model }}
+    <a href="{{ url('auto-in-vendita') }}">Auto in vendita</a> &rsaquo; {{ $vehicle->brand }} {{ $vehicle->model }}
   </div>
 
   <div class="grid">
@@ -99,7 +97,10 @@
           @if($vehicle->engine_cc)<div class="spec-item"><div class="label">Cilindrata</div><div class="value">{{ number_format($vehicle->engine_cc) }} cc</div></div>@endif
           <div class="spec-item"><div class="label">Condizione</div><div class="value">{{ ucfirst($vehicle->condition ?? '-') }}</div></div>
           @if($vehicle->previous_owners)<div class="spec-item"><div class="label">Proprietari prec.</div><div class="value">{{ $vehicle->previous_owners }}</div></div>@endif
-          @if($vehicle->plate)<div class="spec-item"><div class="label">Targa</div><div class="value"><span class="targa">{{ $vehicle->plate }}</span></div></div>@endif
+          {{-- TARGA: visibile solo se plate_visible = true --}}
+          @if($vehicle->plate && $vehicle->plate_visible)
+            <div class="spec-item"><div class="label">Targa</div><div class="value"><span class="targa">{{ $vehicle->plate }}</span></div></div>
+          @endif
         </div>
       </div>
 
@@ -132,7 +133,7 @@
         <h1>{{ $vehicle->brand }} {{ $vehicle->model }}</h1>
         @if($vehicle->version)<div style="color:#666;font-size:14px;margin-bottom:8px">{{ $vehicle->version }}</div>@endif
 
-        {{-- BADGE STATO (venduto / testo libero) --}}
+        {{-- BADGE STATO --}}
         @if($vehicle->status === 'venduto')
           <div><span class="badge-stato" style="background:#dbeafe;color:#1e40af">Venduto</span></div>
         @elseif($vehicle->badge_label)

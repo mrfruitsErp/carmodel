@@ -17,7 +17,7 @@ class SaleVehicle extends Model implements HasMedia
     use SoftDeletes, InteractsWithMedia, LogsActivity;
 
     protected $fillable = [
-        'tenant_id', 'plate', 'vin', 'brand', 'model', 'version',
+        'tenant_id', 'plate', 'plate_visible', 'vin', 'brand', 'model', 'version',
         'year', 'mileage', 'fuel_type', 'transmission', 'color', 'color_type',
         'doors', 'seats', 'engine_cc', 'power_kw', 'power_hp', 'body_type',
         'condition', 'previous_owners', 'first_registration', 'features',
@@ -35,6 +35,7 @@ class SaleVehicle extends Model implements HasMedia
         'sold_date'          => 'date',
         'price_negotiable'   => 'boolean',
         'price_visible'      => 'boolean',
+        'plate_visible'      => 'boolean',
         'vat_deductible'     => 'boolean',
         'asking_price'       => 'decimal:2',
         'min_price'          => 'decimal:2',
@@ -170,16 +171,16 @@ class SaleVehicle extends Model implements HasMedia
     }
 
     /**
-     * Restituisce il testo da mostrare per il prezzo nella card pubblica.
-     * - Se price_visible = false → null (niente prezzo)
-     * - Se price_label è valorizzato → mostra price_label (es. "Chiedi prezzo")
-     * - Altrimenti → mostra asking_price formattato
+     * Prezzo da mostrare nel pubblico:
+     * - price_visible = false  → null (niente prezzo)
+     * - price_label valorizzato → testo libero (es. "Chiedi prezzo")
+     * - altrimenti             → prezzo numerico formattato
      */
     public function getDisplayPriceAttribute(): ?string
     {
         if (!$this->price_visible) return null;
-        if ($this->price_label) return $this->price_label;
-        if ($this->asking_price) return '€ ' . number_format($this->asking_price, 0, ',', '.');
+        if ($this->price_label)   return $this->price_label;
+        if ($this->asking_price)  return number_format($this->asking_price, 0, ',', '.');
         return null;
     }
 }
