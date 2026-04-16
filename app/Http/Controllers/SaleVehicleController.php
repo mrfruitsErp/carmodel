@@ -62,6 +62,8 @@ class SaleVehicleController extends Controller
             'asking_price'       => 'required|numeric|min:0',
             'min_price'          => 'nullable|numeric|min:0',
             'price_negotiable'   => 'boolean',
+            'price_visible'      => 'boolean',
+            'price_label'        => 'nullable|string|max:60',
             'vat_deductible'     => 'boolean',
             'purchase_price'     => 'nullable|numeric|min:0',
             'badge_label'        => 'nullable|string|max:40',
@@ -69,6 +71,7 @@ class SaleVehicleController extends Controller
             'description'        => 'nullable|string',
             'internal_notes'     => 'nullable|string',
             'plate'              => 'nullable|string|max:20',
+            'plate_visible'      => 'boolean',
             'vin'                => 'nullable|string|max:17',
             'status'             => 'nullable|string',
         ]);
@@ -77,8 +80,9 @@ class SaleVehicleController extends Controller
         $data['created_by']       = Auth::id();
         $data['price_negotiable'] = $request->boolean('price_negotiable');
         $data['vat_deductible']   = $request->boolean('vat_deductible');
+        $data['price_visible']    = $request->boolean('price_visible');
+        $data['plate_visible']    = $request->boolean('plate_visible');
 
-        // Stato: usa quello del form oppure forza bozza se non specificato
         if (empty($data['status'])) {
             $data['status'] = $request->input('action') === 'attivo' ? 'attivo' : 'bozza';
         }
@@ -141,6 +145,8 @@ class SaleVehicleController extends Controller
             'asking_price'       => 'required|numeric|min:0',
             'min_price'          => 'nullable|numeric|min:0',
             'price_negotiable'   => 'boolean',
+            'price_visible'      => 'boolean',
+            'price_label'        => 'nullable|string|max:60',
             'vat_deductible'     => 'boolean',
             'purchase_price'     => 'nullable|numeric|min:0',
             'badge_label'        => 'nullable|string|max:40',
@@ -148,14 +154,16 @@ class SaleVehicleController extends Controller
             'description'        => 'nullable|string',
             'internal_notes'     => 'nullable|string',
             'plate'              => 'nullable|string|max:20',
+            'plate_visible'      => 'boolean',
             'vin'                => 'nullable|string|max:17',
             'status'             => 'nullable|string',
         ]);
 
         $data['price_negotiable'] = $request->boolean('price_negotiable');
         $data['vat_deductible']   = $request->boolean('vat_deductible');
+        $data['price_visible']    = $request->boolean('price_visible');
+        $data['plate_visible']    = $request->boolean('plate_visible');
 
-        // Gestione tasto: "Salva bozza" o "Pubblica annuncio"
         if ($request->input('action') === 'attivo') {
             $data['status'] = 'attivo';
         } elseif ($request->input('action') === 'bozza') {
@@ -234,10 +242,9 @@ class SaleVehicleController extends Controller
         $request->validate([
             'status' => 'required|in:attivo,sospeso,venduto,bozza,archiviato',
         ]);
-        $status = $request->status;
-        $saleVehicle->update(['status' => $status]);
+        $saleVehicle->update(['status' => $request->status]);
         return redirect()->route('marketplace.vehicles.show', $saleVehicle)
-            ->with('success', 'Stato aggiornato: ' . ucfirst($status));
+            ->with('success', 'Stato aggiornato: ' . ucfirst($request->status));
     }
 
     private function authorizeVehicle(SaleVehicle $vehicle): void
