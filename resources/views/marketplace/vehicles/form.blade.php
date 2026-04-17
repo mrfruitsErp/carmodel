@@ -6,15 +6,16 @@
 
   {{-- VIN DECODER --}}
   <div class="card" style="border:1px solid var(--orange-border);background:var(--orange-bg)">
-    <div class="card-title" style="color:var(--orange)">Decodifica VIN automatica</div>
+    <div class="card-title" style="color:var(--orange)">🤖 Decodifica VIN con Claude AI</div>
     <div style="display:flex;gap:10px;align-items:flex-end">
       <div class="form-group" style="flex:1;margin-bottom:0">
         <label class="form-label">Numero telaio VIN (17 caratteri)</label>
-        <input type="text" id="vin_input" class="form-input" placeholder="es. WBA3A5G59DNP26082" maxlength="17" style="font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+        <input type="text" id="vin_input" class="form-input" placeholder="es. WF0DXXGAKDFC01137" maxlength="17" style="font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
       </div>
-      <button type="button" onclick="decodeVin()" class="btn btn-primary" id="vin_btn" style="white-space:nowrap">Decodifica VIN</button>
+      <button type="button" onclick="decodeVin()" class="btn btn-primary" id="vin_btn" style="white-space:nowrap">🔍 Decodifica VIN</button>
     </div>
-    <div id="vin_result" style="margin-top:10px;font-size:13px"></div>
+    <div id="vin_result" style="margin-top:10px;font-size:13px;line-height:1.6"></div>
+    <div style="margin-top:8px;font-size:11px;color:var(--text3)">Compila automaticamente: marca, modello, versione, anno, carburante, cambio, carrozzeria, potenza, optional e descrizione.</div>
   </div>
 
   {{-- FOTO VEICOLO --}}
@@ -78,7 +79,6 @@
         <div class="form-group">
           <label class="form-label">
             Targa
-            {{-- TOGGLE VISIBILITÀ TARGA --}}
             <span style="margin-left:10px;font-weight:400;font-size:11px;color:var(--text3)">
               <label style="display:inline-flex;align-items:center;gap:5px;cursor:pointer">
                 <input type="hidden" name="plate_visible" value="0">
@@ -125,7 +125,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Colore</label>
-          <input type="text" name="color" value="{{ old('color', $vehicle->color ?? '') }}" class="form-input" placeholder="es. Nero Metallizzato">
+          <input type="text" name="color" id="f_color" value="{{ old('color', $vehicle->color ?? '') }}" class="form-input" placeholder="es. Nero Metallizzato">
         </div>
         <div class="form-group">
           <label class="form-label">Tipo colore</label>
@@ -207,8 +207,6 @@
         <div style="margin-top:16px;padding:16px;background:var(--bg3);border-radius:10px;border:1px solid var(--border2)">
           <div style="font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Visibilità prezzo nel pubblico</div>
           <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end">
-
-            {{-- TOGGLE MOSTRA/NASCONDI --}}
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600">
               <input type="hidden" name="price_visible" value="0">
               <input type="checkbox" name="price_visible" value="1" id="price_visible_chk"
@@ -217,8 +215,6 @@
                 onchange="togglePriceLabel(this.checked)">
               Mostra prezzo
             </label>
-
-            {{-- TESTO LIBERO PREZZO --}}
             <div id="price_label_wrap" style="flex:1;min-width:220px;display:{{ old('price_visible', $vehicle->price_visible ?? true) ? 'block' : 'none' }}">
               <label class="form-label" style="font-size:11px">Testo alternativo (lascia vuoto per mostrare il numero)</label>
               <input type="text" name="price_label" id="price_label_input" class="form-input"
@@ -226,14 +222,9 @@
                 maxlength="60"
                 value="{{ old('price_label', $vehicle->price_label ?? '') }}"
                 style="max-width:360px">
-              <div style="font-size:11px;color:var(--text3);margin-top:4px">
-                Se compilato, mostra questo testo al posto del numero. Se vuoto, mostra il prezzo numerico.
-              </div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px">Se compilato, mostra questo testo al posto del numero.</div>
             </div>
-
           </div>
-
-          {{-- ANTEPRIMA --}}
           <div style="margin-top:12px;font-size:12px;color:var(--text3)">
             Anteprima pubblica:
             <span id="price_preview" style="font-weight:700;color:var(--orange);margin-left:6px"></span>
@@ -315,8 +306,8 @@
           <input type="text" name="title" value="{{ old('title', $vehicle->title ?? '') }}" class="form-input" required placeholder="es. BMW 320d xDrive Sport - Unico proprietario" id="f_title">
         </div>
         <div class="form-group">
-          <label class="form-label">Descrizione</label>
-          <textarea name="description" class="form-textarea" rows="6" placeholder="Descrizione dettagliata del veicolo...">{{ old('description', $vehicle->description ?? '') }}</textarea>
+          <label class="form-label">Descrizione <span style="font-weight:400;color:var(--text3);font-size:11px">(compilata automaticamente dal VIN decoder)</span></label>
+          <textarea name="description" class="form-textarea" rows="6" placeholder="Inserisci il VIN e premi Decodifica per generare automaticamente la descrizione...">{{ old('description', $vehicle->description ?? '') }}</textarea>
         </div>
         <div class="form-group">
           <label class="form-label">Note interne (non visibili nell'annuncio)</label>
@@ -376,7 +367,6 @@ function updatePricePreview() {
   const asking = askingEl ? parseFloat(askingEl.value) : 0;
   const preview = document.getElementById('price_preview');
   const hiddenPreview = document.getElementById('price_hidden_preview');
-
   if (!visible) {
     preview.style.display = 'none';
     hiddenPreview.style.display = 'inline';
@@ -397,22 +387,20 @@ function updatePricePreview() {
     preview.style.color = 'var(--text3)';
   }
 }
-
-// Aggiorna anteprima al cambio dei campi
 document.getElementById('price_label_input')?.addEventListener('input', updatePricePreview);
 document.querySelector('input[name="asking_price"]')?.addEventListener('input', updatePricePreview);
 document.getElementById('price_visible_chk')?.addEventListener('change', updatePricePreview);
-
-// Init anteprima al caricamento
 document.addEventListener('DOMContentLoaded', updatePricePreview);
 
-// ===== VIN DECODER =====
+// ===== VIN DECODER con Claude AI =====
 async function decodeVin() {
   const vin = document.getElementById('vin_input').value.trim();
-  if (vin.length !== 17) { showVinResult('Il VIN deve essere di esattamente 17 caratteri', 'error'); return; }
+  if (vin.length !== 17) { showVinResult('⚠️ Il VIN deve essere di esattamente 17 caratteri', 'error'); return; }
   const btn = document.getElementById('vin_btn');
-  btn.textContent = 'Decodifica in corso...';
+  btn.textContent = '⏳ Analisi in corso...';
   btn.disabled = true;
+  showVinResult('🤖 Claude AI sta analizzando il VIN... attendere ~5 secondi', 'info');
+
   try {
     const res = await fetch('/api/vin/decode', {
       method: 'POST',
@@ -420,42 +408,91 @@ async function decodeVin() {
       body: JSON.stringify({vin})
     });
     const json = await res.json();
+
     if (json.success) {
       const d = json.data;
+      const source = json.source || 'unknown';
+
+      // ── Dati base ──
       if (d.brand)        setField('f_brand', d.brand);
       if (d.model)        setField('f_model', d.model);
+      if (d.version)      setField('f_version', d.version);
       if (d.year)         setField('f_year', d.year);
       if (d.fuel_type)    setSelect('f_fuel', d.fuel_type);
       if (d.transmission) setSelect('f_trans', d.transmission);
       if (d.body_type)    setSelect('f_body', d.body_type);
       if (d.doors)        setField('f_doors', d.doors);
+      if (d.seats)        setField('f_seats', d.seats);
       if (d.engine_cc)    setField('f_cc', d.engine_cc);
       if (d.power_kw)     setField('f_kw', d.power_kw);
       if (d.power_hp)     setField('f_hp', d.power_hp);
+      if (d.color)        setField('f_color', d.color);
+
+      // ── VIN nascosto ──
       document.getElementById('vin_hidden').value = vin;
-      if (d.brand && d.model && d.year) {
-        const tf = document.getElementById('f_title');
-        if (tf && !tf.value) tf.value = d.brand+' '+d.model+' ('+d.year+')';
+
+      // ── Titolo annuncio ──
+      const tf = document.getElementById('f_title');
+      if (tf && !tf.value && d.brand && d.model) {
+        const parts = [d.brand, d.model, d.version, d.year ? '('+d.year+')' : ''].filter(Boolean);
+        tf.value = parts.join(' ');
       }
-      showVinResult('VIN decodificato: '+[d.brand,d.model,d.year].filter(Boolean).join(' ')+' - Dati compilati!', 'success');
+
+      // ── Descrizione ──
+      const descField = document.querySelector('textarea[name="description"]');
+      if (descField && !descField.value && d.description) {
+        descField.value = d.description;
+      }
+
+      // ── Features/Optional ──
+      if (d.features && d.features.length > 0) {
+        d.features.forEach(function(feat) {
+          const cb = document.querySelector('input[name="features[]"][value="'+feat+'"]');
+          if (cb) cb.checked = true;
+        });
+      }
+
+      // ── Messaggio risultato ──
+      const vehicleName = [d.brand, d.model, d.version, d.year].filter(Boolean).join(' ');
+      const confidenceLabel = {'alta':'🟢 Alta','media':'🟡 Media','bassa':'🔴 Bassa'}[d.confidence] || '';
+      const sourceLabel = source === 'claude' ? '🤖 Claude AI' : '🏛️ NHTSA';
+      const notesHtml = d.notes ? '<br><small style="opacity:.8">⚠️ '+d.notes+'</small>' : '';
+      const featCount = d.features && d.features.length ? ' — '+d.features.length+' optional rilevati' : '';
+
+      showVinResult(
+        '✅ <strong>'+vehicleName+'</strong> — Fonte: '+sourceLabel+' — Confidenza: '+confidenceLabel+featCount+notesHtml,
+        'success'
+      );
+
     } else {
-      showVinResult('Errore: '+(json.error||'VIN non trovato'), 'error');
+      showVinResult('❌ ' + (json.error || 'VIN non trovato nel database'), 'error');
     }
   } catch(e) {
-    showVinResult('Errore connessione API', 'error');
+    showVinResult('❌ Errore connessione: '+e.message, 'error');
   }
-  btn.textContent = 'Decodifica VIN';
+
+  btn.textContent = '🔍 Decodifica VIN';
   btn.disabled = false;
 }
-function setField(id, val) { const el=document.getElementById(id); if(el&&val) el.value=val; }
+
+function setField(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== null && val !== undefined && val !== '') el.value = val;
+}
 function setSelect(id, val) {
-  const el=document.getElementById(id); if(!el||!val) return;
-  for(let o of el.options) { if(o.value===val||o.value.includes(val.toLowerCase())||val.toLowerCase().includes(o.value)) { o.selected=true; break; } }
+  const el = document.getElementById(id);
+  if (!el || !val) return;
+  const valLow = val.toLowerCase();
+  for (let o of el.options) {
+    if (o.value === val || o.value === valLow || o.value.includes(valLow) || valLow.includes(o.value)) {
+      o.selected = true; break;
+    }
+  }
 }
 function showVinResult(msg, type) {
-  const el=document.getElementById('vin_result');
-  el.style.color = type==='success' ? 'var(--green-text)' : 'var(--red-text)';
-  el.textContent = msg;
+  const el = document.getElementById('vin_result');
+  el.style.color = type === 'success' ? 'var(--green-text)' : type === 'info' ? 'var(--orange)' : 'var(--red-text)';
+  el.innerHTML = msg;
 }
 
 // ===== AUTO-CALCOLA CV/KW =====
@@ -478,16 +515,11 @@ function handleDrop(e) {
   document.getElementById('drop-zone').style.background='var(--bg3)';
   handleFiles(e.dataTransfer.files);
 }
-
 function handleFiles(files) {
   var arr = Array.from(files);
-  if (_vid && _uurl) {
-    uploadAjax(arr);
-  } else {
-    arr.forEach(function(f) { var i=_pend.length; _pend.push(f); showPrev(f,i); });
-  }
+  if (_vid && _uurl) { uploadAjax(arr); }
+  else { arr.forEach(function(f) { var i=_pend.length; _pend.push(f); showPrev(f,i); }); }
 }
-
 function showPrev(file, i) {
   var r = new FileReader();
   r.onload = function(e) {
@@ -500,7 +532,6 @@ function showPrev(file, i) {
   };
   r.readAsDataURL(file);
 }
-
 function rmPrev(i) { _pend[i]=null; var el=document.getElementById('prev-'+i); if(el) el.remove(); }
 
 async function uploadAjax(files) {
@@ -526,9 +557,7 @@ async function uploadAjax(files) {
           +'<button type="button" onclick="eliminaFoto('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
         c.appendChild(d);
       }
-    } catch(err) {
-      t.textContent = 'Errore: '+files[i].name;
-    }
+    } catch(err) { t.textContent = 'Errore: '+files[i].name; }
   }
   setTimeout(function(){ p.style.display='none'; b.style.width='0%'; }, 2000);
 }
