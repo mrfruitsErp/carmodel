@@ -35,10 +35,9 @@ body{font-family:'DM Sans',sans-serif;background:#0f0f1a;min-height:100vh;displa
 <body>
 <div class="login-box">
   <div class="logo">
-    <div class="logo-icon">CM</div>
-    <span class="logo-name">CARMODEL</span>
-    <span class="logo-sub">Software &middot; Automotive</span>
-  </div>
+  <img src="{{ asset('images/logo-alecar-compact.png') }}" alt="AleCar" style="max-width:180px;">
+  <span class="logo-sub">Gestionale Automotive</span>
+</div>
   <div class="card">
     <h2>Accesso</h2>
     @if(session('status'))
