@@ -15,8 +15,17 @@ class ClaimController extends Controller
         if ($request->status) $query->where('status', $request->status);
         if ($request->tipo)   $query->where('claim_type', $request->tipo);
         if ($request->filter === 'urgenti') $query->urgent();
-        $sinistri = $query->orderBy('cid_expiry')->paginate(20);
-        return view('sinistri.index', compact('sinistri'));
+        $sinistri = $query->orderBy("cid_expiry")->paginate(20);
+        $contatori = [
+            "tutti"          => Claim::forTenant($tenantId)->count(),
+            "chiuso"         => Claim::forTenant($tenantId)->where("status","chiuso")->count(),
+            "archiviato"     => Claim::forTenant($tenantId)->where("status","archiviato")->count(),
+            "urgenti"        => Claim::forTenant($tenantId)->urgent()->count(),
+            "perizia_attesa" => Claim::forTenant($tenantId)->where("status","perizia_attesa")->count(),
+            "in_riparazione" => Claim::forTenant($tenantId)->where("status","in_riparazione")->count(),
+            "liquidato"      => Claim::forTenant($tenantId)->where("status","liquidato")->count(),
+        ];
+        return view("sinistri.index", compact("sinistri", "contatori"));
     }
 
     public function create()
