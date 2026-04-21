@@ -135,6 +135,12 @@ tbody tr:hover td{background:var(--bg3)}
 .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+.pagination-row{display:flex;align-items:center;gap:4px;padding:16px 20px;border-top:1px solid var(--border);flex-wrap:wrap}
+.btn-page{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 8px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:13px;text-decoration:none;transition:all .15s}
+.btn-page:hover{background:var(--bg4);color:var(--text)}
+.btn-page.active{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.btn-page.disabled{opacity:.35;pointer-events:none;cursor:default}
+.pagination-info{margin-left:auto;font-size:12px;color:var(--text3)}
 @stack('styles')
 </style>
 </head>

@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Claim::observe(ClaimObserver::class);
 
         // Paginazione senza stile Tailwind (usa HTML semplice)
-        Paginator::useBootstrapFive();
+        Paginator::defaultView('vendor.pagination.custom');
+        Paginator::defaultSimpleView('vendor.pagination.custom');
     }
 }
