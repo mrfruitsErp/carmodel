@@ -200,6 +200,7 @@ tbody tr:hover td{background:var(--bg3)}
     </a>
     @endif
 
+    @endif
     {{-- OFFICINA --}}
     @if(auth()->user()->canDo('lavorazioni.view') || auth()->user()->canDo('preventivi.view'))
     <div class="nav-section">Officina</div>
