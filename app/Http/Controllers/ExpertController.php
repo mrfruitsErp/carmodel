@@ -16,13 +16,6 @@ class ExpertController extends Controller
         return request()->routeIs('medici.*');
     }
 
-    private function getType(): string
-    {
-        if ($this->isLiquidatori()) return 'liquidatore';
-        if ($this->isMedici()) return 'medico_legale';
-        return 'altri';
-    }
-
     public function index(Request $request)
     {
         $tid = auth()->user()->tenant_id;
@@ -102,4 +95,27 @@ class ExpertController extends Controller
         $isMedici = $this->isMedici();
         return view('periti.create', [
             'esperto'       => $periti,
-            'compagnie'
+            'compagnie'     => InsuranceCompany::forTenant($tid)->get(),
+            'isLiquidatori' => $isLiquidatori,
+            'isMedici'      => $isMedici,
+        ]);
+    }
+
+    public function update(Request $request, Expert $periti)
+    {
+        abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
+        $periti->update($request->except('tenant_id'));
+        if ($this->isLiquidatori()) return redirect()->route('liquidatori.show', $periti)->with('success', 'Aggiornato.');
+        if ($this->isMedici()) return redirect()->route('medici.show', $periti)->with('success', 'Aggiornato.');
+        return redirect()->route('periti.show', $periti)->with('success', 'Aggiornato.');
+    }
+
+    public function destroy(Expert $periti)
+    {
+        abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
+        $periti->delete();
+        if ($this->isLiquidatori()) return redirect()->route('liquidatori.index')->with('success', 'Eliminato.');
+        if ($this->isMedici()) return redirect()->route('medici.index')->with('success', 'Eliminato.');
+        return redirect()->route('periti.index')->with('success', 'Eliminato.');
+    }
+}

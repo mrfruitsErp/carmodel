@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -202,6 +202,9 @@ tbody tr:hover td{background:var(--bg3)}
     <a href="{{ route('liquidatori.index') }}" class="nav-item {{ request()->routeIs('liquidatori.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Liquidatori
     </a>
+    <a href="{{ route('medici.index') }}" class="nav-item {{ request()->routeIs('medici.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Medici Legali
+    </a>
     @endif
 
     {{-- OFFICINA --}}
@@ -298,9 +301,9 @@ tbody tr:hover td{background:var(--bg3)}
     <div style="display:flex;gap:8px;align-items:center">@yield('topbar-actions')</div>
   </div>
   <div class="content">
-    @if(session('success'))<div class="alert alert-green"><span>✓</span><span>{{ session('success') }}</span></div>@endif
-    @if(session('warning'))<div class="alert alert-amber"><span>⚠</span><span>{{ session('warning') }}</span></div>@endif
-    @if(session('error'))<div class="alert alert-red"><span>✗</span><span>{{ session('error') }}</span></div>@endif
+    @if(session('success'))<div class="alert alert-green"><span>âœ“</span><span>{{ session('success') }}</span></div>@endif
+    @if(session('warning'))<div class="alert alert-amber"><span>âš </span><span>{{ session('warning') }}</span></div>@endif
+    @if(session('error'))<div class="alert alert-red"><span>âœ—</span><span>{{ session('error') }}</span></div>@endif
     @yield('content')
   </div>
 </div>
