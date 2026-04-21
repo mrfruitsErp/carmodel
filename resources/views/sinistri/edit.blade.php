@@ -80,4 +80,18 @@
   </div>
 </div>
 </form>
+@push('scripts')
+<script>
+function loadVehicles(customerId) {
+  const sel = document.querySelector('select[name="vehicle_id"]');
+  if (!customerId) { sel.innerHTML = '<option value="">— Prima seleziona cliente —</option>'; return; }
+  fetch('/api/clienti/' + customerId + '/veicoli')
+    .then(r => r.json())
+    .then(data => {
+      sel.innerHTML = '<option value="">— Nessun veicolo —</option>';
+      data.forEach(v => sel.innerHTML += `<option value="${v.id}">${v.plate} — ${v.brand} ${v.model}</option>`);
+    });
+}
+</script>
+@endpush
 @endsection
