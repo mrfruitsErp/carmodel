@@ -20,7 +20,6 @@ class ExpertController extends Controller
     {
         $tid = auth()->user()->tenant_id;
         $q = Expert::forTenant($tid)->with('insuranceCompany');
-
         if ($this->isLiquidatori()) {
             $q->where('type', 'liquidatore');
         } elseif ($this->isMedici()) {
@@ -28,7 +27,6 @@ class ExpertController extends Controller
         } else {
             $q->whereIn('type', ['perito','avvocato','consulente','legale']);
         }
-
         if ($request->tipo)   $q->where('type', $request->tipo);
         if ($request->search) {
             $q->where(fn($s) => $s
