@@ -31,7 +31,11 @@ $currentIdx = array_search($claim->status, $statiOrder);
       <div class="two-col">
         <div>
           <div class="info-row"><span class="info-label">Cliente</span><span class="info-value"><a href="{{ route('clienti.show', $claim->customer) }}" style="color:var(--green);text-decoration:none">{{ $claim->customer->display_name }}</a></span></div>
-          <div class="info-row"><span class="info-label">Veicolo</span><span class="info-value"><span class="targa">{{ $claim->vehicle->plate }}</span> {{ $claim->vehicle->brand }} {{ $claim->vehicle->model }}</span></div>
+          <div class="info-row"><span class="info-label">Veicolo</span><span class="info-value">@if($claim->vehicle)
+    <span class="targa">{{ $claim->vehicle->plate }}</span> {{ $claim->vehicle->brand }} {{ $claim->vehicle->model }}
+@else
+    <span class="text-muted">Veicolo non associato</span>
+@endif</span></div>
           <div class="info-row"><span class="info-label">Compagnia</span><span class="info-value">{{ $claim->insuranceCompany?->name ?? 'â€”' }}</span></div>
           <div class="info-row"><span class="info-label">NÂ° Polizza</span><span class="info-value" style="font-family:var(--mono);font-size:12px">{{ $claim->policy_number ?? 'â€”' }}</span></div>
           <div class="info-row"><span class="info-label">Tipo sinistro</span><span class="info-value"><span class="badge badge-blue">{{ strtoupper($claim->claim_type) }}</span></span></div>

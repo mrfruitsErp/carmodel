@@ -20,7 +20,7 @@
       <tr onclick="location.href='{{ route('sinistri.show', $s) }}'" style="cursor:pointer">
         <td><span style="font-family:var(--mono);font-size:11px;color:var(--green)">#{{ $s->claim_number }}</span></td>
         <td><strong>{{ $s->customer->display_name }}</strong></td>
-        <td><span class="targa">{{ $s->vehicle->plate }}</span></td>
+        <td><span class="targa">{{ $s->vehicle?->plate ?? '—' }}</span></td>
         <td>{{ $s->insuranceCompany?->name ?? '—' }}</td>
         <td><span class="badge badge-blue">{{ strtoupper($s->claim_type) }}</span></td>
         <td style="color:var(--text2)">{{ $s->expert?->name ?? '—' }}</td>
