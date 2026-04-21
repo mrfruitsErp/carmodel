@@ -6,10 +6,22 @@ use App\Models\{Expert, InsuranceCompany};
 
 class ExpertController extends Controller
 {
+    private function isLiquidatori(): bool
+    {
+        return request()->routeIs('liquidatori.*');
+    }
+
     public function index(Request $request)
     {
         $tid = auth()->user()->tenant_id;
         $q = Expert::forTenant($tid)->with('insuranceCompany');
+
+        if ($this->isLiquidatori()) {
+            $q->where('type', 'liquidatore');
+        } else {
+            $q->whereIn('type', ['perito','avvocato','medico_legale','consulente','legale']);
+        }
+
         if ($request->tipo)   $q->where('type', $request->tipo);
         if ($request->search) {
             $q->where(fn($s) => $s
@@ -18,14 +30,17 @@ class ExpertController extends Controller
             );
         }
         $esperti = $q->orderBy('name')->paginate(20);
-        return view('periti.index', compact('esperti'));
+        $isLiquidatori = $this->isLiquidatori();
+        return view('periti.index', compact('esperti', 'isLiquidatori'));
     }
 
     public function create()
     {
         $tid = auth()->user()->tenant_id;
+        $isLiquidatori = $this->isLiquidatori();
         return view('periti.create', [
-            'compagnie' => InsuranceCompany::forTenant($tid)->get(),
+            'compagnie'     => InsuranceCompany::forTenant($tid)->get(),
+            'isLiquidatori' => $isLiquidatori,
         ]);
     }
 
@@ -48,23 +63,27 @@ class ExpertController extends Controller
         ]);
         $v['tenant_id'] = auth()->user()->tenant_id;
         $e = Expert::create($v);
-        return redirect()->route('periti.show', $e)->with('success', 'Contatto aggiunto.');
+        $route = $this->isLiquidatori() ? 'liquidatori.show' : 'periti.show';
+        return redirect()->route($route, $e)->with('success', 'Contatto aggiunto.');
     }
 
     public function show(Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->load(['insuranceCompany', 'claims']);
-        return view('periti.show', ['esperto' => $periti]);
+        $isLiquidatori = $this->isLiquidatori();
+        return view('periti.show', ['esperto' => $periti, 'isLiquidatori' => $isLiquidatori]);
     }
 
     public function edit(Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $tid = auth()->user()->tenant_id;
+        $isLiquidatori = $this->isLiquidatori();
         return view('periti.create', [
-            'esperto'   => $periti,
-            'compagnie' => InsuranceCompany::forTenant($tid)->get(),
+            'esperto'       => $periti,
+            'compagnie'     => InsuranceCompany::forTenant($tid)->get(),
+            'isLiquidatori' => $isLiquidatori,
         ]);
     }
 
@@ -72,13 +91,15 @@ class ExpertController extends Controller
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->update($request->except('tenant_id'));
-        return redirect()->route('periti.show', $periti)->with('success', 'Aggiornato.');
+        $route = $this->isLiquidatori() ? 'liquidatori.show' : 'periti.show';
+        return redirect()->route($route, $periti)->with('success', 'Aggiornato.');
     }
 
     public function destroy(Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->delete();
-        return redirect()->route('periti.index')->with('success', 'Eliminato.');
+        $route = $this->isLiquidatori() ? 'liquidatori.index' : 'periti.index';
+        return redirect()->route($route)->with('success', 'Eliminato.');
     }
 }
