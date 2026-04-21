@@ -28,50 +28,36 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Sinistri
-    Route::middleware('auth')->group(function () {
-        Route::resource('sinistri', ClaimController::class);
-        Route::post('sinistri/{claim}/stato', [ClaimController::class, 'updateStato'])->name('sinistri.stato');
-        Route::post('sinistri/{claim}/mail', [ClaimController::class, 'sendMail'])->name('sinistri.mail');
-        Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
-        Route::post('sinistri/{claim}/documento', [ClaimController::class, 'uploadDoc'])->name('sinistri.documento');
-    });
+    Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
+    Route::resource('sinistri', ClaimController::class);
+    Route::post('sinistri/{claim}/stato', [ClaimController::class, 'updateStato'])->name('sinistri.stato');
+    Route::post('sinistri/{claim}/mail', [ClaimController::class, 'sendMail'])->name('sinistri.mail');
+    Route::post('sinistri/{claim}/documento', [ClaimController::class, 'uploadDoc'])->name('sinistri.documento');
 
     // Lesioni & Esperti
-    Route::middleware('auth')->group(function () {
-        Route::resource('lesioni', PersonalInjuryController::class);
-    });
-    Route::middleware('auth')->group(function () {
-        Route::resource('esperti', ExpertController::class)->names('periti');
+    Route::resource('lesioni', PersonalInjuryController::class);
+    Route::resource('esperti', ExpertController::class)->names('periti');
     Route::resource('liquidatori', ExpertController::class);
     Route::resource('medici', ExpertController::class);
-    });
 
     // Lavorazioni
-    Route::middleware('auth')->group(function () {
-        Route::resource('lavorazioni', WorkOrderController::class);
-        Route::post('lavorazioni/{lavorazioni}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
-        Route::post('lavorazioni/{lavorazioni}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
-    });
+    Route::resource('lavorazioni', WorkOrderController::class);
+    Route::post('lavorazioni/{lavorazioni}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
+    Route::post('lavorazioni/{lavorazioni}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
 
     // Preventivi
-    Route::middleware('auth')->group(function () {
-        Route::resource('preventivi', QuoteController::class);
-        Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
-    });
+    Route::resource('preventivi', QuoteController::class);
+    Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
 
     // Flotta & Noleggio
-    Route::middleware('auth')->group(function () {
-        Route::resource('flotta', FleetVehicleController::class);
-        Route::resource('noleggio', RentalController::class);
-        Route::post('noleggio/{noleggio}/chiudi', [RentalController::class, 'chiudi'])->name('noleggio.chiudi');
-        Route::resource('sostitutive', RentalController::class);
-    });
+    Route::resource('flotta', FleetVehicleController::class);
+    Route::resource('noleggio', RentalController::class);
+    Route::post('noleggio/{noleggio}/chiudi', [RentalController::class, 'chiudi'])->name('noleggio.chiudi');
+    Route::resource('sostitutive', RentalController::class);
 
     // Documenti
-    Route::middleware('auth')->group(function () {
-        Route::resource('documenti', DocumentController::class);
-        Route::post('documenti/{document}/pagato', [DocumentController::class, 'markPagato'])->name('documenti.pagato');
-    });
+    Route::resource('documenti', DocumentController::class);
+    Route::post('documenti/{document}/pagato', [DocumentController::class, 'markPagato'])->name('documenti.pagato');
 
     // Mail
     Route::get('mail', [MailController::class, 'index'])->name('mail.index');
@@ -79,9 +65,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('mail/template', [MailController::class, 'store'])->name('mail.template.store');
 
     // Ricambi
-    Route::middleware('auth')->group(function () {
-        Route::resource('ricambi', SparePartController::class);
-    });
+    Route::resource('ricambi', SparePartController::class);
 
     // Import Wincar
     Route::get('import/wincar', [WincarImportController::class, 'index'])->name('import.wincar');
@@ -94,16 +78,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/vin/decode', [VinDecoderController::class, 'decode'])->name('vin.decode');
 
     // Utenti & Accessi
-    Route::middleware('auth')->group(function () {
-        Route::get('utenti/accessi', [UserController::class, 'accessLog'])->name('users.access_log');
-        Route::get('utenti/create', [UserController::class, 'create'])->name('users.create');
-        Route::get('utenti', [UserController::class, 'index'])->name('users.index');
-        Route::post('utenti', [UserController::class, 'store'])->name('users.store');
-        Route::get('utenti/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-        Route::put('utenti/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('utenti/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::post('utenti/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
-    });
+    Route::get('utenti/accessi', [UserController::class, 'accessLog'])->name('users.access_log');
+    Route::get('utenti/create', [UserController::class, 'create'])->name('users.create');
+    Route::get('utenti', [UserController::class, 'index'])->name('users.index');
+    Route::post('utenti', [UserController::class, 'store'])->name('users.store');
+    Route::get('utenti/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('utenti/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('utenti/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::post('utenti/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
 
     // Marketplace
     require __DIR__.'/marketplace.php';
@@ -111,5 +93,3 @@ Route::middleware(['auth'])->group(function () {
 
 // Pagine pubbliche (senza auth)
 require __DIR__.'/public.php';
-
-
