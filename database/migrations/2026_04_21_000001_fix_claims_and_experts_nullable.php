@@ -13,7 +13,7 @@ return new class extends Migration {
 
         // Fix experts: aggiunge tipo 'legale' per import avvocati Wincar
         Schema::table('experts', function (Blueprint $table) {
-            $table->enum('type', ['perito','avvocato','medico_legale','consulente','legale'])->change();
+            $table->enum('type', ['perito','avvocato','medico_legale','consulente','legale','liquidatore'])->change();
         });
 
         // Fix customers: address più lunga per dati Wincar

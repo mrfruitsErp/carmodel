@@ -182,7 +182,7 @@ tbody tr:hover td{background:var(--bg3)}
     @endif
 
     {{-- SINISTRI --}}
-    @if(auth()->user()->canDo('sinistri.view') || auth()->user()->canDo('lesioni.view') || auth()->user()->canDo('periti.view'))
+    @if(auth()->user()->canDo('sinistri.view') || auth()->user()->canDo('lesioni.view') || auth()->user()->canDo('periti.view') || auth()->user()->canDo('liquidatori.view'))
     <div class="nav-section">Sinistri & Lesioni</div>
     @if(auth()->user()->canDo('sinistri.view'))
     <a href="{{ route('sinistri.index') }}" class="nav-item {{ request()->routeIs('sinistri.*') ? 'active' : '' }}">
@@ -194,11 +194,14 @@ tbody tr:hover td{background:var(--bg3)}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Lesioni Personali
     </a>
     @endif
-    @if(auth()->user()->canDo('periti.view'))
+    @if(auth()->user()->canDo('periti.view') || auth()->user()->canDo('liquidatori.view'))
     <a href="{{ route('periti.index') }}" class="nav-item {{ request()->routeIs('periti.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>Periti & Avvocati
     </a>
     @endif
+    <a href="{{ route('liquidatori.index') }}" class="nav-item {{ request()->routeIs('liquidatori.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Liquidatori
+    </a>
     @endif
 
     {{-- OFFICINA --}}
@@ -310,3 +313,5 @@ document.querySelectorAll('.nav-item').forEach(el=>{el.addEventListener('click',
 </script>
 </body>
 </html>
+
+
