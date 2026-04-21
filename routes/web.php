@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::middleware('permission:periti.view')->group(function () {
         Route::resource('periti', ExpertController::class);
+    Route::resource('liquidatori', ExpertController::class);
     });
 
     // Lavorazioni
