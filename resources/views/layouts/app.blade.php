@@ -135,6 +135,7 @@ tbody tr:hover td{background:var(--bg3)}
 .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+@stack('styles')
 </style>
 </head>
 <body>

@@ -44,5 +44,25 @@
     </tbody>
   </table>
 </div>
-{{ $sinistri->appends(request()->query())->links() }}
+@if($sinistri->hasPages())
+<div class="pagination-row">
+  @if($sinistri->onFirstPage())
+    <span class="btn-page disabled">‹</span>
+  @else
+    <a href="{{ $sinistri->previousPageUrl() }}" class="btn-page">‹</a>
+  @endif
+
+  @foreach($sinistri->getUrlRange(max(1,$sinistri->currentPage()-2), min($sinistri->lastPage(),$sinistri->currentPage()+2)) as $page => $url)
+    <a href="{{ $url }}" class="btn-page {{ $page == $sinistri->currentPage() ? 'active' : '' }}">{{ $page }}</a>
+  @endforeach
+
+  @if($sinistri->hasMorePages())
+    <a href="{{ $sinistri->nextPageUrl() }}" class="btn-page">›</a>
+  @else
+    <span class="btn-page disabled">›</span>
+  @endif
+
+  <span class="pagination-info">{{ $sinistri->firstItem() }}–{{ $sinistri->lastItem() }} di {{ $sinistri->total() }}</span>
+</div>
+@endif
 @endsection
