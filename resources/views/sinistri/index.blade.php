@@ -7,6 +7,7 @@
 <form method="GET" class="filter-row">
   <div class="search-bar"><span style="color:var(--text3)">⌕</span><input name="search" placeholder="N° sinistro, targa, cliente, compagnia..." value="{{ request('search') }}"></div>
   <a href="{{ route('sinistri.index') }}" class="chip {{ !request('filter') && !request('status') ? 'active' : '' }}">Tutti <span style="font-size:10px;opacity:.7">({{ $contatori['tutti'] }})</span></a>
+  <a href="{{ route('sinistri.index') }}?status=aperto" class="chip {{ request('status')==='aperto' ? 'active' : '' }}">Aperti <span style="font-size:10px;opacity:.7">({{ $contatori['aperto'] }})</span></a>
   <a href="{{ route('sinistri.index') }}?filter=urgenti" class="chip {{ request('filter')==='urgenti' ? 'active' : '' }}" style="{{ request('filter')==='urgenti' ? '' : 'border-color:var(--red);color:var(--red)' }}">⚠ Urgenti <span style="font-size:10px;opacity:.7">({{ $contatori['urgenti'] }})</span></a>
   <a href="{{ route('sinistri.index') }}?status=perizia_attesa" class="chip {{ request('status')==='perizia_attesa' ? 'active' : '' }}">Perizia attesa <span style="font-size:10px;opacity:.7">({{ $contatori['perizia_attesa'] }})</span></a>
   <a href="{{ route('sinistri.index') }}?status=in_riparazione" class="chip {{ request('status')==='in_riparazione' ? 'active' : '' }}">In riparazione <span style="font-size:10px;opacity:.7">({{ $contatori['in_riparazione'] }})</span></a>

@@ -1,42 +1,49 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use App\Models\{Tenant, User, Customer, Vehicle, InsuranceCompany, Expert, Claim, FleetVehicle, MailTemplate};
+use App\Models\Tenant;
+use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // TENANT DEMO
-        $tenant = Tenant::create([
-            'name'       => 'Officina Demo Srl',
-            'slug'       => 'officina-demo',
-            'email'      => 'info@officinademo.it',
-            'phone'      => '+39 06 1234567',
-            'address'    => 'Via Roma 1, 00100 Roma',
-            'vat_number' => 'IT 12345678901',
-            'plan'       => 'professional',
-        ]);
+        // 🔴 1. CREA PERMESSI (PRIMA DI TUTTO)
+        $this->call(PermissionSeeder::class);
 
-        // UTENTI
-        $admin = User::create([
-            'tenant_id' => $tenant->id,
-            'name'      => 'Admin Principale',
-            'email'     => 'admin@demo.it',
-            'password'  => Hash::make('password'),
-            'role'      => 'admin',
-            'phone'     => '+39 333 1234567',
-        ]);
+        // 🔵 2. TENANT DEMO
+        $tenant = Tenant::firstOrCreate(
+            ['slug' => 'officina-demo'],
+            [
+                'name'       => 'Officina Demo Srl',
+                'email'      => 'info@officinademo.it',
+                'phone'      => '+39 06 1234567',
+                'address'    => 'Via Roma 1, 00100 Roma',
+                'vat_number' => 'IT12345678901',
+                'plan'       => 'professional',
+            ]
+        );
 
-        User::create([
-            'tenant_id' => $tenant->id,
-            'name'      => 'Marco Rossi',
-            'email'     => 'marco@demo.it',
-            'password'  => Hash::make('password'),
-            'role'      => 'mechanic',
-        ]);
+        // 🟢 3. UTENTE ADMIN
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@demo.it'],
+            [
+                'tenant_id' => $tenant->id,
+                'name'      => 'Admin Principale',
+                'password'  => bcrypt('password123'),
+                'active'    => 1,
+            ]
+        );
+
+        // 🟡 4. ASSEGNA RUOLO ADMIN (Spatie)
+        if (!$admin->hasRole('admin')) {
+            $admin->assignRole('admin');
+        }
+    }
+}
 
         // COMPAGNIE ASSICURATIVE
         $generali = InsuranceCompany::create(['tenant_id'=>$tenant->id,'name'=>'Generali SpA','code'=>'GEN','email'=>'sinistri@generali.it','phone'=>'+39 02 12345678']);

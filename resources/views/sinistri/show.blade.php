@@ -15,12 +15,22 @@
 @endif
 
 @php
-$statiOrder = ['aperto','cid_presentato','perizia_attesa','perizia_effettuata','in_riparazione','riparazione_completata','liquidazione_attesa','liquidato','chiuso'];
-$currentIdx = array_search($claim->status, $statiOrder);
+$stepsMap = [
+    0 => ['aperto'],
+    1 => ['cid_presentato'],
+    2 => ['perizia_attesa','perizia_effettuata'],
+    3 => ['in_riparazione','riparazione_completata'],
+    4 => ['liquidazione_attesa','liquidato'],
+    5 => ['chiuso','archiviato'],
+];
+$currentStep = 0;
+foreach($stepsMap as $idx => $stati) {
+    if (in_array($claim->status, $stati)) { $currentStep = $idx; break; }
+}
 @endphp
 <div class="sinistro-stati">
   @foreach(['Apertura','CID','Perizia','Riparazione','Liquidazione','Chiuso'] as $i => $step)
-  <div class="stato-step {{ $i < $currentIdx ? 'done' : ($i === $currentIdx ? 'current' : '') }}">{{ $i+1 }}. {{ $step }}</div>
+  <div class="stato-step {{ $i < $currentStep ? 'done' : ($i === $currentStep ? 'current' : '') }}">{{ $i+1 }}. {{ $step }}</div>
   @endforeach
 </div>
 
@@ -67,12 +77,12 @@ $currentIdx = array_search($claim->status, $statiOrder);
 
     <div class="card">
       <div class="card-title">Storico stati</div>
-      @forelse(collect([]) as $h)
+      @forelse($statusHistory as $h)
       <div class="tl-item">
         <div class="tl-dot blue"></div>
         <div class="tl-body">
           <div class="tl-title">{{ str_replace('_',' ',ucfirst($h->status)) }}</div>
-          <div class="tl-meta">{{ $h->created_at->format('d/m/Y H:i') }} @if($h->changedBy) · {{ $h->changedBy->name }} @endif @if($h->notes) · {{ $h->notes }} @endif</div>
+          <div class="tl-meta">{{ \Carbon\Carbon::parse($h->created_at)->format('d/m/Y H:i') }} @if(isset($h->changedBy) && $h->changedBy) · {{ $h->changedBy->name }} @endif @if($h->notes) · {{ $h->notes }} @endif</div>
         </div>
       </div>
       @empty

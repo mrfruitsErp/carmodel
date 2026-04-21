@@ -28,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Sinistri
-    Route::middleware('permission:sinistri.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('sinistri', ClaimController::class);
         Route::post('sinistri/{claim}/stato', [ClaimController::class, 'updateStato'])->name('sinistri.stato');
         Route::post('sinistri/{claim}/mail', [ClaimController::class, 'sendMail'])->name('sinistri.mail');
@@ -36,30 +36,30 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Lesioni & Esperti
-    Route::middleware('permission:lesioni.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('lesioni', PersonalInjuryController::class);
     });
-    Route::middleware('permission:periti.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('esperti', ExpertController::class)->names('periti');
     Route::resource('liquidatori', ExpertController::class);
     Route::resource('medici', ExpertController::class);
     });
 
     // Lavorazioni
-    Route::middleware('permission:lavorazioni.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('lavorazioni', WorkOrderController::class);
         Route::post('lavorazioni/{lavorazioni}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
         Route::post('lavorazioni/{lavorazioni}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
     });
 
     // Preventivi
-    Route::middleware('permission:preventivi.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('preventivi', QuoteController::class);
         Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
     });
 
     // Flotta & Noleggio
-    Route::middleware('permission:noleggio.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('flotta', FleetVehicleController::class);
         Route::resource('noleggio', RentalController::class);
         Route::post('noleggio/{noleggio}/chiudi', [RentalController::class, 'chiudi'])->name('noleggio.chiudi');
@@ -67,7 +67,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Documenti
-    Route::middleware('permission:fatture.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('documenti', DocumentController::class);
         Route::post('documenti/{document}/pagato', [DocumentController::class, 'markPagato'])->name('documenti.pagato');
     });
@@ -78,7 +78,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('mail/template', [MailController::class, 'store'])->name('mail.template.store');
 
     // Ricambi
-    Route::middleware('permission:ricambi.view')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::resource('ricambi', SparePartController::class);
     });
 
@@ -93,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/vin/decode', [VinDecoderController::class, 'decode'])->name('vin.decode');
 
     // Utenti & Accessi
-    Route::middleware('permission:utenti.manage')->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::get('utenti/accessi', [UserController::class, 'accessLog'])->name('users.access_log');
         Route::get('utenti/create', [UserController::class, 'create'])->name('users.create');
         Route::get('utenti', [UserController::class, 'index'])->name('users.index');
