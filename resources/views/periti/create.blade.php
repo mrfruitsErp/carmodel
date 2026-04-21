@@ -85,9 +85,7 @@
           <label class="form-label">Valutazione (1-5)</label>
           <select name="rating" class="form-select">
             @for($i=1;$i<=5;$i++)
-            <option value="{{ $i }}" {{ old('rating', $esperto->rating ?? 3) == $i ? 'selected' : '' }}>
-              {{ str_repeat('★',$i) }}{{ str_repeat('☆',5-$i) }}
-            </option>
+            <option value="{{ $i }}" {{ old('rating', $esperto->rating ?? 3) == $i ? 'selected' : '' }}>{{ str_repeat('★',$i) }}{{ str_repeat('☆',5-$i) }}</option>
             @endfor
           </select>
         </div>
@@ -98,9 +96,7 @@
       </div>
       <div style="display:flex;gap:8px">
         <a href="{{ route('periti.index') }}" class="btn btn-ghost" style="flex:1;justify-content:center">Annulla</a>
-        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center">
-          {{ isset($esperto) ? 'Salva modifiche' : 'Aggiungi' }}
-        </button>
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center">{{ isset($esperto) ? 'Salva modifiche' : 'Aggiungi' }}</button>
       </div>
     </div>
   </div>
