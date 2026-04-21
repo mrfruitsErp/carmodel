@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permission:periti.view')->group(function () {
         Route::resource('periti', ExpertController::class);
     Route::resource('liquidatori', ExpertController::class);
+    Route::resource('medici', ExpertController::class);
     });
 
     // Lavorazioni
@@ -109,3 +110,4 @@ Route::middleware(['auth'])->group(function () {
 
 // Pagine pubbliche (senza auth)
 require __DIR__.'/public.php';
+

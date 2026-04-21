@@ -16,11 +16,13 @@ class ExpertController extends Controller
         $tid = auth()->user()->tenant_id;
         $q = Expert::forTenant($tid)->with('insuranceCompany');
 
-        if ($this->isLiquidatori()) {
-            $q->where('type', 'liquidatore');
-        } else {
-            $q->whereIn('type', ['perito','avvocato','medico_legale','consulente','legale']);
-        }
+ if ($this->isLiquidatori()) {
+    $q->where('type', 'liquidatore');
+} elseif ($this->isMedici()) {
+    $q->where('type', 'medico_legale');
+} else {
+    $q->whereIn('type', ['perito','avvocato','consulente','legale']);
+}
 
         if ($request->tipo)   $q->where('type', $request->tipo);
         if ($request->search) {
