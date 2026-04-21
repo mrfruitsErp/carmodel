@@ -35,12 +35,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('sinistri/{claim}/documento', [ClaimController::class, 'uploadDoc'])->name('sinistri.documento');
     });
 
-    // Lesioni & Periti
+    // Lesioni & Esperti
     Route::middleware('permission:lesioni.view')->group(function () {
         Route::resource('lesioni', PersonalInjuryController::class);
     });
     Route::middleware('permission:periti.view')->group(function () {
-        Route::resource('periti', ExpertController::class);
+        Route::resource('esperti', ExpertController::class)->names('periti');
     Route::resource('liquidatori', ExpertController::class);
     Route::resource('medici', ExpertController::class);
     });
@@ -110,4 +110,5 @@ Route::middleware(['auth'])->group(function () {
 
 // Pagine pubbliche (senza auth)
 require __DIR__.'/public.php';
+
 
