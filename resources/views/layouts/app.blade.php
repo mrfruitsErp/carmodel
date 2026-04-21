@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -149,14 +149,14 @@ tbody tr:hover td{background:var(--bg3)}
 <div class="mobile-header">
   <div style="display:flex;align-items:center;gap:10px">
     <button class="hamburger" id="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
-    <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:28px;width:auto;object-fit:contain">
+    <img src="{{ asset('images/logo-alecar-compact.png') }}" alt="AleCar" style="height:28px;width:auto;object-fit:contain">
   </div>
   <span style="font-size:12px;color:rgba(255,255,255,.4)">@yield('title', 'Dashboard')</span>
 </div>
 <div class="app">
 <div class="sidebar">
   <div class="logo">
-    <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar" style="height:44px;width:auto;object-fit:contain;filter:brightness(1.1);display:block">
+    <img src="{{ asset('images/logo-alecar-compact.png') }}" alt="AleCar" style="height:44px;width:auto;object-fit:contain;filter:brightness(1.1);display:block">
   </div>
   <nav class="nav">
 
@@ -295,9 +295,9 @@ tbody tr:hover td{background:var(--bg3)}
     <div style="display:flex;gap:8px;align-items:center">@yield('topbar-actions')</div>
   </div>
   <div class="content">
-    @if(session('success'))<div class="alert alert-green"><span>✓</span><span>{{ session('success') }}</span></div>@endif
-    @if(session('warning'))<div class="alert alert-amber"><span>⚠</span><span>{{ session('warning') }}</span></div>@endif
-    @if(session('error'))<div class="alert alert-red"><span>✗</span><span>{{ session('error') }}</span></div>@endif
+    @if(session('success'))<div class="alert alert-green"><span>âœ“</span><span>{{ session('success') }}</span></div>@endif
+    @if(session('warning'))<div class="alert alert-amber"><span>âš </span><span>{{ session('warning') }}</span></div>@endif
+    @if(session('error'))<div class="alert alert-red"><span>âœ—</span><span>{{ session('error') }}</span></div>@endif
     @yield('content')
   </div>
 </div>
@@ -310,6 +310,8 @@ document.querySelectorAll('.nav-item').forEach(el=>{el.addEventListener('click',
 </script>
 </body>
 </html>
+
+
 
 
 
