@@ -1,15 +1,8 @@
 @extends('layouts.app')
-@section('title', isset($isLiquidatori) && $isLiquidatori ? 'Nuovo Liquidatore' : (isset($isMedici) && $isMedici ? 'Nuovo Medico Legale' : (isset($esperto) ? 'Modifica '.$esperto->name : 'Nuovo Contatto')))
+@section('title', isset($esperto) ? 'Modifica '.$esperto->name : 'Nuovo Contatto')
 @section('content')
-@php
-  $backRoute = isset($isLiquidatori) && $isLiquidatori ? route('liquidatori.index') : (isset($isMedici) && $isMedici ? route('medici.index') : route('periti.index'));
-  $storeRoute = isset($isLiquidatori) && $isLiquidatori ? route('liquidatori.store') : (isset($isMedici) && $isMedici ? route('medici.store') : route('periti.store'));
-  if (isset($esperto)) {
-    $storeRoute = isset($isLiquidatori) && $isLiquidatori ? route('liquidatori.update', $esperto) : (isset($isMedici) && $isMedici ? route('medici.update', $esperto) : route('periti.update', $esperto));
-  }
-@endphp
-<div style="margin-bottom:16px"><a href="{{ $backRoute }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Indietro</a></div>
-<form method="POST" action="{{ $storeRoute }}">
+<div style="margin-bottom:16px"><a href="{{ route('periti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Esperti & Contatti</a></div>
+<form method="POST" action="{{ isset($esperto) ? route('periti.update', $esperto) : route('periti.store') }}">
   @csrf
   @if(isset($esperto)) @method('PUT') @endif
   <div class="two-col">
@@ -20,17 +13,13 @@
           <div class="form-group">
             <label class="form-label">Tipo *</label>
             <select name="type" class="form-select" required>
-              @if(isset($isLiquidatori) && $isLiquidatori)
-                <option value="liquidatore" selected>Liquidatore</option>
-              @elseif(isset($isMedici) && $isMedici)
-                <option value="medico_legale" selected>Medico Legale</option>
-              @else
-                <option value="">— Seleziona —</option>
-                <option value="perito" {{ old('type', $esperto->type ?? '') === 'perito' ? 'selected' : '' }}>Perito</option>
-                <option value="avvocato" {{ old('type', $esperto->type ?? '') === 'avvocato' ? 'selected' : '' }}>Avvocato</option>
-                <option value="legale" {{ old('type', $esperto->type ?? '') === 'legale' ? 'selected' : '' }}>Legale</option>
-                <option value="consulente" {{ old('type', $esperto->type ?? '') === 'consulente' ? 'selected' : '' }}>Consulente</option>
-              @endif
+              <option value="">— Seleziona —</option>
+              <option value="perito" {{ old('type', $esperto->type ?? '') === 'perito' ? 'selected' : '' }}>Perito</option>
+              <option value="avvocato" {{ old('type', $esperto->type ?? '') === 'avvocato' ? 'selected' : '' }}>Avvocato</option>
+              <option value="legale" {{ old('type', $esperto->type ?? '') === 'legale' ? 'selected' : '' }}>Legale</option>
+              <option value="liquidatore" {{ old('type', $esperto->type ?? '') === 'liquidatore' ? 'selected' : '' }}>Liquidatore</option>
+              <option value="medico_legale" {{ old('type', $esperto->type ?? '') === 'medico_legale' ? 'selected' : '' }}>Medico Legale</option>
+              <option value="consulente" {{ old('type', $esperto->type ?? '') === 'consulente' ? 'selected' : '' }}>Consulente</option>
             </select>
           </div>
           <div class="form-group">
@@ -96,7 +85,9 @@
           <label class="form-label">Valutazione (1-5)</label>
           <select name="rating" class="form-select">
             @for($i=1;$i<=5;$i++)
-            <option value="{{ $i }}" {{ old('rating', $esperto->rating ?? 3) == $i ? 'selected' : '' }}>{{ str_repeat('★',$i) }}{{ str_repeat('☆',5-$i) }}</option>
+            <option value="{{ $i }}" {{ old('rating', $esperto->rating ?? 3) == $i ? 'selected' : '' }}>
+              {{ str_repeat('★',$i) }}{{ str_repeat('☆',5-$i) }}
+            </option>
             @endfor
           </select>
         </div>
@@ -106,7 +97,7 @@
         </div>
       </div>
       <div style="display:flex;gap:8px">
-        <a href="{{ $backRoute }}" class="btn btn-ghost" style="flex:1;justify-content:center">Annulla</a>
+        <a href="{{ route('periti.index') }}" class="btn btn-ghost" style="flex:1;justify-content:center">Annulla</a>
         <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center">
           {{ isset($esperto) ? 'Salva modifiche' : 'Aggiungi' }}
         </button>
