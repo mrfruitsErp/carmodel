@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('sinistri', ClaimController::class);
         Route::post('sinistri/{claim}/stato', [ClaimController::class, 'updateStato'])->name('sinistri.stato');
         Route::post('sinistri/{claim}/mail', [ClaimController::class, 'sendMail'])->name('sinistri.mail');
+        Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
         Route::post('sinistri/{claim}/documento', [ClaimController::class, 'uploadDoc'])->name('sinistri.documento');
     });
 

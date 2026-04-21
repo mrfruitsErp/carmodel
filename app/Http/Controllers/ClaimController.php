@@ -147,4 +147,48 @@ class ClaimController extends Controller
         }
         return back()->with('success', 'Documento caricato.');
     }
+
+    public function export(Request $request)
+    {
+        $tenantId = auth()->user()->tenant_id;
+        $query = Claim::forTenant($tenantId)
+            ->with(['customer','insuranceCompany','expert']);
+        if ($request->status) $query->where('status', $request->status);
+        if ($request->search) $query->search($request->search);
+        $claims = $query->orderBy('claim_number')->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="sinistri_'.date('Ymd').'.csv"',
+        ];
+
+        $callback = function() use ($claims) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+            fputcsv($file, [
+                'N° Sinistro','Cliente','Compagnia','Tipo',
+                'Data Sinistro','Stato','Perito',
+                'Importo Stimato','Importo Approvato',
+                'N° Polizza','Scadenza CID'
+            ], ';');
+            foreach ($claims as $c) {
+                fputcsv($file, [
+                    $c->claim_number,
+                    $c->customer?->display_name ?? '',
+                    $c->insuranceCompany?->name ?? '',
+                    strtoupper($c->claim_type),
+                    $c->event_date?->format('d/m/Y') ?? '',
+                    str_replace('_',' ',ucfirst($c->status)),
+                    $c->expert?->name ?? '',
+                    number_format($c->estimated_amount ?? 0, 2, ',', '.'),
+                    number_format($c->approved_amount ?? 0, 2, ',', '.'),
+                    $c->policy_number ?? '',
+                    $c->cid_expiry?->format('d/m/Y') ?? '',
+                ], ';');
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

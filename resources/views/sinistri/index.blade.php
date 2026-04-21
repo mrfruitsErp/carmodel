@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Sinistri')
 @section('topbar-actions')
+<a href="{{ route('sinistri.export') }}{{ request()->getQueryString() ? '?'.request()->getQueryString() : '' }}" class="btn btn-ghost btn-sm">↓ Esporta CSV</a>
 <a href="{{ route('sinistri.create') }}" class="btn btn-primary btn-sm">+ Apri Sinistro</a>
 @endsection
 @section('content')
