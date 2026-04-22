@@ -7,8 +7,12 @@ use App\Http\Controllers\{
     WorkOrderController, QuoteController, FleetVehicleController,
     RentalController, DocumentController, MailController,
     SparePartController, WincarImportController, VinDecoderController,
-    UserController
+    UserController,
+    FascicoloController,
+    SettingController,
+    DocumentoCatalogoController
 };
+use App\Http\Controllers\Portale\PortaleClienteController;
 
 require __DIR__.'/auth.php';
 
@@ -87,8 +91,54 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('utenti/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::post('utenti/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
 
+    // ──────────────────────────────────────────
+    // FASCICOLI
+    // ──────────────────────────────────────────
+    Route::resource('fascicoli', FascicoloController::class);
+    Route::post('fascicoli/{fascicolo}/genera-link',       [FascicoloController::class, 'generaLink'])->name('fascicoli.genera-link');
+    Route::post('fascicoli/{fascicolo}/disattiva-link',    [FascicoloController::class, 'disattivaLink'])->name('fascicoli.disattiva-link');
+    Route::post('fascicoli/{fascicolo}/popola-documenti',  [FascicoloController::class, 'popolaDocumenti'])->name('fascicoli.popola-documenti');
+    Route::post('fascicoli/{fascicolo}/completa',          [FascicoloController::class, 'segnaCompletato'])->name('fascicoli.completa');
+    Route::post('fascicoli/{fascicolo}/documenti',                              [FascicoloController::class, 'aggiungiDocumento'])->name('fascicoli.documenti.store');
+    Route::patch('fascicoli/{fascicolo}/documenti/{documento}',                 [FascicoloController::class, 'aggiornaDocumento'])->name('fascicoli.documenti.update');
+    Route::delete('fascicoli/{fascicolo}/documenti/{documento}',                [FascicoloController::class, 'rimuoviDocumento'])->name('fascicoli.documenti.destroy');
+    Route::delete('fascicoli/{fascicolo}/media/{media}',                        [FascicoloController::class, 'destroyMedia'])->name('fascicoli.media.destroy');
+
+    // ──────────────────────────────────────────
+    // SETTINGS
+    // ──────────────────────────────────────────
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/',                   [SettingController::class, 'index'])->name('index');
+        Route::get('/{gruppo}',           [SettingController::class, 'gruppo'])->name('gruppo');
+        Route::post('/{gruppo}',          [SettingController::class, 'salva'])->name('salva');
+        Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
+    });
+
+    // ──────────────────────────────────────────
+    // CATALOGO DOCUMENTI
+    // ──────────────────────────────────────────
+    Route::resource('documenti-catalogo', DocumentoCatalogoController::class);
+
     // Marketplace
     require __DIR__.'/marketplace.php';
+});
+
+// ──────────────────────────────────────────
+// PORTALE CLIENTE — pubblico con token
+// ──────────────────────────────────────────
+Route::prefix('portale')->name('portale.')->group(function () {
+    Route::get('/{token}',                           [PortaleClienteController::class, 'accesso'])->name('accesso');
+    Route::post('/{token}/verifica',                 [PortaleClienteController::class, 'verificaIdentita'])->name('verifica');
+    Route::get('/{token}/otp',                       [PortaleClienteController::class, 'otpForm'])->name('otp');
+    Route::post('/{token}/otp',                      [PortaleClienteController::class, 'verificaOtp'])->name('otp.verifica');
+    Route::post('/{token}/otp/reinvia',              [PortaleClienteController::class, 'reinviaOtp'])->name('otp.reinvia');
+    Route::get('/{token}/privacy',                   [PortaleClienteController::class, 'privacy'])->name('privacy');
+    Route::post('/{token}/privacy',                  [PortaleClienteController::class, 'accettaPrivacy'])->name('privacy.accetta');
+    Route::get('/{token}/documenti',                 [PortaleClienteController::class, 'documenti'])->name('documenti');
+    Route::post('/{token}/documenti/{doc}/upload',   [PortaleClienteController::class, 'uploadDocumento'])->name('documenti.upload');
+    Route::post('/{token}/documenti/{doc}/firma',    [PortaleClienteController::class, 'firmaDocumento'])->name('documenti.firma');
+    Route::post('/{token}/documenti/{doc}/otp-firma',[PortaleClienteController::class, 'verificaFirmaOtp'])->name('documenti.firma.otp');
+    Route::post('/{token}/completa',                 [PortaleClienteController::class, 'completaFascicolo'])->name('completa');
 });
 
 // Pagine pubbliche (senza auth)
