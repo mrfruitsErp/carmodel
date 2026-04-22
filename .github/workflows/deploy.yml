@@ -1,0 +1,43 @@
+name: Deploy CarModel
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codice
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /var/www/carmodel
+
+            # Pull codice aggiornato
+            git pull origin main
+
+            # Dipendenze PHP (no dev in produzione)
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+
+            # Cache Laravel
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            # Migration automatica
+            php artisan migrate --force
+
+            # Permessi storage
+            chmod -R 775 storage bootstrap/cache
+            chown -R www-data:www-data storage bootstrap/cache
+
+            echo "Deploy completato"
