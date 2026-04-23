@@ -19,8 +19,8 @@ use App\Http\Controllers\{
     UserController,
     FascicoloController,
     SettingController,
-    DocumentoCatalogoController
-    InsuranceCompanyController::class,
+    DocumentoCatalogoController,
+    InsuranceCompanyController
 };
 use App\Http\Controllers\Portale\PortaleClienteController;
 

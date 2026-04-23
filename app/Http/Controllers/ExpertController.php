@@ -28,6 +28,7 @@ class ExpertController extends Controller
         ];
         return view('periti.index', compact('esperti', 'contatori'));
     }
+
     public function create()
     {
         $tid = auth()->user()->tenant_id;
@@ -35,6 +36,7 @@ class ExpertController extends Controller
             'compagnie' => InsuranceCompany::forTenant($tid)->orderBy('name')->get(),
         ]);
     }
+
     public function store(Request $request)
     {
         $v = $request->validate([
@@ -53,15 +55,17 @@ class ExpertController extends Controller
             'notes'                => 'nullable',
         ]);
         $v['tenant_id'] = auth()->user()->tenant_id;
-        $e = Expert::create($v);
-        return redirect()->route('periti.show', $e)->with('success', 'Contatto aggiunto.');
+        Expert::create($v);
+        return redirect()->route('periti.index')->with('success', 'Contatto aggiunto.');
     }
+
     public function show(Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->load(['insuranceCompany', 'claims']);
         return view('periti.show', ['esperto' => $periti]);
     }
+
     public function edit(Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
@@ -71,12 +75,14 @@ class ExpertController extends Controller
             'compagnie' => InsuranceCompany::forTenant($tid)->orderBy('name')->get(),
         ]);
     }
+
     public function update(Request $request, Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->update($request->except('tenant_id'));
-        return redirect()->route('periti.show', $periti)->with('success', 'Aggiornato.');
+        return redirect()->route('periti.index')->with('success', 'Aggiornato.');
     }
+
     public function destroy(Expert $periti)
     {
         abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
