@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Registro Accessi')
 @section('topbar-actions')
-<a href="{{ route('users.index') }}" class="btn btn-ghost btn-sm">&larr; Utenti</a>
+<a href="{{ route('utenti.index') }}" class="btn btn-ghost btn-sm">&larr; Utenti</a>
 @endsection
 @section('content')
 

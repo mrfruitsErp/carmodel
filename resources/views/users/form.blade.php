@@ -2,9 +2,9 @@
 @section('title', isset($user->id) ? 'Modifica Utente' : 'Nuovo Utente')
 @section('content')
 <div style="max-width:800px">
-  <div style="margin-bottom:16px"><a href="{{ route('users.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">&larr; Utenti</a></div>
+  <div style="margin-bottom:16px"><a href="{{ route('utenti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">&larr; Utenti</a></div>
 
-  <form action="{{ isset($user->id) ? route('users.update',$user) : route('users.store') }}" method="POST">
+  <form action="{{ isset($user->id) ? route('utenti.update',$user) : route('utenti.store') }}" method="POST">
     @csrf @if(isset($user->id)) @method('PUT') @endif
     @if($errors->any())<div class="alert alert-red">@foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>@endif
 
@@ -89,7 +89,7 @@
     </div>
 
     <div style="display:flex;gap:10px;justify-content:flex-end">
-      <a href="{{ route('users.index') }}" class="btn btn-ghost">Annulla</a>
+      <a href="{{ route('utenti.index') }}" class="btn btn-ghost">Annulla</a>
       <button type="submit" class="btn btn-primary">{{ isset($user->id) ? 'Salva modifiche' : 'Crea utente' }}</button>
     </div>
   </form>
