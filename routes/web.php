@@ -20,6 +20,7 @@ use App\Http\Controllers\{
     FascicoloController,
     SettingController,
     DocumentoCatalogoController
+    InsuranceCompanyController::class,
 };
 use App\Http\Controllers\Portale\PortaleClienteController;
 
@@ -51,6 +52,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('esperti', ExpertController::class)->names('periti');
     Route::resource('liquidatori', ExpertController::class);
     Route::resource('medici', ExpertController::class);
+
+// ASSICURAZIONI
+Route::resource('assicurazioni', InsuranceCompanyController::class);
+Route::get('assicurazioni/{assicurazioni}/periti', [InsuranceCompanyController::class, 'periti'])->name('assicurazioni.periti');
 
     // LAVORAZIONI
     Route::resource('lavorazioni', WorkOrderController::class);
