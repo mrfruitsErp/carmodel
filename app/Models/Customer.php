@@ -19,7 +19,8 @@ class Customer extends Model
         'email','phone','phone2','whatsapp',
         'address','city','postal_code','province','country',
         'notes','tags','source','total_value','active','created_by',
-        // Nuovi campi aggiunti dalla migration 000003
+        'iban','intestatario_iban',
+        // Campi legacy
         'tipo_soggetto','codice_fiscale','partita_iva','pec','codice_sdi','ragione_sociale',
     ];
 
@@ -34,11 +35,8 @@ class Customer extends Model
         return LogOptions::defaults()->logFillable()->logOnlyDirty();
     }
 
-    // ──────────────────────────────────────────
-    // Accessori esistenti
-    // ──────────────────────────────────────────
     public function getDisplayNameAttribute(): string {
-        return $this->type === 'company'
+        return in_array($this->type, ['company','individual'])
             ? ($this->company_name ?? $this->ragione_sociale ?? '')
             : trim("{$this->first_name} {$this->last_name}");
     }
@@ -49,34 +47,23 @@ class Customer extends Model
         return strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
     }
 
-    // ──────────────────────────────────────────
-    // Accessori per compatibilità con i nuovi moduli
-    // Mappa i campi inglesi esistenti → campi italiani del modulo Fascicoli
-    // ──────────────────────────────────────────
-
-    // tipo_soggetto: usa il campo nuovo se presente, altrimenti mappa da 'type'
     public function getTipoSoggettoEffettivoAttribute(): string {
         if ($this->tipo_soggetto) return $this->tipo_soggetto;
         return match($this->type) {
-            'company'  => 'azienda',
-            'private'  => 'privato',
-            default    => 'privato',
+            'company'    => 'azienda',
+            'individual' => 'impresa_individuale',
+            default      => 'privato',
         };
     }
 
-    // codice_fiscale: usa campo nuovo oppure fiscal_code esistente
     public function getCodiceFiscaleEffettivoAttribute(): ?string {
         return $this->codice_fiscale ?? $this->fiscal_code;
     }
 
-    // partita_iva: usa campo nuovo oppure vat_number esistente
     public function getPartitaIvaEffettivaAttribute(): ?string {
         return $this->partita_iva ?? $this->vat_number;
     }
 
-    // ──────────────────────────────────────────
-    // Relazioni esistenti
-    // ──────────────────────────────────────────
     public function tenant(): BelongsTo { return $this->belongsTo(Tenant::class); }
     public function createdBy(): BelongsTo { return $this->belongsTo(User::class, 'created_by'); }
     public function vehicles(): HasMany { return $this->hasMany(Vehicle::class); }
@@ -86,14 +73,9 @@ class Customer extends Model
     public function quotes(): HasMany { return $this->hasMany(Quote::class); }
     public function rentals(): HasMany { return $this->hasMany(Rental::class); }
     public function documents(): HasMany { return $this->hasMany(Document::class); }
-
-    // Nuove relazioni modulo Fascicoli
     public function fascicoli(): HasMany { return $this->hasMany(Fascicolo::class, 'cliente_id'); }
     public function referenti(): HasMany { return $this->hasMany(ClienteReferente::class, 'cliente_id'); }
 
-    // ──────────────────────────────────────────
-    // Scopes esistenti
-    // ──────────────────────────────────────────
     public function scopeForTenant($q, $tid) { return $q->where('tenant_id', $tid); }
     public function scopePrivate($q) { return $q->where('type', 'private'); }
     public function scopeCompany($q) { return $q->where('type', 'company'); }
