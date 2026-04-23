@@ -15,7 +15,6 @@ use App\Http\Controllers\{
     DocumentController,
     MailController,
     SparePartController,
-    WincarImportController,
     VinDecoderController,
     UserController,
     FascicoloController,
@@ -30,200 +29,83 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // =========================
     // CLIENTI
-    // =========================
-    Route::middleware('cando:clienti.view')->group(function () {
-        Route::resource('clienti', CustomerController::class)
-            ->parameters(['clienti' => 'customer']);
+    Route::resource('clienti', CustomerController::class)->parameters(['clienti' => 'customer']);
+    Route::get('clienti/{customer}/storico', [CustomerController::class, 'storico'])->name('clienti.storico');
 
-        Route::get('clienti/{customer}/storico',
-            [CustomerController::class, 'storico']
-        )->name('clienti.storico');
-    });
-
-    // =========================
     // VEICOLI
-    // =========================
-    Route::middleware('cando:veicoli.view')->group(function () {
-        Route::resource('veicoli', VehicleController::class);
+    Route::resource('veicoli', VehicleController::class);
+    Route::post('veicoli/{vehicle}/foto', [VehicleController::class, 'uploadFoto'])->name('veicoli.foto');
 
-        Route::post('veicoli/{vehicle}/foto',
-            [VehicleController::class, 'uploadFoto']
-        )->name('veicoli.foto');
-    });
-
-    // =========================
     // SINISTRI
-    // =========================
-    Route::middleware('cando:sinistri.view')->group(function () {
-        Route::get('sinistri/export',
-            [ClaimController::class, 'export']
-        )->name('sinistri.export');
+    Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
+    Route::resource('sinistri', ClaimController::class);
+    Route::post('sinistri/{claim}/stato', [ClaimController::class, 'updateStato'])->name('sinistri.stato');
+    Route::post('sinistri/{claim}/mail', [ClaimController::class, 'sendMail'])->name('sinistri.mail');
+    Route::post('sinistri/{claim}/documento', [ClaimController::class, 'uploadDoc'])->name('sinistri.documento');
 
-        Route::resource('sinistri', ClaimController::class);
-
-        Route::post('sinistri/{claim}/stato',
-            [ClaimController::class, 'updateStato']
-        )->name('sinistri.stato');
-
-        Route::post('sinistri/{claim}/mail',
-            [ClaimController::class, 'sendMail']
-        )->name('sinistri.mail');
-
-        Route::post('sinistri/{claim}/documento',
-            [ClaimController::class, 'uploadDoc']
-        )->name('sinistri.documento');
-    });
-
-    // =========================
     // LESIONI
-    // =========================
-    Route::middleware('cando:lesioni.view')->group(function () {
-        Route::resource('lesioni', PersonalInjuryController::class);
-    });
+    Route::resource('lesioni', PersonalInjuryController::class);
 
-    // =========================
     // ESPERTI
-    // =========================
-    Route::middleware('cando:periti.view')->group(function () {
-        Route::resource('esperti', ExpertController::class)->names('periti');
-        Route::resource('liquidatori', ExpertController::class);
-        Route::resource('medici', ExpertController::class);
-    });
+    Route::resource('esperti', ExpertController::class)->names('periti');
+    Route::resource('liquidatori', ExpertController::class);
+    Route::resource('medici', ExpertController::class);
 
-    // =========================
     // LAVORAZIONI
-    // =========================
-    Route::middleware('cando:lavorazioni.view')->group(function () {
-        Route::resource('lavorazioni', WorkOrderController::class);
+    Route::resource('lavorazioni', WorkOrderController::class);
+    Route::post('lavorazioni/{lavorazioni}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
+    Route::post('lavorazioni/{lavorazioni}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
 
-        Route::post('lavorazioni/{lavorazioni}/stato',
-            [WorkOrderController::class, 'updateStato']
-        )->name('lavorazioni.stato');
-
-        Route::post('lavorazioni/{lavorazioni}/progresso',
-            [WorkOrderController::class, 'updateProgresso']
-        )->name('lavorazioni.progresso');
-    });
-
-    // =========================
     // PREVENTIVI
-    // =========================
-    Route::middleware('cando:preventivi.view')->group(function () {
-        Route::resource('preventivi', QuoteController::class);
+    Route::resource('preventivi', QuoteController::class);
+    Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
 
-        Route::post('preventivi/{quote}/converti',
-            [QuoteController::class, 'convertToJob']
-        )->name('preventivi.converti');
-    });
-
-    // =========================
     // FLOTTA & NOLEGGIO
-    // =========================
-    Route::middleware('cando:noleggio.view')->group(function () {
-        Route::resource('flotta', FleetVehicleController::class);
-        Route::resource('noleggio', RentalController::class);
+    Route::resource('flotta', FleetVehicleController::class);
+    Route::resource('noleggio', RentalController::class);
+    Route::post('noleggio/{noleggio}/chiudi', [RentalController::class, 'chiudi'])->name('noleggio.chiudi');
+    Route::resource('sostitutive', RentalController::class);
 
-        Route::post('noleggio/{noleggio}/chiudi',
-            [RentalController::class, 'chiudi']
-        )->name('noleggio.chiudi');
-
-        Route::resource('sostitutive', RentalController::class);
-    });
-
-    // =========================
     // DOCUMENTI
-    // =========================
-    Route::middleware('cando:documenti.view')->group(function () {
-        Route::resource('documenti', DocumentController::class);
+    Route::resource('documenti', DocumentController::class);
+    Route::post('documenti/{document}/pagato', [DocumentController::class, 'markPagato'])->name('documenti.pagato');
 
-        Route::post('documenti/{document}/pagato',
-            [DocumentController::class, 'markPagato']
-        )->name('documenti.pagato');
-    });
-
-    // =========================
     // MAIL
-    // =========================
     Route::get('mail', [MailController::class, 'index'])->name('mail.index');
     Route::get('mail/template/create', [MailController::class, 'create'])->name('mail.template.create');
     Route::post('mail/template', [MailController::class, 'store'])->name('mail.template.store');
 
-    // =========================
     // RICAMBI
-    // =========================
-    Route::middleware('cando:ricambi.view')->group(function () {
-        Route::resource('ricambi', SparePartController::class);
-    });
+    Route::resource('ricambi', SparePartController::class);
 
-    // =========================
-    // IMPORT WINCAR
-    // =========================
-    Route::get('import/wincar', [WincarImportController::class, 'index'])->name('import.wincar');
-    Route::post('import/wincar', [WincarImportController::class, 'upload'])->name('import.wincar.upload');
-
-    // =========================
     // UTENTI
-    // =========================
-    Route::middleware('cando:utenti.manage')->group(function () {
-        Route::get('utenti/accessi', [UserController::class, 'accessLog'])->name('utenti.access_log');
+    Route::get('utenti/accessi', [UserController::class, 'accessLog'])->name('utenti.access_log');
+    Route::resource('utenti', UserController::class)->names('utenti');
+    Route::post('utenti/{user}/toggle', [UserController::class, 'toggleActive'])->name('utenti.toggle');
 
-        Route::resource('utenti', UserController::class)->names('utenti');
-
-        Route::post('utenti/{user}/toggle',
-            [UserController::class, 'toggleActive']
-        )->name('utenti.toggle');
-    });
-
-    // =========================
     // FASCICOLI
-    // =========================
-    Route::middleware('cando:fascicoli.view')->group(function () {
-        Route::resource('fascicoli', FascicoloController::class);
+    Route::resource('fascicoli', FascicoloController::class);
+    Route::post('fascicoli/{fascicolo}/genera-link', [FascicoloController::class, 'generaLink'])->name('fascicoli.genera-link');
+    Route::post('fascicoli/{fascicolo}/disattiva-link', [FascicoloController::class, 'disattivaLink'])->name('fascicoli.disattiva-link');
+    Route::post('fascicoli/{fascicolo}/popola-documenti', [FascicoloController::class, 'popolaDocumenti'])->name('fascicoli.popola-documenti');
+    Route::post('fascicoli/{fascicolo}/completa', [FascicoloController::class, 'segnaCompletato'])->name('fascicoli.completa');
 
-        Route::post('fascicoli/{fascicolo}/genera-link',
-            [FascicoloController::class, 'generaLink']
-        )->name('fascicoli.genera-link');
-
-        Route::post('fascicoli/{fascicolo}/disattiva-link',
-            [FascicoloController::class, 'disattivaLink']
-        )->name('fascicoli.disattiva-link');
-
-        Route::post('fascicoli/{fascicolo}/popola-documenti',
-            [FascicoloController::class, 'popolaDocumenti']
-        )->name('fascicoli.popola-documenti');
-
-        Route::post('fascicoli/{fascicolo}/completa',
-            [FascicoloController::class, 'segnaCompletato']
-        )->name('fascicoli.completa');
-    });
-
-    // =========================
     // SETTINGS
-    // =========================
-    Route::middleware('cando:impostazioni.manage')->group(function () {
-        Route::prefix('settings')->name('settings.')->group(function () {
-            Route::get('/', [SettingController::class, 'index'])->name('index');
-            Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
-            Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
-            Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
-        });
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingController::class, 'index'])->name('index');
+        Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
+        Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
+        Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
     });
 
-    // =========================
     // CATALOGO DOCUMENTI
-    // =========================
-    Route::middleware('cando:documenti.manage')->group(function () {
-        Route::resource('documenti-catalogo', DocumentoCatalogoController::class);
-    });
+    Route::resource('documenti-catalogo', DocumentoCatalogoController::class);
 
     require __DIR__.'/marketplace.php';
 });
 
-// =========================
 // PORTALE PUBBLICO
-// =========================
 Route::prefix('portale')->name('portale.')->group(function () {
     Route::get('/{token}', [PortaleClienteController::class, 'accesso'])->name('accesso');
     Route::post('/{token}/verifica', [PortaleClienteController::class, 'verificaIdentita'])->name('verifica');

@@ -1,8 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Gestione Utenti')
 @section('topbar-actions')
-<a href="{{ route('users.access_log') }}" class="btn btn-ghost btn-sm">📋 Registro accessi</a>
-<a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">+ Nuovo utente</a>
+<a href="{{ route('utenti.create') }}" class="btn btn-primary btn-sm">+ Nuovo utente</a>
 @endsection
 @section('content')
 
@@ -33,7 +32,7 @@
         <td style="font-size:13px">{{ $user->email }}</td>
         <td style="font-size:13px">{{ $user->phone ?? '-' }}</td>
         <td>
-          <form action="{{ route('users.toggle', $user) }}" method="POST" style="display:inline">
+          <form action="{{ route('utenti.toggle', $user) }}" method="POST" style="display:inline">
             @csrf
             <button type="submit" class="badge {{ $user->active ? 'badge-green' : 'badge-red' }}" style="border:none;cursor:pointer">
               {{ $user->active ? 'Attivo' : 'Disattivo' }}
@@ -45,9 +44,9 @@
         </td>
         <td>
           <div style="display:flex;gap:6px">
-            <a href="{{ route('users.edit', $user) }}" class="btn btn-ghost btn-sm">Modifica</a>
+            <a href="{{ route('utenti.edit', $user) }}" class="btn btn-ghost btn-sm">Modifica</a>
             @if($user->id !== auth()->id())
-            <form action="{{ route('users.destroy', $user) }}" method="POST"
+            <form action="{{ route('utenti.destroy', $user) }}" method="POST"
               onsubmit="return confirm('Eliminare {{ $user->name }}?')">
               @csrf @method('DELETE')
               <button type="submit" class="btn btn-danger btn-sm">Elimina</button>
