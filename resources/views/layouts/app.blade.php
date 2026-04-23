@@ -199,8 +199,8 @@ tbody tr:hover td{background:var(--bg3)}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>Esperti & Contatti
     </a>
     @endif
-
     @endif
+
     {{-- OFFICINA --}}
     @if(auth()->user()->canDo('lavorazioni.view') || auth()->user()->canDo('preventivi.view'))
     <div class="nav-section">Officina</div>
@@ -254,7 +254,7 @@ tbody tr:hover td{background:var(--bg3)}
     </a>
     @endif
     @if(auth()->user()->canDo('utenti.manage'))
-    <a href="{{ route('users.index') }}" class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+    <a href="{{ route('utenti.index') }}" class="nav-item {{ request()->routeIs('utenti.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utenti
     </a>
     @endif
@@ -307,9 +307,9 @@ tbody tr:hover td{background:var(--bg3)}
     <div style="display:flex;gap:8px;align-items:center">@yield('topbar-actions')</div>
   </div>
   <div class="content">
-    @if(session('success'))<div class="alert alert-green"><span>âœ“</span><span>{{ session('success') }}</span></div>@endif
-    @if(session('warning'))<div class="alert alert-amber"><span>âš </span><span>{{ session('warning') }}</span></div>@endif
-    @if(session('error'))<div class="alert alert-red"><span>âœ—</span><span>{{ session('error') }}</span></div>@endif
+    @if(session('success'))<div class="alert alert-green"><span>✔</span><span>{{ session('success') }}</span></div>@endif
+    @if(session('warning'))<div class="alert alert-amber"><span>⚠</span><span>{{ session('warning') }}</span></div>@endif
+    @if(session('error'))<div class="alert alert-red"><span>✗</span><span>{{ session('error') }}</span></div>@endif
     @yield('content')
   </div>
 </div>
