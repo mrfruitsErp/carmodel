@@ -46,7 +46,7 @@ class UserController extends Controller
 
         User::create($data);
 
-        return redirect()->route('users.index')->with('success', 'Utente creato.');
+        return redirect()->route('utenti.index')->with('success', 'Utente creato.');
     }
 
     public function edit(User $user)
@@ -91,7 +91,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('users.index')->with('success', 'Utente aggiornato.');
+        return redirect()->route('utenti.index')->with('success', 'Utente aggiornato.');
     }
 
     public function destroy(User $user)
@@ -100,7 +100,7 @@ class UserController extends Controller
         abort_if($user->tenant_id !== $this->tid(), 403);
         abort_if($user->id === Auth::id(), 403, 'Non puoi eliminare te stesso.');
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'Utente eliminato.');
+        return redirect()->route('utenti.index')->with('success', 'Utente eliminato.');
     }
 
     public function accessLog()
