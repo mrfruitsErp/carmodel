@@ -10,6 +10,7 @@ use Spatie\Activitylog\LogOptions;
 
 class Customer extends Model
 {
+    protected $table = 'customers';
     use SoftDeletes, LogsActivity;
 
     protected $fillable = [

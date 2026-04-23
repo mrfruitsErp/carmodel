@@ -12,7 +12,7 @@ use App\Notifications\FascicoloCompletato;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class FascicoloController extends Controller
+class SettingController extends Controller
 {
     public function index(Request $request)
     {
