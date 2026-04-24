@@ -127,3 +127,10 @@ class CustomerController extends Controller
         return view('clienti.storico', compact('customer'));
     }
 }
+
+public function destroy(Customer $customer)
+{
+    abort_if($customer->tenant_id !== auth()->user()->tenant_id, 403);
+    $customer->delete();
+    return redirect()->route('clienti.index')->with('success', 'Cliente eliminato.');
+}
