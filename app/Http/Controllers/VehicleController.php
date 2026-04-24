@@ -116,7 +116,7 @@ class VehicleController extends Controller {
         return back()->with('success', 'Documento eliminato.');
     }
 
-    public function scanLibretto(Request $request, Vehicle $veicoli) {
+public function scanLibretto(Request $request, Vehicle $veicoli) {
         $request->validate([
             'file' => 'required|file|max:10240|mimes:jpg,jpeg,png,pdf',
         ]);
@@ -148,19 +148,21 @@ class VehicleController extends Controller {
             }
 
             $response = Http::withHeaders([
-           'x-api-key'         => \App\Models\Setting::get('ai_api_key'),
-           'anthropic-version' => '2023-06-01',
-           'content-type'      => 'application/json',
-])->post('https://api.anthropic.com/v1/messages', [
-           'model'      => \App\Models\Setting::get('ai_model', 'claude-opus-4-5'),
-           'max_tokens' => 1024,
-           'messages'   => [[
-                    'role'    => 'user',
-                    'content' => [
-                        $mediaContent,
-                        [
-                            'type' => 'text',
-                            'text' => 'Sei un assistente per carrozzerie italiane. Analizza questo documento (libretto di circolazione italiano) ed estrai i seguenti dati in formato JSON puro senza markdown:
+                'x-api-key'         => \App\Models\Setting::get('ai_api_key'),
+                'anthropic-version' => '2023-06-01',
+                'content-type'      => 'application/json',
+            ])->post('https://api.anthropic.com/v1/messages', [
+                'model'      => \App\Models\Setting::get('ai_model', 'claude-3-5-sonnet-20240620'),
+                'max_tokens' => 1024,
+                'messages'   => [
+                    [
+                        'role'    => 'user',
+                        'content' => [
+                            $mediaContent,
+                            [
+                                'type' => 'text',
+                                'text' => <<<EOT
+Sei un assistente per carrozzerie italiane. Analizza questo documento (libretto di circolazione italiano) ed estrai i seguenti dati in formato JSON puro senza markdown:
 {
   "targa": "",
   "vin": "",
@@ -174,4 +176,30 @@ class VehicleController extends Controller {
   "intestatario_cf": "",
   "intestatario_indirizzo": ""
 }
-Se un campo non è leggibile o non presente, lascia stringa vuota. Rispondi SOLO con il JSON, nessun al
+Se un campo non è leggibile o non presente, lascia stringa vuota. Rispondi SOLO con il JSON, nessun altro testo.
+EOT
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+            if ($response->failed()) {
+                throw new \Exception("Errore API Anthropic: " . $response->body());
+            }
+
+            $data = json_decode($response->json()['content'][0]['text'], true);
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Errore durante la scansione: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+} // Chiusura della classe

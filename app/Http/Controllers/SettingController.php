@@ -25,11 +25,15 @@ class SettingController extends Controller
     {
         $tid = auth()->user()->tenant_id;
         $gruppiLabel = $this->gruppiLabel();
+        
+        // Recuperiamo i settings esistenti indicizzandoli per 'chiave'
+        // Usiamo withoutGlobalScope se il modello Setting ha un filtro automatico sul tenant
         $settings = Setting::withoutGlobalScope('tenant')
             ->where('tenant_id', $tid)
             ->where('gruppo', $gruppo)
             ->get()
             ->keyBy('chiave');
+
         return view('settings.gruppo', compact('gruppo', 'settings', 'gruppiLabel'));
     }
 
