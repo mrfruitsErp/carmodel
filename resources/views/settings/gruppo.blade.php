@@ -1,19 +1,16 @@
 @extends('layouts.app')
 @section('title', 'Impostazioni — '.($gruppiLabel[$gruppo] ?? ucfirst($gruppo)))
 @section('content')
-<div style="display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start">
-  <div class="card" style="padding:8px">
+<div style="display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:start">
+  <div class="card" style="padding:6px">
     <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:8px 10px 4px">Sezioni</div>
     @foreach($gruppiLabel as $key => $label)
-    <a href="{{ route('settings.gruppo', $key) }}" class="nav-item {{ $gruppo == $key ? 'active' : '' }}" style="border-radius:var(--radius);margin:2px 0">
-      @php $icons = ['generale'=>'🏢','mail'=>'✉️','sms'=>'📱','fascicoli'=>'📁','documenti'=>'📄','notifiche'=>'🔔','privacy'=>'🔒','veicoli'=>'🚗'] @endphp
-      <span style="font-size:13px">{{ $icons[$key] ?? '⚙️' }}</span> {{ $label }}
-    </a>
+    <a href="{{ route('settings.gruppo', $key) }}" class="nav-item {{ $gruppo == $key ? 'active' : '' }}" style="border-radius:var(--radius);margin:2px 0;font-size:12px">{{ $label }}</a>
     @endforeach
     @if(auth()->user()->isAdmin())
     <div style="border-top:1px solid var(--border2);margin:8px 0"></div>
-    <a href="{{ route('settings.gruppo', 'permessi') }}" class="nav-item {{ $gruppo == 'permessi' ? 'active' : '' }}" style="border-radius:var(--radius);margin:2px 0">👥 Permessi operatori</a>
-    <a href="{{ route('documenti-catalogo.index') }}" class="nav-item" style="border-radius:var(--radius);margin:2px 0">📋 Catalogo documenti</a>
+    <a href="{{ route('settings.gruppo', 'permessi') }}" class="nav-item {{ $gruppo == 'permessi' ? 'active' : '' }}" style="border-radius:var(--radius);margin:2px 0;font-size:12px">Permessi operatori</a>
+    <a href="{{ route('documenti-catalogo.index') }}" class="nav-item" style="border-radius:var(--radius);margin:2px 0;font-size:12px">Catalogo documenti</a>
     @endif
   </div>
 
@@ -27,7 +24,7 @@
         @csrf
         <input type="hidden" name="user_id" value="{{ $op->id }}">
         <div style="font-weight:600;font-size:13px;margin-bottom:10px">{{ $op->name }} <span class="badge badge-gray">{{ ucfirst($op->role) }}</span></div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
           @foreach($gruppiLabel as $gKey => $gLabel)
           @php $hasPerm = \DB::table('setting_permissions')->where('tenant_id', auth()->user()->tenant_id)->where('user_id', $op->id)->where('gruppo', $gKey)->where('can_edit', true)->exists(); @endphp
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
@@ -77,8 +74,9 @@
           <div class="form-group"><label class="form-label">Nome mittente</label><input name="mail_from_name" class="form-input" value="{{ $settings['mail_from_name']?->valore ?? '' }}" placeholder="AleCar S.r.l."></div>
           <div class="form-group"><label class="form-label">Email mittente</label><input name="mail_from_address" class="form-input" value="{{ $settings['mail_from_address']?->valore ?? '' }}" placeholder="tuamail@legalmail.it"></div>
         </div>
-        <div class="form-group" style="margin-top:8px">
-          <a href="{{ route('settings.mail.test') }}" class="btn btn-ghost btn-sm">📨 Invia mail di test</a>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button type="submit" class="btn btn-primary">✓ Salva</button>
+          <a href="{{ route('settings.mail.test') }}" class="btn btn-ghost">📨 Invia mail di test</a>
         </div>
 
         @else
@@ -95,8 +93,9 @@
             </div>
           @elseif($chiave==='sms_provider')
             <select name="{{ $chiave }}" class="form-select">
-              @foreach(['self_hosted'=>'Self-hosted (OTP email)','twilio'=>'Twilio','esendex'=>'eSendex','smshosting'=>'SMSHOSTING','vonage'=>'Vonage'] as $v=>$l)
-              <option value="{{ $v }}" {{ $valore==$v?'selected':'' }}>{{ $l }}</option>@endforeach
+              @foreach(['self_hosted'=>'Self-hosted','twilio'=>'Twilio','esendex'=>'eSendex','smshosting'=>'SMSHOSTING','vonage'=>'Vonage'] as $v=>$l)
+              <option value="{{ $v }}" {{ $valore==$v?'selected':'' }}>{{ $l }}</option>
+              @endforeach
             </select>
           @elseif($chiave==='firma_modalita')
             <select name="{{ $chiave }}" class="form-select">
@@ -105,8 +104,10 @@
             </select>
           @elseif($chiave==='firma_provider')
             <select name="{{ $chiave }}" class="form-select">
-              @foreach(['=>Nessuno','yousign'=>'Yousign','namirial'=>'Namirial','docusign'=>'DocuSign'] as $v=>$l)
-              <option value="{{ $v }}" {{ $valore==$v?'selected':'' }}>{{ $l }}</option>@endforeach
+              <option value="" {{ !$valore?'selected':'' }}>Nessuno</option>
+              <option value="yousign" {{ $valore=='yousign'?'selected':'' }}>Yousign</option>
+              <option value="namirial" {{ $valore=='namirial'?'selected':'' }}>Namirial</option>
+              <option value="docusign" {{ $valore=='docusign'?'selected':'' }}>DocuSign</option>
             </select>
           @elseif($isSecret)
             <input type="password" name="{{ $chiave }}" class="form-input" value="{{ $valore }}" autocomplete="new-password">
@@ -117,11 +118,8 @@
           @endif
         </div>
         @endforeach
+        <div style="margin-top:8px"><button type="submit" class="btn btn-primary">✓ Salva impostazioni</button></div>
         @endif
-
-        <div style="margin-top:8px">
-          <button type="submit" class="btn btn-primary">✓ Salva impostazioni</button>
-        </div>
       </div>
     </form>
     @endif
