@@ -21,15 +21,18 @@
         </div>
       </div>
       <div class="info-row"><span class="info-label">Email</span><span class="info-value">{{ $customer->email ?? '—' }}</span></div>
+      <div class="info-row"><span class="info-label">PEC</span><span class="info-value">{{ $customer->pec_email ?? '—' }}</span></div>
       <div class="info-row"><span class="info-label">Telefono</span><span class="info-value">{{ $customer->phone ?? '—' }}</span></div>
+      @if($customer->phone2)<div class="info-row"><span class="info-label">Telefono 2</span><span class="info-value">{{ $customer->phone2 }}</span></div>@endif
       <div class="info-row"><span class="info-label">WhatsApp</span><span class="info-value">{{ $customer->whatsapp ?? '—' }}</span></div>
       @if($customer->type === 'private')
       <div class="info-row"><span class="info-label">Codice Fiscale</span><span class="info-value" style="font-family:var(--mono);font-size:12px">{{ $customer->fiscal_code ?? '—' }}</span></div>
       @else
       <div class="info-row"><span class="info-label">P.IVA</span><span class="info-value" style="font-family:var(--mono);font-size:12px">{{ $customer->vat_number ?? '—' }}</span></div>
-      <div class="info-row"><span class="info-label">PEC</span><span class="info-value">{{ $customer->pec_email ?? '—' }}</span></div>
       <div class="info-row"><span class="info-label">Codice SDI</span><span class="info-value">{{ $customer->sdi_code ?? '—' }}</span></div>
       @endif
+      @if($customer->iban)<div class="info-row"><span class="info-label">IBAN</span><span class="info-value" style="font-family:var(--mono);font-size:12px">{{ $customer->iban }}</span></div>@endif
+      @if($customer->intestatario_iban)<div class="info-row"><span class="info-label">Intestatario</span><span class="info-value">{{ $customer->intestatario_iban }}</span></div>@endif
       <div class="info-row"><span class="info-label">Indirizzo</span><span class="info-value">{{ $customer->address ? $customer->address.', '.$customer->city : '—' }}</span></div>
       <div class="info-row"><span class="info-label">Valore totale</span><span class="info-value" style="color:var(--green)">€ {{ number_format($customer->total_value, 2, ',', '.') }}</span></div>
     </div>
@@ -67,7 +70,7 @@
         <div class="tl-dot {{ in_array($claim->status,['chiuso','liquidato']) ? 'gray' : ($claim->isOverdue() ? 'red' : 'amber') }}"></div>
         <div class="tl-body">
           <div class="tl-title"><a href="{{ route('sinistri.show', $claim) }}" style="color:var(--green);text-decoration:none">#{{ $claim->claim_number }}</a> — {{ $claim->insuranceCompany?->name }}</div>
-          <div class="tl-meta">{{ $claim->event_date->format('d/m/Y') }} · {{ $claim->estimated_amount ? '€ '.number_format($claim->estimated_amount,0,',','.') : '' }}</div>
+          <div class="tl-meta">{{ $claim->event_date?->format('d/m/Y') }} · {{ $claim->estimated_amount ? '€ '.number_format($claim->estimated_amount,0,',','.') : '' }}</div>
         </div>
       </div>
       @empty

@@ -62,6 +62,10 @@
           <input type="email" name="email" class="form-input" value="{{ old('email', $esperto->email ?? '') }}">
         </div>
         <div class="form-group">
+          <label class="form-label">PEC</label>
+          <input type="email" name="pec" class="form-input" value="{{ old('pec', $esperto->pec ?? '') }}" placeholder="pec@esempio.it">
+        </div>
+        <div class="form-group">
           <label class="form-label">Indirizzo</label>
           <textarea name="address" class="form-textarea" style="min-height:60px">{{ old('address', $esperto->address ?? '') }}</textarea>
         </div>
