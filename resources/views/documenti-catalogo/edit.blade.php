@@ -7,7 +7,7 @@
 
 @section('content')
 
-<form method="POST" action="{{ isset($documento) ? route('documenti-catalogo.update', $documento) : route('documenti-catalogo.store') }}">
+<form method="POST" action="{{ isset($documento) ? route('documenti-catalogo.update', $documento->id) : route('documenti-catalogo.store') }}">
 @csrf
 @if(isset($documento)) @method('PUT') @endif
 

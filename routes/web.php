@@ -106,7 +106,8 @@ Route::prefix('settings')->name('settings.')->group(function () {
 });
 
     // CATALOGO DOCUMENTI
-    Route::resource('documenti-catalogo', DocumentoCatalogoController::class);
+    Route::resource('documenti-catalogo', DocumentoCatalogoController::class)
+        ->parameters(['documenti-catalogo' => 'documentoCatalogo']);
 
     require __DIR__.'/marketplace.php';
 });
