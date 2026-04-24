@@ -1,10 +1,11 @@
 @extends('layouts.app')
 @section('title', $customer->display_name)
 @section('topbar-actions')
+<a href="{{ route('fascicoli.index') }}?cliente_id={{ $customer->id }}" class="btn btn-ghost btn-sm">📁 Fascicoli</a>
+<a href="{{ route('fascicoli.create') }}?cliente_id={{ $customer->id }}" class="btn btn-ghost btn-sm">+ Fascicolo</a>
 <a href="{{ route('clienti.edit', $customer) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
 <a href="{{ route('sinistri.create') }}?customer_id={{ $customer->id }}" class="btn btn-primary btn-sm">+ Sinistro</a>
-@endsection
-@section('content')
+@endsection@section('content')
 <div style="margin-bottom:16px"><a href="{{ route('clienti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Clienti</a></div>
 <div class="two-col">
   <div>
