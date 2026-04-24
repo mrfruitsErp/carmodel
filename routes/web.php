@@ -1,25 +1,12 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    DashboardController,
-    CustomerController,
-    VehicleController,
-    ClaimController,
-    PersonalInjuryController,
-    ExpertController,
-    WorkOrderController,
-    QuoteController,
-    FleetVehicleController,
-    RentalController,
-    DocumentController,
-    MailController,
-    SparePartController,
-    VinDecoderController,
-    UserController,
-    FascicoloController,
-    SettingController,
-    DocumentoCatalogoController,
+    DashboardController, CustomerController, VehicleController,
+    ClaimController, PersonalInjuryController, ExpertController,
+    WorkOrderController, QuoteController, FleetVehicleController,
+    RentalController, DocumentController, MailController,
+    SparePartController, VinDecoderController, UserController,
+    FascicoloController, SettingController, DocumentoCatalogoController,
     InsuranceCompanyController
 };
 use App\Http\Controllers\Portale\PortaleClienteController;
@@ -37,6 +24,9 @@ Route::middleware(['auth'])->group(function () {
     // VEICOLI
     Route::resource('veicoli', VehicleController::class);
     Route::post('veicoli/{vehicle}/foto', [VehicleController::class, 'uploadFoto'])->name('veicoli.foto');
+    Route::post('veicoli/{vehicle}/documento', [VehicleController::class, 'uploadDocumento'])->name('veicoli.documento');
+    Route::delete('veicoli/{vehicle}/documento/{docId}', [VehicleController::class, 'deleteDocumento'])->name('veicoli.documento.delete');
+    Route::post('veicoli/{vehicle}/scan-libretto', [VehicleController::class, 'scanLibretto'])->name('veicoli.scan-libretto');
 
     // SINISTRI
     Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
@@ -53,9 +43,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('liquidatori', ExpertController::class);
     Route::resource('medici', ExpertController::class);
 
-// ASSICURAZIONI
-Route::resource('assicurazioni', InsuranceCompanyController::class);
-Route::get('assicurazioni/{assicurazioni}/periti', [InsuranceCompanyController::class, 'periti'])->name('assicurazioni.periti');
+    // ASSICURAZIONI
+    Route::resource('assicurazioni', InsuranceCompanyController::class);
+    Route::get('assicurazioni/{assicurazioni}/periti', [InsuranceCompanyController::class, 'periti'])->name('assicurazioni.periti');
 
     // LAVORAZIONI
     Route::resource('lavorazioni', WorkOrderController::class);
@@ -96,14 +86,14 @@ Route::get('assicurazioni/{assicurazioni}/periti', [InsuranceCompanyController::
     Route::post('fascicoli/{fascicolo}/popola-documenti', [FascicoloController::class, 'popolaDocumenti'])->name('fascicoli.popola-documenti');
     Route::post('fascicoli/{fascicolo}/completa', [FascicoloController::class, 'segnaCompletato'])->name('fascicoli.completa');
 
-// SETTINGS
-Route::prefix('settings')->name('settings.')->group(function () {
-    Route::get('/', [SettingController::class, 'index'])->name('index');
-    Route::get('/mail/test', [SettingController::class, 'testMail'])->name('mail.test');
-    Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
-    Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
-    Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
-});
+    // SETTINGS
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingController::class, 'index'])->name('index');
+        Route::get('/mail/test', [SettingController::class, 'testMail'])->name('mail.test');
+        Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
+        Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
+        Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
+    });
 
     // CATALOGO DOCUMENTI
     Route::resource('documenti-catalogo', DocumentoCatalogoController::class)
