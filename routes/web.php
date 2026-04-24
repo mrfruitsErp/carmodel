@@ -102,6 +102,8 @@ Route::get('assicurazioni/{assicurazioni}/periti', [InsuranceCompanyController::
         Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
         Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
         Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
+Route::get('settings/mail/test', [SettingController::class, 'testMail'])->name('settings.mail.test');
+Route::post('settings/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('settings.permessi.aggiorna');
     });
 
     // CATALOGO DOCUMENTI

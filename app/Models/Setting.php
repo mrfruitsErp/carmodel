@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -9,21 +8,10 @@ class Setting extends Model
 {
     protected $table = 'settings';
 
-    protected $fillable = [
-        'tenant_id',
-        'gruppo',
-        'chiave',
-        'valore',
-        'is_secret',
-    ];
+    protected $fillable = ['tenant_id','gruppo','chiave','valore','is_secret'];
 
-    protected $casts = [
-        'is_secret' => 'boolean',
-    ];
+    protected $casts = ['is_secret' => 'boolean'];
 
-    // ──────────────────────────────────────────
-    // Scope tenant
-    // ──────────────────────────────────────────
     protected static function booted(): void
     {
         static::addGlobalScope('tenant', function ($query) {
@@ -31,16 +19,11 @@ class Setting extends Model
                 $query->where('tenant_id', auth()->user()->tenant_id);
             }
         });
-
-        // Pulisce cache quando un setting viene salvato
         static::saved(function ($setting) {
             Cache::forget("settings_{$setting->tenant_id}");
         });
     }
 
-    // ──────────────────────────────────────────
-    // Helper statico — get/set con cache
-    // ──────────────────────────────────────────
     public static function get(string $chiave, mixed $default = null): mixed
     {
         $tenantId = auth()->user()?->tenant_id ?? 0;
@@ -49,7 +32,6 @@ class Setting extends Model
                 ->where('tenant_id', $tenantId)
                 ->pluck('valore', 'chiave');
         });
-
         return $settings->get($chiave, $default);
     }
 
@@ -63,13 +45,11 @@ class Setting extends Model
         Cache::forget("settings_{$tenantId}");
     }
 
-    // ──────────────────────────────────────────
-    // Gruppi definiti
-    // ──────────────────────────────────────────
     public static function gruppi(): array
     {
         return [
             'generale'   => 'Generale',
+            'mail'       => 'Mail & SMTP',
             'sms'        => 'SMS Gateway',
             'fascicoli'  => 'Fascicoli',
             'documenti'  => 'Documenti',
@@ -79,35 +59,44 @@ class Setting extends Model
         ];
     }
 
-    // ──────────────────────────────────────────
-    // Chiavi default per ogni gruppo
-    // ──────────────────────────────────────────
     public static function defaultPerGruppo(): array
     {
         return [
             'generale' => [
-                'azienda_nome'       => '',
-                'azienda_indirizzo'  => '',
-                'azienda_telefono'   => '',
-                'azienda_email'      => '',
-                'timezone'           => 'Europe/Rome',
+                'azienda_nome'      => '',
+                'azienda_indirizzo' => '',
+                'azienda_telefono'  => '',
+                'azienda_email'     => '',
+                'azienda_pec'       => '',
+                'azienda_piva'      => '',
+                'timezone'          => 'Europe/Rome',
+            ],
+            'mail' => [
+                'mail_driver'       => 'smtp',
+                'mail_host'         => 'smtp.legalmail.it',
+                'mail_port'         => '587',
+                'mail_encryption'   => 'tls',
+                'mail_username'     => '',
+                'mail_password'     => '',
+                'mail_from_name'    => '',
+                'mail_from_address' => '',
             ],
             'sms' => [
-                'sms_provider'       => 'self_hosted', // twilio, esendex, smshosting
+                'sms_provider'       => 'self_hosted',
                 'sms_api_key'        => '',
                 'sms_mittente'       => 'CarModel',
                 'otp_timeout_minuti' => '10',
                 'otp_lunghezza'      => '6',
             ],
             'fascicoli' => [
-                'link_scadenza_giorni'  => '7',
-                'upload_max_mb'         => '10',
-                'upload_formati'        => 'jpg,jpeg,png,pdf',
-                'notifica_email_admin'  => '1',
+                'link_scadenza_giorni' => '7',
+                'upload_max_mb'        => '10',
+                'upload_formati'       => 'jpg,jpeg,png,pdf',
+                'notifica_email_admin' => '1',
             ],
             'documenti' => [
-                'firma_modalita'        => 'self_hosted', // self_hosted, provider_esterno
-                'firma_provider'        => '',            // yousign, namirial, docusign
+                'firma_modalita'        => 'self_hosted',
+                'firma_provider'        => '',
                 'firma_provider_key'    => '',
                 'firma_cartacea_attiva' => '1',
             ],
@@ -116,12 +105,12 @@ class Setting extends Model
                 'notifica_email'        => '1',
             ],
             'privacy' => [
-                'gdpr_versione'         => '1.0',
-                'gdpr_testo'            => 'Ai sensi del Regolamento UE 2016/679 (GDPR), La informiamo che i Suoi dati personali saranno trattati per le finalità connesse alla gestione del rapporto contrattuale.',
+                'gdpr_versione' => '1.0',
+                'gdpr_testo'    => 'Ai sensi del Regolamento UE 2016/679 (GDPR), La informiamo che i Suoi dati personali saranno trattati per le finalità connesse alla gestione del rapporto contrattuale.',
             ],
             'veicoli' => [
-                'km_alert_soglia'       => '10000',
-                'revisione_alert_giorni'=> '30',
+                'km_alert_soglia'        => '10000',
+                'revisione_alert_giorni' => '30',
             ],
         ];
     }
