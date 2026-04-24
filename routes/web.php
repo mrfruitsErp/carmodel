@@ -18,6 +18,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // CLIENTI
+    Route::get('clienti/cestino', [CustomerController::class, 'cestino'])->name('clienti.cestino');
+    Route::post('clienti/{id}/ripristina', [CustomerController::class, 'ripristina'])->name('clienti.ripristina');
     Route::resource('clienti', CustomerController::class)->parameters(['clienti' => 'customer']);
     Route::get('clienti/{customer}/storico', [CustomerController::class, 'storico'])->name('clienti.storico');
 

@@ -17,6 +17,25 @@ class CustomerController extends Controller
         return view('clienti.index', compact('clienti'));
     }
 
+    public function cestino(Request $request)
+    {
+        $tenantId = auth()->user()->tenant_id;
+        $clienti = Customer::onlyTrashed()
+            ->where('tenant_id', $tenantId)
+            ->orderByDesc('deleted_at')
+            ->paginate(20);
+        return view('clienti.cestino', compact('clienti'));
+    }
+
+    public function ripristina(int $id)
+    {
+        $customer = Customer::onlyTrashed()
+            ->where('tenant_id', auth()->user()->tenant_id)
+            ->findOrFail($id);
+        $customer->restore();
+        return back()->with('success', 'Cliente '.$customer->display_name.' ripristinato.');
+    }
+
     public function create() { return view('clienti.create'); }
 
     public function store(Request $request)
@@ -44,7 +63,6 @@ class CustomerController extends Controller
             'iban'              => 'nullable|string|max:34',
             'intestatario_iban' => 'nullable|string|max:255',
         ]);
-
         if ($request->type === 'individual') {
             $validated['first_name']   = $request->first_name_ind;
             $validated['last_name']    = $request->last_name_ind;
@@ -54,12 +72,10 @@ class CustomerController extends Controller
             $validated['sdi_code']     = $request->sdi_code_ind;
             $validated['pec_email']    = $request->pec_email_ind;
         }
-
         $validated['tenant_id']   = auth()->user()->tenant_id;
         $validated['created_by']  = auth()->id();
         $validated['fiscal_code'] = strtoupper($validated['fiscal_code'] ?? '');
         $validated['iban']        = strtoupper(str_replace(' ', '', $validated['iban'] ?? ''));
-
         $customer = Customer::create($validated);
         return redirect()->route('clienti.show', $customer)->with('success', 'Cliente creato.');
     }
@@ -100,7 +116,6 @@ class CustomerController extends Controller
             'iban'              => 'nullable|string|max:34',
             'intestatario_iban' => 'nullable|string|max:255',
         ]);
-
         if ($request->type === 'individual') {
             $validated['first_name']   = $request->first_name_ind;
             $validated['last_name']    = $request->last_name_ind;
@@ -110,10 +125,8 @@ class CustomerController extends Controller
             $validated['sdi_code']     = $request->sdi_code_ind;
             $validated['pec_email']    = $request->pec_email_ind;
         }
-
         $validated['fiscal_code'] = strtoupper($validated['fiscal_code'] ?? '');
         $validated['iban']        = strtoupper(str_replace(' ', '', $validated['iban'] ?? ''));
-
         $customer->update($validated);
         return redirect()->route('clienti.show', $customer)->with('success', 'Cliente aggiornato.');
     }
@@ -127,6 +140,6 @@ class CustomerController extends Controller
     {
         abort_if($customer->tenant_id !== auth()->user()->tenant_id, 403);
         $customer->delete();
-        return redirect()->route('clienti.index')->with('success', 'Cliente eliminato.');
+        return redirect()->route('clienti.index')->with('success', 'Cliente eliminato e spostato nel cestino.');
     }
 }

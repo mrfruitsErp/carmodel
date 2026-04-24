@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Clienti')
 @section('topbar-actions')
+<a href="{{ route('clienti.cestino') }}" class="btn btn-ghost btn-sm">🗑 Cestino</a>
 <a href="{{ route('clienti.create') }}" class="btn btn-primary btn-sm">+ Nuovo Cliente</a>
 @endsection
 @section('content')
