@@ -51,27 +51,23 @@ class FleetVehicleController extends Controller
 
     public function show(FleetVehicle $flottum)
     {
-        abort_if($flottum->tenant_id !== auth()->user()->tenant_id, 403);
         $flottum->load(['rentals.customer']);
         return view('flotta.show', ['vehicle' => $flottum]);
     }
 
     public function edit(FleetVehicle $flottum)
     {
-        abort_if($flottum->tenant_id !== auth()->user()->tenant_id, 403);
         return view('flotta.create', ['vehicle' => $flottum]);
     }
 
     public function update(Request $request, FleetVehicle $flottum)
     {
-        abort_if($flottum->tenant_id !== auth()->user()->tenant_id, 403);
         $flottum->update($request->except(['tenant_id']));
         return redirect()->route('flotta.show', $flottum)->with('success', 'Veicolo aggiornato.');
     }
 
     public function destroy(FleetVehicle $flottum)
     {
-        abort_if($flottum->tenant_id !== auth()->user()->tenant_id, 403);
         $flottum->delete();
         return redirect()->route('flotta.index')->with('success', 'Veicolo rimosso dalla flotta.');
     }

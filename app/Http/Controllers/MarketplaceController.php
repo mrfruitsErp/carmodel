@@ -42,7 +42,6 @@ class MarketplaceController extends Controller
 
     public function publish(Request $request, SaleVehicle $saleVehicle)
     {
-        abort_if($saleVehicle->tenant_id !== $this->tid(), 403);
 
         $request->validate([
             'platforms'   => 'required|array|min:1',
@@ -67,7 +66,6 @@ class MarketplaceController extends Controller
 
     public function unpublish(MarketplaceListing $listing)
     {
-        abort_if($listing->tenant_id !== $this->tid(), 403);
 
         $result = $this->manager->unpublish($listing);
 
@@ -79,7 +77,6 @@ class MarketplaceController extends Controller
 
     public function updatePrice(Request $request, SaleVehicle $saleVehicle)
     {
-        abort_if($saleVehicle->tenant_id !== $this->tid(), 403);
         $request->validate(['asking_price' => 'required|numeric|min:0']);
 
         $saleVehicle->update(['asking_price' => $request->asking_price]);
@@ -108,7 +105,6 @@ class MarketplaceController extends Controller
 
     public function updateLead(Request $request, MarketplaceLead $lead)
     {
-        abort_if($lead->tenant_id !== $this->tid(), 403);
 
         $lead->update($request->validate([
             'status'         => 'required|in:nuovo,contattato,appuntamento,trattativa,vinto,perso',

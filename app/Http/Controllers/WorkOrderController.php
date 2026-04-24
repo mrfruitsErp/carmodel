@@ -46,13 +46,11 @@ class WorkOrderController extends Controller {
     }
 
     public function show(WorkOrder $lavorazioni) {
-        abort_if($lavorazioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lavorazioni->load(['customer','vehicle','claim','assignedTo','items','documents']);
         return view('lavorazioni.show', ['workOrder' => $lavorazioni]);
     }
 
     public function edit(WorkOrder $lavorazioni) {
-        abort_if($lavorazioni->tenant_id !== auth()->user()->tenant_id, 403);
         $tid = auth()->user()->tenant_id;
         return view('lavorazioni.edit', [
             'workOrder' => $lavorazioni,
@@ -64,25 +62,21 @@ class WorkOrderController extends Controller {
     }
 
     public function update(Request $request, WorkOrder $lavorazioni) {
-        abort_if($lavorazioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lavorazioni->update($request->except(['tenant_id','job_number']));
         return redirect()->route('lavorazioni.show', $lavorazioni)->with('success', 'Aggiornato.');
     }
 
     public function destroy(WorkOrder $lavorazioni) {
-        abort_if($lavorazioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lavorazioni->delete();
         return redirect()->route('lavorazioni.index')->with('success', 'Eliminata.');
     }
 
     public function updateStato(Request $request, WorkOrder $lavorazioni) {
-        abort_if($lavorazioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lavorazioni->update(['status' => $request->status, 'technical_notes' => $request->technical_notes ?? $lavorazioni->technical_notes]);
         return back()->with('success', 'Stato aggiornato.');
     }
 
     public function updateProgresso(Request $request, WorkOrder $lavorazioni) {
-        abort_if($lavorazioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lavorazioni->update(['progress_percent' => $request->progress, 'status' => $request->status]);
         return back()->with('success', 'Avanzamento aggiornato.');
     }

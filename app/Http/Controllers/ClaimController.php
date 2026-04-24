@@ -76,7 +76,6 @@ class ClaimController extends Controller
 
     public function show(Claim $sinistri)
     {
-        abort_if($sinistri->tenant_id !== auth()->user()->tenant_id, 403);
         $sinistri->load(['customer','vehicle','insuranceCompany','expert','assignedTo','personalInjuries','workOrders']);
         $statusHistory = DB::table('claim_status_histories')
             ->where('claim_id', $sinistri->id)
@@ -88,7 +87,6 @@ class ClaimController extends Controller
 
     public function edit(Claim $sinistri)
     {
-        abort_if($sinistri->tenant_id !== auth()->user()->tenant_id, 403);
         $tenantId = auth()->user()->tenant_id;
         $claim = $sinistri;
         return view('sinistri.edit', [
@@ -103,14 +101,12 @@ class ClaimController extends Controller
 
     public function update(Request $request, Claim $sinistri)
     {
-        abort_if($sinistri->tenant_id !== auth()->user()->tenant_id, 403);
         $sinistri->update($request->except(['tenant_id','claim_number']));
         return redirect()->route('sinistri.show', $sinistri)->with('success', 'Sinistro aggiornato.');
     }
 
     public function destroy(Claim $sinistri)
     {
-        abort_if($sinistri->tenant_id !== auth()->user()->tenant_id, 403);
         $sinistri->delete();
         return redirect()->route('sinistri.index')->with('success', 'Sinistro eliminato.');
     }
@@ -135,13 +131,11 @@ class ClaimController extends Controller
 
     public function sendMail(Request $request, Claim $sinistri)
     {
-        abort_if($sinistri->tenant_id !== auth()->user()->tenant_id, 403);
         return back()->with('success', 'Mail inviata.');
     }
 
     public function uploadDoc(Request $request, Claim $sinistri)
     {
-        abort_if($sinistri->tenant_id !== auth()->user()->tenant_id, 403);
         if ($request->hasFile('documento')) {
             $sinistri->addMedia($request->file('documento'))->toMediaCollection('documents');
         }

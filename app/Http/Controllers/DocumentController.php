@@ -47,7 +47,6 @@ class DocumentController extends Controller
 
     public function show(Document $document)
     {
-        abort_if($document->tenant_id !== auth()->user()->tenant_id, 403);
         $document->load(['customer','workOrder','claim','items']);
         return view('documenti.show', compact('document'));
     }
@@ -56,21 +55,18 @@ class DocumentController extends Controller
 
     public function update(Request $request, Document $document)
     {
-        abort_if($document->tenant_id !== auth()->user()->tenant_id, 403);
         $document->update($request->except(['tenant_id','document_number']));
         return redirect()->route('documenti.show', $document)->with('success', 'Documento aggiornato.');
     }
 
     public function destroy(Document $document)
     {
-        abort_if($document->tenant_id !== auth()->user()->tenant_id, 403);
         $document->delete();
         return redirect()->route('documenti.index')->with('success', 'Documento eliminato.');
     }
 
     public function markPagato(Request $request, Document $document)
     {
-        abort_if($document->tenant_id !== auth()->user()->tenant_id, 403);
         $document->update(['payment_status'=>'pagata','payment_date'=>now(),'payment_method'=>$request->payment_method ?? 'contanti']);
         $document->customer->recalculateTotalValue();
         return back()->with('success', 'Documento segnato come pagato.');

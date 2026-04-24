@@ -249,6 +249,5 @@ class SaleVehicleController extends Controller
 
     private function authorizeVehicle(SaleVehicle $vehicle): void
     {
-        abort_if($vehicle->tenant_id !== $this->tid(), 403);
     }
 }

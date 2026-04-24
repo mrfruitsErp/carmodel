@@ -61,14 +61,12 @@ class ExpertController extends Controller
 
     public function show(Expert $periti)
     {
-        abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
-        $periti->load(['insuranceCompany', 'claims']);
+        $periti->load(['insuranceCompany']);
         return view('periti.show', ['esperto' => $periti]);
     }
 
     public function edit(Expert $periti)
     {
-        abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $tid = auth()->user()->tenant_id;
         return view('periti.create', [
             'esperto'   => $periti,
@@ -78,14 +76,12 @@ class ExpertController extends Controller
 
     public function update(Request $request, Expert $periti)
     {
-        abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->update($request->except('tenant_id'));
         return redirect()->route('periti.index')->with('success', 'Aggiornato.');
     }
 
     public function destroy(Expert $periti)
     {
-        abort_if($periti->tenant_id !== auth()->user()->tenant_id, 403);
         $periti->delete();
         return redirect()->route('periti.index')->with('success', 'Eliminato.');
     }

@@ -50,7 +50,6 @@ class SparePartController extends Controller
 
     public function show(SparePart $ricambi)
     {
-        abort_if($ricambi->tenant_id !== auth()->user()->tenant_id, 403);
         return view('ricambi.show', ['ricambio' => $ricambi]);
     }
 
@@ -61,21 +60,18 @@ class SparePartController extends Controller
 
     public function update(Request $request, SparePart $ricambi)
     {
-        abort_if($ricambi->tenant_id !== auth()->user()->tenant_id, 403);
         $ricambi->update($request->except('tenant_id'));
         return redirect()->route('ricambi.show', $ricambi)->with('success', 'Aggiornato.');
     }
 
     public function destroy(SparePart $ricambi)
     {
-        abort_if($ricambi->tenant_id !== auth()->user()->tenant_id, 403);
         $ricambi->delete();
         return redirect()->route('ricambi.index')->with('success', 'Eliminato.');
     }
 
     public function movimento(Request $request, SparePart $ricambi)
     {
-        abort_if($ricambi->tenant_id !== auth()->user()->tenant_id, 403);
         $request->validate(['movement_type' => 'required', 'quantity' => 'required|numeric']);
         $delta = $request->movement_type === 'carico' ? $request->quantity : -$request->quantity;
         $ricambi->movements()->create([

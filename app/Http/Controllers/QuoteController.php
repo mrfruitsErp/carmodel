@@ -38,20 +38,17 @@ class QuoteController extends Controller
 
     public function show(Quote $preventivo)
     {
-        abort_if($preventivo->tenant_id !== auth()->user()->tenant_id, 403);
         $preventivo->load(['customer','vehicle','items','claim']);
         return view('preventivi.show', compact('preventivo'));
     }
 
     public function edit(Quote $preventivo)
     {
-        abort_if($preventivo->tenant_id !== auth()->user()->tenant_id, 403);
         return view('preventivi.show', compact('preventivo'));
     }
 
     public function update(Request $request, Quote $preventivo)
     {
-        abort_if($preventivo->tenant_id !== auth()->user()->tenant_id, 403);
         $preventivo->update($request->except(['tenant_id','quote_number']));
         $preventivo->recalculate();
         return redirect()->route('preventivi.show', $preventivo)->with('success', 'Preventivo aggiornato.');
@@ -59,14 +56,12 @@ class QuoteController extends Controller
 
     public function destroy(Quote $preventivo)
     {
-        abort_if($preventivo->tenant_id !== auth()->user()->tenant_id, 403);
         $preventivo->delete();
         return redirect()->route('preventivi.index')->with('success', 'Preventivo eliminato.');
     }
 
     public function convertToJob(Quote $preventivo)
     {
-        abort_if($preventivo->tenant_id !== auth()->user()->tenant_id, 403);
         if ($preventivo->converted_to_job_id) {
             return back()->with('error', 'Preventivo già convertito in lavorazione.');
         }

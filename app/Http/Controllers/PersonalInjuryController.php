@@ -53,14 +53,12 @@ class PersonalInjuryController extends Controller
 
     public function show(PersonalInjury $lesioni)
     {
-        abort_if($lesioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lesioni->load(['customer','claim','lawyer','doctor']);
         return view('lesioni.show', ['lesione' => $lesioni]);
     }
 
     public function edit(PersonalInjury $lesioni)
     {
-        abort_if($lesioni->tenant_id !== auth()->user()->tenant_id, 403);
         $tid = auth()->user()->tenant_id;
         return view('lesioni.create', [
             'lesione'  => $lesioni,
@@ -72,14 +70,12 @@ class PersonalInjuryController extends Controller
 
     public function update(Request $request, PersonalInjury $lesioni)
     {
-        abort_if($lesioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lesioni->update($request->except(['tenant_id','injury_number']));
         return redirect()->route('lesioni.show', $lesioni)->with('success', 'Lesione aggiornata.');
     }
 
     public function destroy(PersonalInjury $lesioni)
     {
-        abort_if($lesioni->tenant_id !== auth()->user()->tenant_id, 403);
         $lesioni->delete();
         return redirect()->route('lesioni.index')->with('success', 'Eliminata.');
     }

@@ -56,14 +56,12 @@ class RentalController extends Controller
 
     public function show(Rental $noleggio)
     {
-        abort_if($noleggio->tenant_id !== auth()->user()->tenant_id, 403);
         $noleggio->load(['customer','fleetVehicle','claim','createdBy']);
         return view('noleggio.show', compact('noleggio'));
     }
 
     public function edit(Rental $noleggio)
     {
-        abort_if($noleggio->tenant_id !== auth()->user()->tenant_id, 403);
         $tid = auth()->user()->tenant_id;
         return view('noleggio.create', [
             'rental'  => $noleggio,
@@ -75,21 +73,18 @@ class RentalController extends Controller
 
     public function update(Request $request, Rental $noleggio)
     {
-        abort_if($noleggio->tenant_id !== auth()->user()->tenant_id, 403);
         $noleggio->update($request->except(['tenant_id','rental_number']));
         return redirect()->route('noleggio.show', $noleggio)->with('success', 'Contratto aggiornato.');
     }
 
     public function destroy(Rental $noleggio)
     {
-        abort_if($noleggio->tenant_id !== auth()->user()->tenant_id, 403);
         $noleggio->delete();
         return redirect()->route('noleggio.index')->with('success', 'Contratto eliminato.');
     }
 
     public function chiudi(Request $request, Rental $noleggio)
     {
-        abort_if($noleggio->tenant_id !== auth()->user()->tenant_id, 403);
         $noleggio->update([
             'status'          => 'chiuso',
             'actual_end_date' => now(),

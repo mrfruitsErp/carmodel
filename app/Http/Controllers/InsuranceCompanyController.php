@@ -57,7 +57,6 @@ class InsuranceCompanyController extends Controller
 
     public function show(InsuranceCompany $assicurazioni)
     {
-        abort_if($assicurazioni->tenant_id !== $this->tid(), 403);
         $periti = Expert::where('tenant_id', $this->tid())
             ->where('insurance_company_id', $assicurazioni->id)
             ->orderBy('type')->orderBy('name')->get();
@@ -68,13 +67,11 @@ class InsuranceCompanyController extends Controller
 
     public function edit(InsuranceCompany $assicurazioni)
     {
-        abort_if($assicurazioni->tenant_id !== $this->tid(), 403);
         return view('assicurazioni.create', ['company' => $assicurazioni]);
     }
 
     public function update(Request $request, InsuranceCompany $assicurazioni)
     {
-        abort_if($assicurazioni->tenant_id !== $this->tid(), 403);
         $data = $request->validate([
             'name'             => 'required|string|max:255',
             'code'             => 'nullable|string|max:50',
@@ -100,7 +97,6 @@ class InsuranceCompanyController extends Controller
 
     public function destroy(InsuranceCompany $assicurazioni)
     {
-        abort_if($assicurazioni->tenant_id !== $this->tid(), 403);
         $assicurazioni->delete();
         return redirect()->route('assicurazioni.index')->with('success', 'Compagnia eliminata.');
     }
@@ -108,7 +104,6 @@ class InsuranceCompanyController extends Controller
     // API per AJAX nel form sinistro
     public function periti(InsuranceCompany $assicurazioni)
     {
-        abort_if($assicurazioni->tenant_id !== $this->tid(), 403);
         $periti = Expert::where('tenant_id', $this->tid())
             ->where('insurance_company_id', $assicurazioni->id)
             ->orderBy('name')->get(['id','name','type']);

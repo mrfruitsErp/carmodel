@@ -69,20 +69,17 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        abort_if($customer->tenant_id !== auth()->user()->tenant_id, 403);
         $customer->load(['vehicles.claims','claims.insuranceCompany','claims.expert','personalInjuries','workOrders','rentals','documents']);
         return view('clienti.show', compact('customer'));
     }
 
     public function edit(Customer $customer)
     {
-        abort_if($customer->tenant_id !== auth()->user()->tenant_id, 403);
         return view('clienti.edit', compact('customer'));
     }
 
     public function update(Request $request, Customer $customer)
     {
-        abort_if($customer->tenant_id !== auth()->user()->tenant_id, 403);
 
         $validated = $request->validate([
             'type'               => 'required|in:private,company,individual',
@@ -127,7 +124,6 @@ class CustomerController extends Controller
 
     public function storico(Customer $customer)
     {
-        abort_if($customer->tenant_id !== auth()->user()->tenant_id, 403);
         return view('clienti.storico', compact('customer'));
     }
 }
