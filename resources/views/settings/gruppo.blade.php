@@ -79,6 +79,45 @@
           <a href="{{ route('settings.mail.test') }}" class="btn btn-ghost">📨 Invia mail di test</a>
         </div>
 
+        @elseif($gruppo === 'ai')
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px">🤖 Intelligenza Artificiale</div>
+          <div style="font-size:11px;color:var(--text3)">Configura la chiave API per abilitare le funzioni AI del gestionale: scan libretto, generazione lettere sinistro, analisi documenti e altro. La chiave viene salvata in modo sicuro e non è mai visibile dopo il salvataggio.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chiave API</label>
+          <input type="password" name="ai_api_key" class="form-input"
+            value="{{ $settings['ai_api_key']?->valore ?? '' }}"
+            autocomplete="new-password"
+            placeholder="Incolla qui la tua chiave API">
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">
+            Lascia vuoto per non modificare la chiave esistente
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Modello AI</label>
+          <input type="text" name="ai_model" class="form-input"
+            value="{{ $settings['ai_model']?->valore ?? 'claude-opus-4-5' }}"
+            placeholder="Es. claude-opus-4-5">
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">
+            Modello da usare per tutte le funzioni AI del gestionale
+          </div>
+        </div>
+        {{-- Campo tecnico nascosto — solo admin avanzato --}}
+        <input type="hidden" name="ai_provider" value="{{ $settings['ai_provider']?->valore ?? 'anthropic' }}">
+        @if(auth()->user()->isAdmin())
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:10px;margin-top:4px">
+          <div style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Info tecniche</div>
+          <div style="font-size:11px;color:var(--text3)">
+            Provider attivo: <strong style="color:var(--text2)">{{ $settings['ai_provider']?->valore ?? 'anthropic' }}</strong><br>
+            Stato: <strong style="color:{{ $settings['ai_api_key']?->valore ? 'var(--green)' : 'var(--red)' }}">{{ $settings['ai_api_key']?->valore ? '✓ Configurato' : '✗ Non configurato' }}</strong>
+          </div>
+        </div>
+        @endif
+        <div style="margin-top:16px">
+          <button type="submit" class="btn btn-primary">✓ Salva configurazione AI</button>
+        </div>
+
         @else
         @foreach($defaults as $chiave => $default)
         @php $valore = $settings[$chiave]?->valore ?? $default; $isSecret = $settings[$chiave]?->is_secret ?? false; $label = ucwords(str_replace('_',' ',$chiave)); @endphp

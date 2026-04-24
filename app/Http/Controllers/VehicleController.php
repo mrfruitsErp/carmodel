@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Models\{Vehicle, Customer, VehicleDocument};
 
 class VehicleController extends Controller {
@@ -76,7 +77,6 @@ class VehicleController extends Controller {
             'note'           => 'nullable|string',
         ]);
 
-        // Se tipo singleFile (libretto, polizza, revisione, bollo) → disattiva i precedenti
         $tipiSingle = ['libretto','polizza','revisione','bollo'];
         if (in_array($request->tipo, $tipiSingle)) {
             $veicoli->vehicleDocuments()
@@ -99,7 +99,6 @@ class VehicleController extends Controller {
 
         $doc->addMedia($request->file('file'))->toMediaCollection('file');
 
-        // Aggiorna scadenze sul veicolo
         if ($request->tipo === 'polizza' && $request->data_scadenza) {
             $veicoli->update(['insurance_expiry' => $request->data_scadenza]);
         }
@@ -118,7 +117,61 @@ class VehicleController extends Controller {
     }
 
     public function scanLibretto(Request $request, Vehicle $veicoli) {
-        // Implementazione AI scan — da completare con API Claude
-        return back()->with('warning', 'Funzione scan in sviluppo.');
-    }
+        $request->validate([
+            'file' => 'required|file|max:10240|mimes:jpg,jpeg,png,pdf',
+        ]);
+
+        try {
+            $file = $request->file('file');
+            $mimeType = $file->getMimeType();
+            $base64 = base64_encode(file_get_contents($file->getRealPath()));
+
+            // Prepara il contenuto immagine per Claude
+            if ($mimeType === 'application/pdf') {
+                $mediaContent = [
+                    'type' => 'document',
+                    'source' => [
+                        'type'       => 'base64',
+                        'media_type' => 'application/pdf',
+                        'data'       => $base64,
+                    ]
+                ];
+            } else {
+                $mediaContent = [
+                    'type' => 'image',
+                    'source' => [
+                        'type'       => 'base64',
+                        'media_type' => $mimeType,
+                        'data'       => $base64,
+                    ]
+                ];
+            }
+
+            $response = Http::withHeaders([
+           'x-api-key'         => \App\Models\Setting::get('ai_api_key'),
+           'anthropic-version' => '2023-06-01',
+           'content-type'      => 'application/json',
+])->post('https://api.anthropic.com/v1/messages', [
+           'model'      => \App\Models\Setting::get('ai_model', 'claude-opus-4-5'),
+           'max_tokens' => 1024,
+           'messages'   => [[
+                    'role'    => 'user',
+                    'content' => [
+                        $mediaContent,
+                        [
+                            'type' => 'text',
+                            'text' => 'Sei un assistente per carrozzerie italiane. Analizza questo documento (libretto di circolazione italiano) ed estrai i seguenti dati in formato JSON puro senza markdown:
+{
+  "targa": "",
+  "vin": "",
+  "marca": "",
+  "modello": "",
+  "versione": "",
+  "anno_immatricolazione": "",
+  "colore": "",
+  "alimentazione": "",
+  "intestatario_nome": "",
+  "intestatario_cf": "",
+  "intestatario_indirizzo": ""
 }
+Se un campo non è leggibile o non presente, lascia stringa vuota. Rispondi SOLO con il JSON, nessun al

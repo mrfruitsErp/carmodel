@@ -7,9 +7,7 @@ use Illuminate\Support\Facades\Cache;
 class Setting extends Model
 {
     protected $table = 'settings';
-
     protected $fillable = ['tenant_id','gruppo','chiave','valore','is_secret'];
-
     protected $casts = ['is_secret' => 'boolean'];
 
     protected static function booted(): void
@@ -48,14 +46,15 @@ class Setting extends Model
     public static function gruppi(): array
     {
         return [
-            'generale'   => 'Generale',
-            'mail'       => 'Mail & SMTP',
-            'sms'        => 'SMS Gateway',
-            'fascicoli'  => 'Fascicoli',
-            'documenti'  => 'Documenti',
-            'notifiche'  => 'Notifiche',
-            'privacy'    => 'Privacy & GDPR',
-            'veicoli'    => 'Veicoli',
+            'generale'  => 'Generale',
+            'mail'      => 'Mail & SMTP',
+            'ai'        => 'Intelligenza Artificiale',
+            'sms'       => 'SMS Gateway',
+            'fascicoli' => 'Fascicoli',
+            'documenti' => 'Documenti',
+            'notifiche' => 'Notifiche',
+            'privacy'   => 'Privacy & GDPR',
+            'veicoli'   => 'Veicoli',
         ];
     }
 
@@ -80,6 +79,11 @@ class Setting extends Model
                 'mail_password'     => '',
                 'mail_from_name'    => '',
                 'mail_from_address' => '',
+            ],
+            'ai' => [
+                'ai_api_key'  => '',
+                'ai_model'    => 'claude-opus-4-5',
+                'ai_provider' => 'anthropic',
             ],
             'sms' => [
                 'sms_provider'       => 'self_hosted',

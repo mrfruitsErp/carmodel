@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('veicoli/{vehicle}/documento', [VehicleController::class, 'uploadDocumento'])->name('veicoli.documento');
     Route::delete('veicoli/{vehicle}/documento/{docId}', [VehicleController::class, 'deleteDocumento'])->name('veicoli.documento.delete');
     Route::post('veicoli/{vehicle}/scan-libretto', [VehicleController::class, 'scanLibretto'])->name('veicoli.scan-libretto');
+    Route::post('veicoli/{vehicle}/applica-libretto', [VehicleController::class, 'applicaLibretto'])->name('veicoli.applica-libretto');
 
     // SINISTRI
     Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
