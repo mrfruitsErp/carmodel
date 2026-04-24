@@ -96,15 +96,14 @@ Route::get('assicurazioni/{assicurazioni}/periti', [InsuranceCompanyController::
     Route::post('fascicoli/{fascicolo}/popola-documenti', [FascicoloController::class, 'popolaDocumenti'])->name('fascicoli.popola-documenti');
     Route::post('fascicoli/{fascicolo}/completa', [FascicoloController::class, 'segnaCompletato'])->name('fascicoli.completa');
 
-    // SETTINGS
-    Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/', [SettingController::class, 'index'])->name('index');
-        Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
-        Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
-        Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
-Route::get('settings/mail/test', [SettingController::class, 'testMail'])->name('settings.mail.test');
-Route::post('settings/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('settings.permessi.aggiorna');
-    });
+// SETTINGS
+Route::prefix('settings')->name('settings.')->group(function () {
+    Route::get('/', [SettingController::class, 'index'])->name('index');
+    Route::get('/mail/test', [SettingController::class, 'testMail'])->name('mail.test');
+    Route::post('/permessi/aggiorna', [SettingController::class, 'aggiornaPermessi'])->name('permessi.aggiorna');
+    Route::get('/{gruppo}', [SettingController::class, 'gruppo'])->name('gruppo');
+    Route::post('/{gruppo}', [SettingController::class, 'salva'])->name('salva');
+});
 
     // CATALOGO DOCUMENTI
     Route::resource('documenti-catalogo', DocumentoCatalogoController::class);
