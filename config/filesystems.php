@@ -41,7 +41,10 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // URL relativo: le foto si servono dal dominio della richiesta corrente.
+            // Così le immagini caricate funzionano sia su alecar.it che su erp.alecar.it
+            // senza dover hard-codare APP_URL (che è uno solo per app multi-dominio).
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
