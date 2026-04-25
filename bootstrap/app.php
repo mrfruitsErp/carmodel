@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'cando' => \App\Http\Middleware\CheckCanDo::class,
+            'cando'    => \App\Http\Middleware\CheckCanDo::class,
+            'restrict' => \App\Http\Middleware\RestrictDomains::class,
         ]);
     })
 

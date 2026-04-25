@@ -218,17 +218,17 @@ $erpRoutes = function () {
     });
 };
 
-// Le route Laravel Breeze (login, register, password reset) sono caricate
-// UNA SOLA VOLTA fuori dai gruppi domain — altrimenti i nomi route verrebbero
-// duplicati (es. "register") e route:cache fallisce.
+// Le route Laravel Breeze (login, register, password reset).
+// Caricate UNA volta fuori dal gruppo restrict — il login funziona da qualsiasi
+// dominio, l'accesso ai dati ERP è poi limitato dal middleware "restrict" sotto.
 require __DIR__.'/auth.php';
 
 if (app()->environment('production')) {
-    // PROD: ERP solo su erp.alecar.it (e IP server per debug diretto)
-    Route::domain('erp.alecar.it')->group($erpRoutes);
-    Route::domain('142.93.99.245')->group($erpRoutes);
+    // PROD: tutte le route ERP rispondono solo se l'host è erp.alecar.it o l'IP server.
+    // Su alecar.it / www.alecar.it il middleware ritorna 404 (sito pubblico).
+    Route::middleware('restrict:erp.alecar.it,142.93.99.245')->group($erpRoutes);
 } else {
-    // DEV: ERP raggiungibile da carmodel.local / localhost (qualsiasi dominio dev)
+    // DEV: nessun filtro dominio (carmodel.local / localhost servono tutto).
     $erpRoutes();
 }
 
