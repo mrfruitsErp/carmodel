@@ -37,7 +37,7 @@
       <svg width="28" height="28" fill="none" stroke="var(--text3)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       <div>
         <div style="font-size:13px;color:var(--text2);font-weight:500">Clicca o trascina le foto qui</div>
-        <div style="font-size:11px;color:var(--text3)">JPG PNG WEBP - max 10MB - selezione multipla supportata</div>
+        <div style="font-size:11px;color:var(--text3)">JPG PNG WEBP — anche foto da smartphone (vengono ottimizzate automaticamente a 1920px) — selezione multipla supportata</div>
       </div>
       <input type="file" id="foto-input" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple style="display:none" onchange="handleFiles(this.files)">
     </div>
@@ -509,17 +509,115 @@ var _uurl = _vid ? '/marketplace/vehicles/'+_vid+'/foto' : null;
 var _csrf = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
 var _pend = [];
 
+// ── Configurazione ridimensionamento client-side ──
+var IMG_MAX_DIM     = 1920;        // lato max (px) — Full HD per pubblicazione marketplace
+var IMG_JPEG_QUAL   = 0.85;        // qualità JPEG (0-1)
+var IMG_SKIP_BELOW  = 500 * 1024;  // skip resize se file < 500KB (già leggero)
+var IMG_RESIZE_TYPES = ['image/jpeg','image/png','image/webp'];
+
+/**
+ * Ridimensiona un File immagine via Canvas e ritorna una Promise<File>.
+ * - Lato lungo max IMG_MAX_DIM
+ * - Output JPEG (riduce file 80-95%)
+ * - Mantiene aspect ratio
+ * - Skip se file già piccolo o tipo non supportato
+ */
+function resizeImage(file) {
+  return new Promise(function(resolve, reject) {
+    if (!IMG_RESIZE_TYPES.includes(file.type) || file.size < IMG_SKIP_BELOW) {
+      return resolve(file); // Restituisce il file originale invariato
+    }
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function() {
+      try {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w > IMG_MAX_DIM || h > IMG_MAX_DIM) {
+          if (w >= h) { h = Math.round(h * (IMG_MAX_DIM / w)); w = IMG_MAX_DIM; }
+          else        { w = Math.round(w * (IMG_MAX_DIM / h)); h = IMG_MAX_DIM; }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function(blob) {
+          if (!blob) return resolve(file);
+          // Mantieni il nome originale ma con .jpg
+          var newName = file.name.replace(/\.(jpe?g|png|webp)$/i, '') + '.jpg';
+          var newFile = new File([blob], newName, { type: 'image/jpeg', lastModified: Date.now() });
+          // Se per qualche motivo il "ridimensionato" è più grande dell'originale, tieni l'originale
+          resolve(newFile.size < file.size ? newFile : file);
+        }, 'image/jpeg', IMG_JPEG_QUAL);
+      } catch (e) {
+        URL.revokeObjectURL(url);
+        resolve(file); // fallback: non blocchiamo l'upload
+      }
+    };
+    img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
+
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('drop-zone').style.borderColor='var(--border2)';
   document.getElementById('drop-zone').style.background='var(--bg3)';
   handleFiles(e.dataTransfer.files);
 }
-function handleFiles(files) {
+
+async function handleFiles(files) {
   var arr = Array.from(files);
-  if (_vid && _uurl) { uploadAjax(arr); }
-  else { arr.forEach(function(f) { var i=_pend.length; _pend.push(f); showPrev(f,i); }); }
+  if (!arr.length) return;
+
+  // Mostra info di ottimizzazione
+  var t = document.getElementById('progress-text');
+  var p = document.getElementById('upload-progress');
+  if (p && t) { p.style.display='block'; t.textContent = 'Ottimizzo immagini...'; }
+
+  var resized = [];
+  var totalBefore = 0, totalAfter = 0;
+  for (var i = 0; i < arr.length; i++) {
+    totalBefore += arr[i].size;
+    if (t) t.textContent = 'Ottimizzo ' + (i+1) + '/' + arr.length + ' (' + arr[i].name + ')...';
+    var r = await resizeImage(arr[i]);
+    totalAfter += r.size;
+    resized.push(r);
+  }
+  if (t) {
+    var saved = ((1 - totalAfter/totalBefore) * 100).toFixed(0);
+    t.textContent = 'Ottimizzate: ' + fmtSize(totalBefore) + ' → ' + fmtSize(totalAfter) + ' (-' + saved + '%)';
+  }
+
+  if (_vid && _uurl) {
+    uploadAjax(resized);
+  } else {
+    resized.forEach(function(f) { var idx = _pend.length; _pend.push(f); showPrev(f, idx); });
+    if (p) setTimeout(function(){ p.style.display='none'; }, 2500);
+    syncPendingToInput();
+  }
 }
+
+/**
+ * Aggiorna l'input file con i Blob ridimensionati così che il form POST
+ * (caso "nuovo veicolo") invii al server le foto già ottimizzate.
+ */
+function syncPendingToInput() {
+  var input = document.getElementById('foto-input');
+  if (!input) return;
+  var dt = new DataTransfer();
+  _pend.forEach(function(f) { if (f) dt.items.add(f); });
+  input.files = dt.files;
+}
+
 function showPrev(file, i) {
   var r = new FileReader();
   r.onload = function(e) {
@@ -532,7 +630,12 @@ function showPrev(file, i) {
   };
   r.readAsDataURL(file);
 }
-function rmPrev(i) { _pend[i]=null; var el=document.getElementById('prev-'+i); if(el) el.remove(); }
+function rmPrev(i) {
+  _pend[i] = null;
+  var el = document.getElementById('prev-'+i);
+  if (el) el.remove();
+  syncPendingToInput();
+}
 
 async function uploadAjax(files) {
   var p=document.getElementById('upload-progress'), b=document.getElementById('progress-bar'), t=document.getElementById('progress-text');
@@ -543,9 +646,10 @@ async function uploadAjax(files) {
     fd.append('_token', _csrf);
     try {
       var res = await fetch(_uurl, {method:'POST', body:fd});
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       var data = await res.json();
       b.style.width = ((i+1)/files.length*100)+'%';
-      t.textContent = 'Caricato '+(i+1)+' di '+files.length;
+      t.textContent = 'Caricata ' + (i+1) + ' di ' + files.length + ' (' + fmtSize(files[i].size) + ')';
       var c = document.getElementById('foto-esistenti');
       if (c) {
         var empty = c.querySelector('div[style*="color:var(--text3)"]');
@@ -557,9 +661,12 @@ async function uploadAjax(files) {
           +'<button type="button" onclick="eliminaFoto('+data.id+')" style="position:absolute;top:2px;right:2px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:3px;width:18px;height:18px;cursor:pointer;font-size:12px">&times;</button>';
         c.appendChild(d);
       }
-    } catch(err) { t.textContent = 'Errore: '+files[i].name; }
+    } catch(err) {
+      t.textContent = 'Errore caricamento ' + files[i].name + ': ' + err.message;
+      console.error('Upload error:', err);
+    }
   }
-  setTimeout(function(){ p.style.display='none'; b.style.width='0%'; }, 2000);
+  setTimeout(function(){ p.style.display='none'; b.style.width='0%'; }, 2500);
 }
 
 async function eliminaFoto(mid) {
