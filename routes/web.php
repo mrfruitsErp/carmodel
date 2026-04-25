@@ -19,8 +19,6 @@ use App\Http\Controllers\Portale\PortaleClienteController;
  *  - LOCALE     → nessun filtro dominio            (carmodel.local serve tutto)
  */
 $erpRoutes = function () {
-    require __DIR__.'/auth.php';
-
     Route::middleware(['auth'])->group(function () {
 
         // Dashboard: accessibile a chiunque sia loggato
@@ -219,6 +217,11 @@ $erpRoutes = function () {
         });
     });
 };
+
+// Le route Laravel Breeze (login, register, password reset) sono caricate
+// UNA SOLA VOLTA fuori dai gruppi domain — altrimenti i nomi route verrebbero
+// duplicati (es. "register") e route:cache fallisce.
+require __DIR__.'/auth.php';
 
 if (app()->environment('production')) {
     // PROD: ERP solo su erp.alecar.it (e IP server per debug diretto)
