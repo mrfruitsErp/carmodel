@@ -1,7 +1,15 @@
 @extends('layouts.app')
 @section('title', isset($vehicle) ? 'Modifica Veicolo' : 'Nuovo Veicolo')
 @section('content')
-<div style="margin-bottom:16px"><a href="{{ route('veicoli.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Veicoli</a></div>
+<div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+  <a href="{{ route('veicoli.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Veicoli</a>
+  @unless(isset($vehicle))
+    <button type="button" id="btn-scan-libretto" class="btn btn-primary btn-sm" onclick="document.getElementById('input-scan-libretto').click()">
+      📷 Scansiona libretto
+    </button>
+    <input type="file" id="input-scan-libretto" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+  @endunless
+</div>
 <form method="POST" action="{{ isset($vehicle) ? route('veicoli.update', $vehicle) : route('veicoli.store') }}">
 @csrf @if(isset($vehicle)) @method('PUT') @endif
 <div class="two-col">
@@ -54,4 +62,72 @@
   </div>
 </div>
 </form>
+
+@unless(isset($vehicle))
+<script>
+(function(){
+  const btn   = document.getElementById('btn-scan-libretto');
+  const input = document.getElementById('input-scan-libretto');
+  if (!btn || !input) return;
+
+  input.addEventListener('change', async function(){
+    if (!input.files.length) return;
+    const file = input.files[0];
+
+    const oldLabel = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Lettura libretto...';
+
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('_token', '{{ csrf_token() }}');
+
+    try {
+      const res = await fetch('{{ route('veicoli.scan-libretto-nuovo') }}', {
+        method: 'POST',
+        body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || 'Errore scansione');
+
+      const d = json.data || {};
+      const map = {
+        plate: d.targa,
+        vin:   d.vin,
+        brand: d.marca,
+        model: d.modello,
+        year:  d.anno_immatricolazione,
+        color: d.colore,
+      };
+      Object.entries(map).forEach(([name, val]) => {
+        if (!val) return;
+        const el = document.querySelector(`[name="${name}"]`);
+        if (el && !el.value) el.value = val;
+      });
+
+      // alimentazione: normalizza
+      if (d.alimentazione) {
+        const sel = document.querySelector('[name="fuel_type"]');
+        if (sel) {
+          const v = d.alimentazione.toLowerCase().trim();
+          for (const opt of sel.options) {
+            if (opt.value.toLowerCase() === v) { sel.value = opt.value; break; }
+          }
+        }
+      }
+
+      btn.innerHTML = '✓ Dati importati';
+      setTimeout(() => { btn.innerHTML = oldLabel; btn.disabled = false; }, 2500);
+    } catch (e) {
+      alert('Errore lettura libretto: ' + e.message);
+      btn.innerHTML = oldLabel;
+      btn.disabled = false;
+    } finally {
+      input.value = '';
+    }
+  });
+})();
+</script>
+@endunless
 @endsection

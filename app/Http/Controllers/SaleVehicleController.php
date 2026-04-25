@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SaleVehicle;
+use App\Models\FleetVehicle;
 use App\Services\Marketplace\MarketplaceManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,43 @@ class SaleVehicleController extends Controller
 
     public function index(Request $request)
     {
+        $type = $request->input('type', 'vendita'); // 'vendita' | 'noleggio'
+
+        // ── NOLEGGIO ───────────────────────────────────────────────────────
+        if ($type === 'noleggio') {
+            $q = FleetVehicle::forTenant($this->tid())->latest();
+
+            if ($s = $request->search) {
+                $q->where(fn($w) => $w
+                    ->where('brand', 'like', "%{$s}%")
+                    ->orWhere('model', 'like', "%{$s}%")
+                    ->orWhere('plate', 'like', "%{$s}%")
+                    ->orWhere('vin', 'like', "%{$s}%")
+                );
+            }
+            if ($status = $request->status) $q->where('status', $status);
+
+            $vehicles = $q->paginate(20)->withQueryString();
+
+            // Conteggi per le card statistiche
+            $base = FleetVehicle::forTenant($this->tid());
+            $rentalStats = [
+                'total'        => (clone $base)->count(),
+                'disponibili'  => (clone $base)->where('status', 'disponibile')->count(),
+                'in_noleggio'  => (clone $base)->where('status', 'in_noleggio')->count(),
+                'manutenzione' => (clone $base)->where('status', 'manutenzione')->count(),
+                'web_visibili' => (clone $base)->where('web_visible', true)->count(),
+            ];
+
+            return view('marketplace.vehicles.index', [
+                'type'        => 'noleggio',
+                'vehicles'    => $vehicles,
+                'stats'       => $this->manager->dashboardStats($this->tid()),
+                'rentalStats' => $rentalStats,
+            ]);
+        }
+
+        // ── VENDITA (default) ─────────────────────────────────────────────
         $query = SaleVehicle::forTenant($this->tid())
             ->withCount(['listings' => fn($q) => $q->where('status', 'published')])
             ->with(['listings'])
@@ -26,7 +64,11 @@ class SaleVehicleController extends Controller
         $vehicles = $query->paginate(20)->withQueryString();
         $stats    = $this->manager->dashboardStats($this->tid());
 
-        return view('marketplace.vehicles.index', compact('vehicles', 'stats'));
+        return view('marketplace.vehicles.index', [
+            'type'     => 'vendita',
+            'vehicles' => $vehicles,
+            'stats'    => $stats,
+        ]);
     }
 
     public function create()

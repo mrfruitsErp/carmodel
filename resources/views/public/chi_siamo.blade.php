@@ -1,41 +1,43 @@
 {{-- chi_siamo.blade.php --}}
 @extends('public.layout')
-@section('title', 'Chi Siamo - AleCar S.r.l. Torino')
-@section('description', 'AleCar S.r.l. - La nostra storia, la nostra sede e il nostro team a Torino.')
+@section('title', 'Chi Siamo - AleCar S.r.l. | Carrozzeria, Officina, Vendita Auto e Noleggio a Torino')
+@section('description', 'AleCar S.r.l. a Torino dal 2013: carrozzeria, officina, vendita auto nuove e usate, noleggio breve e lungo termine, gestione sinistri e pratiche auto. Il tuo partner completo per il mondo dell\'auto.')
 
 @section('content')
 
+{{-- HERO --}}
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:60px 0 48px">
   <div class="container">
     <div class="section-label">La nostra storia</div>
     <h1 class="section-title">Chi siamo</h1>
-    <p class="section-sub">AleCar S.r.l. — nata dalla passione per l'automobile e dalla voglia di offrire un servizio trasparente e di qualità.</p>
+    <p class="section-sub">AleCar S.r.l. — il tuo partner completo per il mondo dell'auto a Torino dal 2013. Vendita, officina, carrozzeria, noleggio, sinistri e pratiche: tutto in un unico posto.</p>
   </div>
 </section>
 
+{{-- INTRO + STORIA --}}
 <section class="section">
   <div class="container">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:60px">
       <div>
         <div class="orange-line"></div>
-        <h2 style="font-size:28px;font-weight:800;margin-bottom:20px">La nostra missione</h2>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:20px">Torino, 2013. Una passione che diventa impresa.</h2>
         <p style="color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:16px">
-          AleCar S.r.l. nasce a Torino con un obiettivo chiaro: rendere l'acquisto e il noleggio di un'auto un'esperienza semplice, trasparente e soddisfacente.
+          AleCar nasce a Torino nel 2013 dall'intuizione di un giovane imprenditore con le radici nella carrozzeria di famiglia e lo sguardo rivolto al futuro. L'idea era semplice quanto ambiziosa: creare un punto di riferimento unico per tutto ciò che riguarda l'automobile.
         </p>
         <p style="color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:16px">
-          Ogni veicolo del nostro stock viene selezionato con cura, verificato meccanicamente e proposto a prezzi equi con IVA sempre esposta. Nessuna sorpresa, nessun costo nascosto.
+          In oltre dieci anni di attività, AleCar si è trasformata in un polo integrato di servizi auto che oggi serve privati e aziende in tutta l'area metropolitana torinese — dall'acquisto alla riparazione, dal noleggio alla gestione dei sinistri, fino al disbrigo delle pratiche burocratiche.
         </p>
         <p style="color:var(--text2);font-size:15px;line-height:1.9">
-          Offriamo anche un servizio di noleggio breve e lungo termine per privati e aziende, con una flotta sempre aggiornata e veicoli pronti alla consegna.
+          Siamo torinesi. Lavoriamo ogni giorno in una città che l'automobile ce l'ha nel DNA, e questo si sente nel modo in cui approcciamo ogni cliente: con competenza, serietà e la flessibilità di chi ha costruito la propria reputazione sulla soddisfazione delle persone.
         </p>
       </div>
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:36px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           @foreach([
-            ['🚗','Stock veicoli','Selezione accurata di auto usate garantite'],
-            ['📅','Noleggio','Breve e lungo termine per privati e aziende'],
-            ['🔍','Trasparenza','Prezzi chiari, IVA sempre esposta'],
-            ['📞','Assistenza','Supporto dedicato prima e dopo l\'acquisto'],
+            ['🔧','Officina & Carrozzeria','Riparazioni, revisioni e verniciatura certificata'],
+            ['🚗','Vendita Auto','Nuove, km0 e usate selezionate multimarca'],
+            ['🔑','Noleggio','Breve e lungo termine, vetture sostitutive sempre disponibili'],
+            ['📋','Pratiche & Sinistri','Passaggi di proprietà, immatricolazioni e gestione sinistri completa'],
           ] as [$icon,$title,$desc])
           <div style="background:var(--bg3);border-radius:10px;padding:20px">
             <div style="font-size:24px;margin-bottom:10px">{{ $icon }}</div>
@@ -49,8 +51,91 @@
 
     <div class="divider"></div>
 
-    {{-- Sede e orari --}}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    {{-- TUTTI I SERVIZI --}}
+    <div style="margin:60px 0 0">
+      <div class="orange-line"></div>
+      <h2 style="font-size:26px;font-weight:800;margin-bottom:8px">Tutto quello che riguarda la tua auto. In un unico posto.</h2>
+      <p style="color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:40px;max-width:700px">Siamo l'alternativa moderna alla concessionaria tradizionale. Non vendiamo solo auto: ti seguiamo in ogni momento della vita del tuo veicolo.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:60px">
+
+        {{-- Officina --}}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <div style="font-size:30px;margin-bottom:14px">🔧</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">Officina & Carrozzeria</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.8">Riparazioni meccaniche, revisioni, carrozzeria e verniciatura professionale. Tecnici certificati, ricambi originali e tempi certi. La tua auto torna come nuova.</p>
+        </div>
+
+        {{-- Vendita --}}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <div style="font-size:30px;margin-bottom:14px">🚗</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">Vendita Auto Nuove e Usate</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.8">Ampia selezione multimarca di vetture nuove, km0 e usate garantite. Valutazione dell'usato, permuta e finanziamenti personalizzati. IVA sempre esposta, nessuna sorpresa.</p>
+        </div>
+
+        {{-- Noleggio --}}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <div style="font-size:30px;margin-bottom:14px">🔑</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">Noleggio Breve e Lungo Termine</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.8">Soluzioni flessibili per privati e aziende. Auto sostitutive durante le riparazioni, noleggio giornaliero o mensile, fleet aziendale gestita chiavi in mano.</p>
+        </div>
+
+        {{-- Sinistri --}}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <div style="font-size:30px;margin-bottom:14px">🛡️</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">Gestione Sinistri</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.8">Ti affianchiamo in ogni fase: dalla perizia al rapporto con la compagnia assicurativa, fino alla riparazione completa e alla vettura sostitutiva. Ci pensiamo noi a tutto.</p>
+        </div>
+
+        {{-- Pratiche --}}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <div style="font-size:30px;margin-bottom:14px">📋</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">Pratiche Auto</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.8">Passaggi di proprietà, immatricolazioni, radiazioni, visure e pratiche assicurative. Zero code, zero stress: ci occupiamo noi di tutta la burocrazia.</p>
+        </div>
+
+        {{-- Pneumatici --}}
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <div style="font-size:30px;margin-bottom:14px">🔩</div>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:10px">Tagliandi, Gomme & Revisioni</h3>
+          <p style="font-size:13px;color:var(--text2);line-height:1.8">Cambi gomme stagionali, tagliandi programmati e revisioni ministeriali. Prezzi trasparenti, appuntamenti rapidi, nessuna sorpresa in fattura.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    {{-- PERCHE' SCEGLIERCI --}}
+    <div style="margin:60px 0">
+      <div class="orange-line"></div>
+      <h2 style="font-size:26px;font-weight:800;margin-bottom:8px">Perché scegliere AleCar</h2>
+      <p style="color:var(--text2);font-size:15px;line-height:1.8;margin-bottom:36px;max-width:700px">Perché non devi più girare da un'officina all'altra, da un'agenzia di pratiche all'altra, da un noleggiatore all'altro. Da AleCar trovi tutto, gestito da persone competenti che si prendono cura di te.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        @foreach([
+          ['✅','Oltre 10 anni di esperienza','Nel settore automotive torinese, con centinaia di clienti soddisfatti.'],
+          ['✅','Servizio a 360°','Vendita, riparazione, noleggio, pratiche: un solo interlocutore per tutto.'],
+          ['✅','Assistenza personalizzata','Per privati e aziende, con soluzioni su misura per ogni esigenza.'],
+          ['✅','Trasparenza totale','Preventivi chiari, tempi certi, nessun costo nascosto.'],
+          ['✅','Vetture sostitutive','Sempre disponibili durante le riparazioni, senza attese.'],
+          ['✅','Team certificato','Aggiornato sulle ultime tecnologie, pronto a seguirti in ogni fase.'],
+        ] as [$icon,$title,$desc])
+        <div style="display:flex;gap:14px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <span style="color:var(--orange);font-size:18px;flex-shrink:0">{{ $icon }}</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">{{ $title }}</div>
+            <div style="font-size:12px;color:var(--text3);line-height:1.6">{{ $desc }}</div>
+          </div>
+        </div>
+        @endforeach
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    {{-- SEDE + ORARI --}}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:60px">
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px">
         <div class="orange-line"></div>
         <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Dove siamo</h3>
@@ -92,7 +177,18 @@
       </div>
     </div>
 
-    {{-- Dati aziendali --}}
+    {{-- CTA --}}
+    <div style="margin-top:48px;background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);border:1px solid var(--orange);border-radius:16px;padding:40px;text-align:center">
+      <h3 style="font-size:22px;font-weight:800;margin-bottom:12px">Hai bisogno di un'auto, un preventivo o un consiglio?</h3>
+      <p style="color:var(--text2);font-size:15px;margin-bottom:28px">Contattaci subito — rispondiamo entro poche ore. Nessun centralino, parli direttamente con noi.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="tel:+393278072650" style="background:var(--orange);color:#000;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px">📞 Chiamaci ora</a>
+        <a href="mailto:alecarto7@gmail.com" style="background:var(--bg3);border:1px solid var(--border);color:var(--text1);font-weight:600;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px">✉️ Scrivici una email</a>
+        <a href="{{ route('public.vehicles.index') }}" style="background:var(--bg3);border:1px solid var(--border);color:var(--text1);font-weight:600;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px">🚗 Vedi le auto in vendita</a>
+      </div>
+    </div>
+
+    {{-- DATI AZIENDALI --}}
     <div style="margin-top:40px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px">
       <div style="font-size:12px;color:var(--text3);line-height:2">
         <strong style="color:var(--text2)">AleCar S.r.l.</strong> — Via Ignazio Collino 29, 10100 Torino (TO) —
@@ -100,13 +196,17 @@
         Iscritta alla CCIAA di Torino — PEC: alecar@legalmail.it
       </div>
     </div>
+
   </div>
 </section>
 
 @push('styles')
 <style>
 @media(max-width:768px){
-  div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  div[style*="grid-template-columns:1fr 1fr"],
+  div[style*="grid-template-columns:repeat(3,1fr)"]{
+    grid-template-columns:1fr!important
+  }
 }
 </style>
 @endpush

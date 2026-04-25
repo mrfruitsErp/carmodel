@@ -40,7 +40,38 @@ class SettingController extends Controller
     public function salva(Request $request, string $gruppo)
     {
         $tid = auth()->user()->tenant_id;
-        foreach ($request->except(['_token', '_method']) as $chiave => $valore) {
+        $payload = $request->except(['_token', '_method']);
+
+        // ==== Logica speciale per il gruppo AI: rilevamento automatico provider/modello ====
+        if ($gruppo === 'ai') {
+            $apiKey = trim((string) ($payload['ai_api_key'] ?? ''));
+            $model  = trim((string) ($payload['ai_model']   ?? ''));
+
+            // Rileva provider dal prefisso della chiave
+            if (str_starts_with($apiKey, 'sk-ant-')) {
+                $payload['ai_provider'] = 'anthropic';
+                $defaultModel = 'claude-3-5-sonnet-20240620';
+            } elseif (str_starts_with($apiKey, 'AIza')) {
+                $payload['ai_provider'] = 'google';
+                $defaultModel = 'gemini-2.0-flash';
+            } else {
+                // chiave non riconosciuta: lascia ciò che arriva (o anthropic come fallback)
+                $payload['ai_provider'] = $payload['ai_provider'] ?? 'anthropic';
+                $defaultModel = $payload['ai_provider'] === 'google' ? 'gemini-2.0-flash' : 'claude-3-5-sonnet-20240620';
+            }
+
+            // Se il modello è vuoto, o non coerente col provider rilevato, applica il default
+            $low = strtolower($model);
+            $coerente = ($payload['ai_provider'] === 'google' && preg_match('/^gemini-\d/', $low))
+                     || ($payload['ai_provider'] === 'anthropic' && str_starts_with($low, 'claude-'));
+            if ($model === '' || !$coerente) {
+                $payload['ai_model'] = $defaultModel;
+            } else {
+                $payload['ai_model'] = $model;
+            }
+        }
+
+        foreach ($payload as $chiave => $valore) {
             Setting::withoutGlobalScope('tenant')->updateOrCreate(
                 ['tenant_id' => $tid, 'chiave' => $chiave, 'gruppo' => $gruppo],
                 ['valore' => $valore]

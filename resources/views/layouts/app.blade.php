@@ -223,9 +223,12 @@ tbody tr:hover td{background:var(--bg3)}
 
     {{-- NOLEGGIO --}}
     @if(auth()->user()->canDo('noleggio.view'))
+    @php
+      $isMarketplaceRental = request()->routeIs('marketplace.vehicles.*') && request('type') === 'noleggio';
+    @endphp
     <div class="nav-section">Noleggio</div>
-    <a href="{{ route('flotta.index') }}" class="nav-item {{ request()->routeIs('flotta.*') ? 'active' : '' }}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Flotta Veicoli
+    <a href="{{ route('marketplace.vehicles.index', ['type'=>'noleggio']) }}" class="nav-item {{ $isMarketplaceRental || request()->routeIs('flotta.*') ? 'active' : '' }}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>Veicoli a noleggio
     </a>
     <a href="{{ route('noleggio.index') }}" class="nav-item {{ request()->routeIs('noleggio.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Contratti Noleggio
@@ -270,11 +273,14 @@ tbody tr:hover td{background:var(--bg3)}
 
     {{-- VENDITA AUTO --}}
     @if(auth()->user()->canDo('marketplace.view'))
+    @php
+      $isMarketplaceSale = request()->routeIs('marketplace.vehicles.*') && request('type') !== 'noleggio';
+    @endphp
     <div class="nav-section" style="color:rgba(255,107,0,.5)">Vendita Auto</div>
     <a href="{{ route('marketplace.dashboard') }}" class="nav-item {{ request()->routeIs('marketplace.dashboard') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
     </a>
-    <a href="{{ route('marketplace.vehicles.index') }}" class="nav-item {{ request()->routeIs('marketplace.vehicles.*') ? 'active' : '' }}">
+    <a href="{{ route('marketplace.vehicles.index', ['type'=>'vendita']) }}" class="nav-item {{ $isMarketplaceSale ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>Veicoli in vendita
     </a>
     <a href="{{ route('marketplace.leads.index') }}" class="nav-item {{ request()->routeIs('marketplace.leads.*') ? 'active' : '' }}">

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', $vehicle->plate.' — '.$vehicle->brand.' '.$vehicle->model)
 @section('topbar-actions')
+<button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('input-scan-libretto-existing').click()">📷 Scansiona libretto</button>
+<input type="file" id="input-scan-libretto-existing" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
 <a href="{{ route('veicoli.edit', ['veicoli' => $vehicle]) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
 @endsection
 @section('content')
@@ -163,4 +165,107 @@
     </form>
   </div>
 </div>
+
+{{-- MODAL CONFERMA APPLICA LIBRETTO --}}
+<div id="modal-libretto-confirm" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:24px;width:520px;max-width:95vw">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:600">Dati estratti dal libretto</div>
+      <button type="button" onclick="document.getElementById('modal-libretto-confirm').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button>
+    </div>
+    <form method="POST" action="{{ route('veicoli.applica-libretto', $vehicle) }}" id="form-applica-libretto">
+      @csrf
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Controlla i dati e modifica se necessario, poi applica al veicolo.</div>
+      <div class="two-col" style="gap:10px">
+        <div class="form-group"><label class="form-label">Targa</label><input name="plate" class="form-input" style="text-transform:uppercase"></div>
+        <div class="form-group"><label class="form-label">VIN</label><input name="vin" class="form-input" style="text-transform:uppercase"></div>
+      </div>
+      <div class="two-col" style="gap:10px">
+        <div class="form-group"><label class="form-label">Marca</label><input name="brand" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Modello</label><input name="model" class="form-input"></div>
+      </div>
+      <div class="two-col" style="gap:10px">
+        <div class="form-group"><label class="form-label">Versione</label><input name="version" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Anno</label><input name="year" type="number" class="form-input" min="1900" max="2099"></div>
+      </div>
+      <div class="two-col" style="gap:10px">
+        <div class="form-group"><label class="form-label">Colore</label><input name="color" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Alimentazione</label>
+          <select name="fuel_type" class="form-select">
+            <option value="">—</option>
+            @foreach(['benzina','diesel','gpl','metano','elettrico','ibrido','altro'] as $f)
+            <option value="{{ $f }}">{{ ucfirst($f) }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button type="button" onclick="document.getElementById('modal-libretto-confirm').style.display='none'" class="btn btn-ghost" style="flex:1">Annulla</button>
+        <button type="submit" class="btn btn-primary" style="flex:1">Applica al veicolo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  const input = document.getElementById('input-scan-libretto-existing');
+  if (!input) return;
+  const modal = document.getElementById('modal-libretto-confirm');
+  const form  = document.getElementById('form-applica-libretto');
+
+  input.addEventListener('change', async function(){
+    if (!input.files.length) return;
+    const file = input.files[0];
+
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('_token', '{{ csrf_token() }}');
+
+    // feedback minimo
+    const orig = document.title;
+    document.title = '⏳ Lettura libretto...';
+
+    try {
+      const res = await fetch('{{ route('veicoli.scan-libretto', $vehicle) }}', {
+        method: 'POST',
+        body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || 'Errore scansione');
+
+      const d = json.data || {};
+      const map = {
+        plate: d.targa,
+        vin:   d.vin,
+        brand: d.marca,
+        model: d.modello,
+        version: d.versione,
+        year:  d.anno_immatricolazione,
+        color: d.colore,
+      };
+      Object.entries(map).forEach(([name, val]) => {
+        const el = form.querySelector(`[name="${name}"]`);
+        if (el) el.value = val || '';
+      });
+      if (d.alimentazione) {
+        const sel = form.querySelector('[name="fuel_type"]');
+        if (sel) {
+          const v = d.alimentazione.toLowerCase().trim();
+          for (const opt of sel.options) {
+            if (opt.value.toLowerCase() === v) { sel.value = opt.value; break; }
+          }
+        }
+      }
+      modal.style.display = 'flex';
+    } catch (e) {
+      alert('Errore lettura libretto: ' + e.message);
+    } finally {
+      document.title = orig;
+      input.value = '';
+    }
+  });
+})();
+</script>
 @endsection

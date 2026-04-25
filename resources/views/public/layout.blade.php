@@ -158,8 +158,12 @@
 {{-- NAVBAR --}}
 <nav class="navbar">
   <div class="navbar-inner">
+    @php
+      $logoPath = 'images/logo-alecar-compact.png';
+      $logoVer  = file_exists(public_path($logoPath)) ? filemtime(public_path($logoPath)) : '1';
+    @endphp
     <a href="{{ route('public.home') }}" class="navbar-logo">
-      <img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar S.r.l.">
+      <img src="{{ asset($logoPath) }}?v={{ $logoVer }}" alt="AleCar S.r.l.">
     </a>
     <div class="navbar-menu">
       <a href="{{ route('public.home') }}" class="{{ request()->routeIs('public.home') ? 'active' : '' }}">Home</a>
@@ -192,7 +196,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="footer-logo"><img src="{{ asset('images/logo_alecar.jpg') }}" alt="AleCar"></div>
+        <div class="footer-logo"><img src="{{ asset($logoPath) }}?v={{ $logoVer }}" alt="AleCar"></div>
         <p class="footer-desc">AleCar S.r.l. — Vendita auto usate selezionate e noleggio veicoli a Torino. Qualità garantita, prezzi trasparenti, assistenza dedicata.</p>
       </div>
       <div class="footer-col">

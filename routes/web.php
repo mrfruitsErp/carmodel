@@ -24,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('clienti/{customer}/storico', [CustomerController::class, 'storico'])->name('clienti.storico');
 
     // VEICOLI
+    // (scan-libretto-nuovo va PRIMA del resource per evitare conflitto col {vehicle})
+    Route::post('veicoli/scan-libretto-nuovo', [VehicleController::class, 'scanLibrettoNuovo'])->name('veicoli.scan-libretto-nuovo');
     Route::resource('veicoli', VehicleController::class);
     Route::post('veicoli/{vehicle}/foto', [VehicleController::class, 'uploadFoto'])->name('veicoli.foto');
     Route::post('veicoli/{vehicle}/documento', [VehicleController::class, 'uploadDocumento'])->name('veicoli.documento');

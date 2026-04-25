@@ -17,6 +17,21 @@ class Setting extends Model
                 $query->where('tenant_id', auth()->user()->tenant_id);
             }
         });
+
+        // Mirror delle colonne legacy (key/value/group) sulle nuove (chiave/valore/gruppo)
+        // così la riga è sempre coerente anche se qualche query legge ancora i nomi inglesi.
+        static::saving(function ($setting) {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('settings', 'key')) {
+                $setting->setAttribute('key', $setting->chiave);
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('settings', 'value')) {
+                $setting->setAttribute('value', $setting->valore);
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('settings', 'group')) {
+                $setting->setAttribute('group', $setting->gruppo);
+            }
+        });
+
         static::saved(function ($setting) {
             Cache::forget("settings_{$setting->tenant_id}");
         });
