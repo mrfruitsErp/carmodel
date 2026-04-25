@@ -34,10 +34,10 @@ class UserController extends Controller
             'active'   => 'boolean',
         ]);
 
-        $data['tenant_id'] = $this->tid();
-        $data['password']  = Hash::make($data['password']);
-        $data['active']    = $request->boolean('active', true);
-        $data['custom_permissions'] = [];
+        $data['tenant_id']          = $this->tid();
+        $data['password']           = Hash::make($data['password']);
+        $data['active']             = $request->boolean('active', true);
+        $data['custom_permissions'] = $this->parsePermissions($request);
 
         User::create($data);
         return redirect()->route('utenti.index')->with('success', 'Utente creato.');
@@ -71,19 +71,42 @@ class UserController extends Controller
             $data['password'] = Hash::make($data['password']);
         }
 
-        $data['active'] = $request->boolean('active');
-
-        $customPerms = [];
-        foreach (User::ALL_PERMISSIONS as $section => $actions) {
-            foreach ($actions as $action => $label) {
-                $key = "{$section}.{$action}";
-                $customPerms[$key] = $request->boolean("perm_{$section}_{$action}");
-            }
-        }
-        $data['custom_permissions'] = $customPerms;
+        $data['active']             = $request->boolean('active');
+        $data['custom_permissions'] = $this->parsePermissions($request);
 
         $utenti->update($data);
         return redirect()->route('utenti.index')->with('success', 'Utente aggiornato.');
+    }
+
+    /**
+     * Estrae i custom_permissions dalle checkbox del form.
+     *
+     * - Se l'utente NON spunta nessuna checkbox → ritorna null (= usa i default del ruolo)
+     * - Se spunta almeno una checkbox → ritorna array con tutte le chiavi
+     *   (true per le spuntate, false per le non spuntate)
+     *
+     * Questo comportamento corrisponde al testo del form:
+     *   "Se non spunti nulla, vengono usati i permessi predefiniti del ruolo"
+     */
+    private function parsePermissions(Request $request): ?array
+    {
+        $perms = [];
+        $any   = false;
+
+        foreach (User::ALL_PERMISSIONS as $section => $actions) {
+            foreach ($actions as $action => $label) {
+                $field = "perm_{$section}_{$action}";
+                $key   = "{$section}.{$action}";
+                if ($request->boolean($field)) {
+                    $perms[$key] = true;
+                    $any = true;
+                } else {
+                    $perms[$key] = false;
+                }
+            }
+        }
+
+        return $any ? $perms : null;
     }
 
     public function destroy(User $utenti)

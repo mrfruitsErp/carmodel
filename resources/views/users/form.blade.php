@@ -56,8 +56,15 @@
     {{-- PERMESSI CUSTOM --}}
     <div class="card">
       <div class="card-title">Permessi personalizzati</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:16px">
-        I permessi qui sotto sovrascrivono quelli del ruolo base. Se non spunti nulla, vengono usati i permessi predefiniti del ruolo.
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.7">
+        <strong style="color:var(--orange)">Regola di funzionamento:</strong><br>
+        • <strong>Nessuna checkbox spuntata</strong> → l'utente usa i permessi predefiniti del ruolo base (Admin, Manager, Operatore, Vendite).<br>
+        • <strong>Almeno una checkbox spuntata</strong> → vengono usati ESATTAMENTE i permessi spuntati (le altre voci sono negate).<br>
+        • <strong>"Vedere"</strong> = leggere/aprire la sezione · <strong>"Modificare"</strong> = creare/aggiornare/eliminare.<br>
+        • Gli utenti con ruolo <strong>Admin</strong> hanno sempre tutti i permessi (le checkbox vengono ignorate).
+      </div>
+      <div style="background:var(--orange-bg);border:1px solid rgba(255,107,0,.3);border-radius:6px;padding:8px 12px;margin-bottom:16px;font-size:11px;color:var(--text2)">
+        💡 Esempio: per dare a un utente accesso solo a Clienti e Veicoli, spunta solo le 4 caselle in quei due gruppi.
       </div>
 
       @php $customPerms = $user->custom_permissions ?? []; @endphp
