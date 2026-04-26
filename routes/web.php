@@ -22,7 +22,7 @@ $erpRoutes = function () {
     Route::middleware(['auth'])->group(function () {
 
         // Dashboard: accessibile a chiunque sia loggato
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // ─── CLIENTI (view obbligatorio per accedere, edit per POST/PUT/DELETE) ───
         Route::middleware('cando:clienti.view')->group(function () {
@@ -218,17 +218,18 @@ $erpRoutes = function () {
     });
 };
 
-// Le route Laravel Breeze (login, register, password reset).
-// Caricate UNA volta fuori dal gruppo restrict — il login funziona da qualsiasi
-// dominio, l'accesso ai dati ERP è poi limitato dal middleware "restrict" sotto.
-require __DIR__.'/auth.php';
-
 if (app()->environment('production')) {
-    // PROD: tutte le route ERP rispondono solo se l'host è erp.alecar.it o l'IP server.
-    // Su alecar.it / www.alecar.it il middleware ritorna 404 (sito pubblico).
-    Route::middleware('restrict:erp.alecar.it,142.93.99.245')->group($erpRoutes);
+    // PROD: ERP + login rispondono SOLO sui domini gestionali.
+    // app.alecar.it = nuovo URL canonico
+    // erp.alecar.it = alias (compatibilità con vecchi link)
+    // 142.93.99.245  = IP server per debug diretto
+    Route::middleware('restrict:app.alecar.it,erp.alecar.it,142.93.99.245')->group(function () use ($erpRoutes) {
+        require __DIR__.'/auth.php';   // login, register, password reset
+        $erpRoutes();
+    });
 } else {
     // DEV: nessun filtro dominio (carmodel.local / localhost servono tutto).
+    require __DIR__.'/auth.php';
     $erpRoutes();
 }
 

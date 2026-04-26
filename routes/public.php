@@ -44,8 +44,9 @@ $siteRoutes = function () {
 };
 
 if (app()->environment('production')) {
-    // PROD: alla root del dominio alecar.it (URL puliti)
-    Route::domain('www.alecar.it')->name('public.')->group($siteRoutes);
+    // PROD: route registrate UNA volta sul dominio canonico alecar.it.
+    // www.alecar.it viene reindirizzato 301 dal vhost nginx → alecar.it
+    // (così evitiamo doppia registrazione che rompe route:cache).
     Route::domain('alecar.it')->name('public.')->group($siteRoutes);
 } else {
     // DEV/locale: prefix "/sito" per non collidere con la dashboard ERP

@@ -11,8 +11,15 @@ class CheckCanDo
     {
         $user = auth()->user();
 
-        if (!$user || !$user->canDo($permission)) {
-            abort(403, 'Accesso negato');
+        // Se non loggato → al login (non 403, ha senso solo per chi è dentro)
+        if (!$user) {
+            return $request->expectsJson()
+                ? response()->json(['error' => 'Unauthenticated'], 401)
+                : redirect()->guest(route('login'));
+        }
+
+        if (!$user->canDo($permission)) {
+            abort(403, "Permesso richiesto: {$permission}");
         }
 
         return $next($request);
