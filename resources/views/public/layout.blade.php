@@ -148,8 +148,124 @@
     .legal-modal-body h4:first-child{margin-top:0}
     .legal-modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
 
-    @media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}.section-title{font-size:28px}}
-    @media(max-width:600px){.navbar-menu{display:none}.hamburger{display:flex}.footer-grid{grid-template-columns:1fr}.section{padding:48px 0}.section-title{font-size:24px}.cookie-inner{flex-direction:column}.cookie-actions{width:100%}.cookie-btn{flex:1;text-align:center}}
+    /* ═══════════════════════════════════════════════════════════════
+       RESPONSIVE — globale
+       ═══════════════════════════════════════════════════════════════ */
+    body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+    img{max-width:100%;height:auto}
+    main{padding-top:64px;min-height:100vh;width:100%;overflow-x:hidden}
+
+    /* Bottoni: clamp font + padding fluidi */
+    .btn{font-size:clamp(13px,1.6vw,14px);padding:clamp(10px,1.4vw,11px) clamp(16px,2.4vw,24px)}
+
+    /* TABLET ≤ 900px */
+    @media(max-width:900px){
+      .container{padding:0 16px}
+      .footer-grid{grid-template-columns:1fr 1fr;gap:24px!important}
+      .section-title{font-size:clamp(22px,3.5vw,28px)}
+
+      /* Pattern di grid inline più comuni → riduci colonne */
+      div[style*="grid-template-columns:1fr 1fr"]:not([style*="auto-fit"]):not([style*="minmax"]),
+      div[style*="grid-template-columns: 1fr 1fr"]:not([style*="auto-fit"]):not([style*="minmax"]){grid-template-columns:1fr!important;gap:24px!important}
+
+      div[style*="grid-template-columns:1fr 1fr 1fr"]:not([style*="auto-fit"]):not([style*="minmax"]),
+      div[style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:repeat(2,1fr)!important;gap:16px!important}
+
+      div[style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important;gap:16px!important}
+
+      div[style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(2,1fr)!important;gap:14px!important}
+
+      /* Padding sezioni grandi → ridotti */
+      div[style*="padding:60px"]:not([style*="padding:60px 0"]){padding:32px 20px!important}
+      div[style*="padding:48px"]:not([style*="padding:48px 0"]){padding:28px 20px!important}
+      div[style*="padding:40px"]:not([style*="padding:40px 0"]){padding:24px 16px!important}
+
+      .section{padding:48px 0}
+    }
+
+    /* MOBILE ≤ 600px */
+    @media(max-width:600px){
+      html,body{font-size:14px}
+      .container{padding:0 14px}
+
+      .navbar-menu{display:none}
+      .hamburger{display:flex}
+      .navbar-logo img{height:32px}
+
+      .footer-grid{grid-template-columns:1fr;gap:24px!important;text-align:left}
+
+      /* Tutti i grid inline → 1 colonna */
+      div[style*="grid-template-columns:1fr 1fr"]:not([style*="auto-fit"]):not([style*="minmax"]),
+      div[style*="grid-template-columns:1fr 1fr 1fr"]:not([style*="auto-fit"]):not([style*="minmax"]),
+      div[style*="grid-template-columns:repeat(2,1fr)"],
+      div[style*="grid-template-columns:repeat(3,1fr)"],
+      div[style*="grid-template-columns:repeat(4,1fr)"],
+      div[style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:1fr!important;gap:16px!important}
+
+      /* Tipografia */
+      h1{font-size:clamp(26px,7vw,34px)!important;line-height:1.15!important}
+      h2{font-size:clamp(20px,5.5vw,26px)!important}
+      h3{font-size:clamp(17px,4.5vw,20px)!important}
+      .section-title{font-size:clamp(20px,5vw,24px)!important}
+
+      /* Padding */
+      .section{padding:32px 0}
+      section{padding-left:0;padding-right:0}
+      div[style*="padding:80px"]{padding:40px 16px!important}
+      div[style*="padding:60px"]:not([style*="padding:60px 0"]){padding:28px 16px!important}
+      div[style*="padding:48px"]:not([style*="padding:48px 0"]){padding:24px 14px!important}
+
+      /* Numeri grandi (statistiche) ridotti */
+      div[style*="font-size:32px"]:not(.section-title):not(h1):not(h2){font-size:24px!important}
+      div[style*="font-size:36px"]:not(.section-title):not(h1):not(h2){font-size:26px!important}
+
+      /* Form input — 16px previene zoom iOS al focus */
+      .form-input,.form-select,.form-textarea,input,textarea,select{font-size:16px!important}
+
+      /* Cookie banner full width */
+      .cookie-inner{flex-direction:column;align-items:stretch}
+      .cookie-actions{width:100%;flex-direction:column;gap:8px}
+      .cookie-btn{flex:1;text-align:center;width:100%}
+
+      /* Modal legali */
+      .legal-modal{padding:12px}
+      .legal-modal-box{max-height:90vh}
+      .legal-modal-body{padding:16px;font-size:13px}
+      .legal-modal-footer{flex-direction:column;gap:8px}
+      .legal-modal-footer .btn{width:100%}
+
+      /* WhatsApp FAB più piccolo */
+      a[href*="wa.me"]{width:50px!important;height:50px!important;bottom:18px!important;right:18px!important}
+      a[href*="wa.me"] svg{width:24px!important;height:24px!important}
+
+      /* CTA con 2 bottoni: in colonna full-width */
+      div[style*="display:flex"][style*="justify-content:center"][style*="flex-wrap:wrap"] > .btn,
+      div[style*="display:flex"][style*="gap:12px"][style*="flex-wrap:wrap"] > .btn,
+      div[style*="display:flex"][style*="gap:16px"][style*="flex-wrap:wrap"] > .btn{flex:1 1 100%;justify-content:center}
+
+      /* Form di ricerca pubblici (auto-in-vendita, noleggio, ecc.):
+         su mobile gli input/select con min-width devono andare a piena larghezza */
+      form input[type="text"],
+      form input[type="email"],
+      form input[type="tel"],
+      form input[type="number"],
+      form input[type="search"],
+      form select,
+      form textarea{min-width:0!important;width:100%!important}
+
+      form button[type="submit"]{width:100%}
+
+      /* Form a flex con gap → impila in colonna */
+      form[style*="display:flex"]{flex-direction:column!important;align-items:stretch!important}
+    }
+
+    /* MOBILE STRETTO ≤ 380px */
+    @media(max-width:380px){
+      .container{padding:0 12px}
+      .navbar-inner{padding:0 14px}
+      .navbar-logo img{height:28px}
+      h1{font-size:24px!important}
+    }
   </style>
   @stack('styles')
 </head>
