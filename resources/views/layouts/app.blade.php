@@ -251,6 +251,22 @@ tbody tr:hover td{background:var(--bg3)}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Fatture & DDT
     </a>
     @endif
+    @if(auth()->user()->canDo('clienti.view'))
+    @php
+      try {
+        $msgNonLetti = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->count();
+      } catch (\Throwable $e) { $msgNonLetti = 0; }
+    @endphp
+    <a href="{{ route('messaggi.index') }}" class="nav-item {{ request()->routeIs('messaggi.*') ? 'active' : '' }}" style="display:flex;align-items:center;justify-content:space-between">
+      <span style="display:flex;align-items:center;gap:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messaggi sito
+      </span>
+      @if($msgNonLetti > 0)
+        <span style="background:#ff6b00;color:#000;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;line-height:1.4">{{ $msgNonLetti }}</span>
+      @endif
+    </a>
+    @endif
     <a href="{{ route('mail.index') }}" class="nav-item {{ request()->routeIs('mail.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mail & Notifiche
     </a>
@@ -313,7 +329,22 @@ tbody tr:hover td{background:var(--bg3)}
 <div class="main">
   <div class="topbar">
     <span class="page-title">@yield('title', 'Dashboard')</span>
-    <div style="display:flex;gap:8px;align-items:center">@yield('topbar-actions')</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      @if(auth()->user()->canDo('clienti.view'))
+      @php
+        try {
+          $bellCount = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->count();
+        } catch (\Throwable $e) { $bellCount = 0; }
+      @endphp
+      <a href="{{ route('messaggi.index') }}" title="Messaggi dal sito" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);text-decoration:none;transition:.15s" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        @if($bellCount > 0)
+          <span style="position:absolute;top:-6px;right:-6px;background:#ff6b00;color:#000;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center;border:2px solid var(--bg)">{{ $bellCount > 99 ? '99+' : $bellCount }}</span>
+        @endif
+      </a>
+      @endif
+      @yield('topbar-actions')
+    </div>
   </div>
   <div class="content">
     @if(session('success'))<div class="alert alert-green"><span>✔</span><span>{{ session('success') }}</span></div>@endif

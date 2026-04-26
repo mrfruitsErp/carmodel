@@ -59,25 +59,43 @@ class PublicVehicleController extends Controller
     public function contact(Request $request, SaleVehicle $vehicle)
     {
         $request->validate([
-            'name'    => 'required|string|max:100',
-            'email'   => 'required|email',
-            'phone'   => 'nullable|string|max:30',
-            'message' => 'nullable|string|max:1000',
+            'name'         => 'required|string|max:100',
+            'email'        => 'required|email|max:150',
+            'phone'        => 'nullable|string|max:30',
+            'message'      => 'nullable|string|max:1500',
+            'gdpr_consent' => 'accepted',
+        ], [
+            'gdpr_consent.accepted' => 'Devi accettare il trattamento dei dati per procedere.',
         ]);
 
-        $listing = $vehicle->listings()->first();
+        try {
+            $listing = $vehicle->listings()->first();
 
-        MarketplaceLead::create([
-            'tenant_id'              => $vehicle->tenant_id,
-            'marketplace_listing_id' => $listing?->id ?? $vehicle->listings()->first()?->id,
-            'sale_vehicle_id'        => $vehicle->id,
-            'platform'               => 'manual',
-            'lead_name'              => $request->name,
-            'lead_email'             => $request->email,
-            'lead_phone'             => $request->phone,
-            'lead_message'           => $request->message,
-            'status'                 => 'nuovo',
-        ]);
+            MarketplaceLead::create([
+                'tenant_id'              => $vehicle->tenant_id,
+                'marketplace_listing_id' => $listing?->id, // null se non c'è listing — la colonna deve essere nullable
+                'sale_vehicle_id'        => $vehicle->id,
+                'platform'               => 'manual',
+                'lead_name'              => $request->name,
+                'lead_email'             => $request->email,
+                'lead_phone'             => $request->phone,
+                'lead_message'           => $request->message,
+                'status'                 => 'nuovo',
+            ]);
+        } catch (\Throwable $e) {
+            // Fallback: se MarketplaceLead fallisce (es. listing_id NOT NULL),
+            // salviamo nel WebBooking (struttura più semplice, sempre disponibile).
+            \Log::warning('MarketplaceLead create fallito, fallback su WebBooking: ' . $e->getMessage());
+            \App\Models\WebBooking::create([
+                'tenant_id' => $vehicle->tenant_id,
+                'type'      => 'contatto_veicolo',
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'phone'     => $request->phone,
+                'message'   => "[{$vehicle->brand} {$vehicle->model} #{$vehicle->id}] " . ($request->message ?? ''),
+                'status'    => 'nuova',
+            ]);
+        }
 
         return back()->with('success', 'Grazie! Ti contatteremo al più presto.');
     }

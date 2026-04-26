@@ -7,7 +7,7 @@ use App\Http\Controllers\{
     RentalController, DocumentController, MailController,
     SparePartController, VinDecoderController, UserController,
     FascicoloController, SettingController, DocumentoCatalogoController,
-    InsuranceCompanyController
+    InsuranceCompanyController, MessaggiController
 };
 use App\Http\Controllers\Portale\PortaleClienteController;
 
@@ -166,6 +166,16 @@ $erpRoutes = function () {
         Route::get('mail', [MailController::class, 'index'])->name('mail.index');
         Route::get('mail/template/create', [MailController::class, 'create'])->name('mail.template.create');
         Route::post('mail/template', [MailController::class, 'store'])->name('mail.template.store');
+
+        // ─── MESSAGGI dal sito pubblico (contatti, richieste noleggio/veicoli) ───
+        Route::middleware('cando:clienti.view')->prefix('messaggi')->name('messaggi.')->group(function () {
+            Route::get('/', [MessaggiController::class, 'index'])->name('index');
+            Route::get('/{messaggio}', [MessaggiController::class, 'show'])->name('show');
+            Route::post('/{messaggio}/letto', [MessaggiController::class, 'markLetto'])->name('letto');
+            Route::post('/{messaggio}/non-letto', [MessaggiController::class, 'markNonLetto'])->name('non-letto');
+            Route::post('/{messaggio}/stato', [MessaggiController::class, 'updateStatus'])->name('stato');
+            Route::delete('/{messaggio}', [MessaggiController::class, 'destroy'])->name('destroy');
+        });
 
         // ─── RICAMBI ───
         Route::middleware('cando:ricambi.view')->group(function () {

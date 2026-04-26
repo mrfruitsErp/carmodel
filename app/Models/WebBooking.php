@@ -12,19 +12,23 @@ class WebBooking extends Model
         'name', 'email', 'phone',
         'date_start', 'date_end', 'message',
         'status', 'admin_notes', 'confirmed_at',
+        'letto_at', 'letto_da_user_id',
     ];
 
     protected $casts = [
         'date_start'   => 'date',
         'date_end'     => 'date',
         'confirmed_at' => 'datetime',
+        'letto_at'     => 'datetime',
     ];
 
     public function tenant(): BelongsTo     { return $this->belongsTo(Tenant::class); }
     public function fleetVehicle(): BelongsTo { return $this->belongsTo(FleetVehicle::class); }
+    public function lettoDa(): BelongsTo    { return $this->belongsTo(\App\Models\User::class, 'letto_da_user_id'); }
 
     public function scopeForTenant($q, $tid) { return $q->where('tenant_id', $tid); }
     public function scopeNuove($q)           { return $q->where('status', 'nuova'); }
+    public function scopeNonLetti($q)        { return $q->whereNull('letto_at'); }
 
     public function getDaysAttribute(): int
     {
@@ -32,5 +36,20 @@ class WebBooking extends Model
             return $this->date_start->diffInDays($this->date_end) ?: 1;
         }
         return 1;
+    }
+
+    public function isNotLetto(): bool { return $this->letto_at === null; }
+
+    /**
+     * Etichetta human-friendly per il tipo di messaggio.
+     */
+    public function getTipoLabelAttribute(): string
+    {
+        return match ($this->type) {
+            'noleggio'         => 'Richiesta noleggio',
+            'contatto'         => 'Contatto generico',
+            'contatto_veicolo' => 'Richiesta veicolo',
+            default            => ucfirst($this->type),
+        };
     }
 }

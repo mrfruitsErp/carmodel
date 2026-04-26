@@ -13,7 +13,7 @@
     <span>{{ $vehicle->brand }} {{ $vehicle->model }}</span>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start">
+  <div class="auto-detail-grid">
 
     {{-- COLONNA SINISTRA --}}
     <div>
@@ -107,7 +107,7 @@
     </div>
 
     {{-- COLONNA DESTRA --}}
-    <div style="position:sticky;top:80px">
+    <div class="auto-detail-side">
 
       {{-- SCHEDA PREZZO --}}
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px">
@@ -209,13 +209,31 @@
 
 @push('styles')
 <style>
-@media(max-width:768px){
-  div[style*="grid-template-columns:1fr 360px"]{grid-template-columns:1fr!important}
-  div[style*="position:sticky"]{position:relative!important;top:0!important}
-  div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr 1fr!important}
+.auto-detail-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+.auto-detail-side{position:sticky;top:80px}
+
+@media(max-width:900px){
+  .auto-detail-grid{grid-template-columns:1fr;gap:20px}
+  .auto-detail-side{position:static}
 }
-@media(max-width:480px){
-  div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+@media(max-width:600px){
+  .auto-detail-grid{gap:16px}
+  /* Galleria foto: thumb più piccoli */
+  div[style*="display:flex;gap:8px;padding:12px"] img{width:60px!important;height:48px!important}
+  /* Foto principale max-height ridotta */
+  #mainPhoto{max-height:300px!important}
+  /* Dati tecnici a 2 colonne piccole */
+  div[style*="grid-template-columns:1fr 1fr"]:not([style*="auto-fit"]):not([style*="minmax"]){grid-template-columns:1fr 1fr!important;gap:10px!important}
+  /* Padding card ridotti */
+  .auto-detail-grid div[style*="padding:24px"]{padding:18px!important}
+  /* Titolo h1 dentro la sticky più piccolo */
+  .auto-detail-side h1{font-size:20px!important}
+  /* Prezzo grande più piccolo */
+  .auto-detail-side div[style*="font-size:34px"]{font-size:26px!important}
+}
+@media(max-width:380px){
+  /* Su mobile stretto, dati tecnici in 1 sola colonna */
+  .auto-detail-grid div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
 }
 </style>
 @endpush

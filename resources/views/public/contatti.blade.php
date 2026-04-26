@@ -106,6 +106,12 @@
             <label class="form-label">Messaggio *</label>
             <textarea name="message" class="form-textarea" required rows="5" placeholder="Scrivi il tuo messaggio...">{{ old('message') }}</textarea>
           </div>
+          <div class="form-group">
+            <label class="form-check" style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text2);cursor:pointer;line-height:1.5">
+              <input type="checkbox" name="gdpr_consent" value="1" {{ old('gdpr_consent') ? 'checked' : '' }} required style="margin-top:3px;flex-shrink:0;width:16px;height:16px;accent-color:var(--orange)">
+              <span>Ho letto e accetto il trattamento dei dati ai sensi della <a href="{{ route('public.privacy') }}" target="_blank" style="color:var(--orange)">Privacy Policy</a> *</span>
+            </label>
+          </div>
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:13px">
             ✉️ Invia messaggio
           </button>
