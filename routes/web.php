@@ -22,7 +22,7 @@ $erpRoutes = function () {
     Route::middleware(['auth'])->group(function () {
 
         // Dashboard: accessibile a chiunque sia loggato
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         // ─── CLIENTI (view obbligatorio per accedere, edit per POST/PUT/DELETE) ───
         Route::middleware('cando:clienti.view')->group(function () {
