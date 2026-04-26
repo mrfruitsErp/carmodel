@@ -218,11 +218,18 @@ $erpRoutes = function () {
     });
 };
 
+/*
+ * IMPORTANTE: le route del sito pubblico (`routes/public.php`) vanno caricate
+ * PRIMA di quelle ERP, così su alecar.it il routing matcha public.* prima dei
+ * path collidenti (/noleggio, /, /contatti...) registrati anche dall'ERP.
+ *
+ * Le route ERP hanno middleware "restrict" che ne limita l'esposizione ai soli
+ * domini gestionali (app.alecar.it, erp.alecar.it, IP server).
+ */
+require __DIR__.'/public.php';
+
 if (app()->environment('production')) {
-    // PROD: ERP + login rispondono SOLO sui domini gestionali.
-    // app.alecar.it = nuovo URL canonico
-    // erp.alecar.it = alias (compatibilità con vecchi link)
-    // 142.93.99.245  = IP server per debug diretto
+    // PROD: ERP + login SOLO sui domini gestionali
     Route::middleware('restrict:app.alecar.it,erp.alecar.it,142.93.99.245')->group(function () use ($erpRoutes) {
         require __DIR__.'/auth.php';   // login, register, password reset
         $erpRoutes();
@@ -244,6 +251,3 @@ Route::prefix('portale')->name('portale.')->group(function () {
     Route::post('/{token}/privacy', [PortaleClienteController::class, 'accettaPrivacy'])->name('privacy.accetta');
     Route::get('/{token}/documenti', [PortaleClienteController::class, 'documenti'])->name('documenti');
 });
-
-// SITO PUBBLICO (alla root in produzione, /sito in dev)
-require __DIR__.'/public.php';
