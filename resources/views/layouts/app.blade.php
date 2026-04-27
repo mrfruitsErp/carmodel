@@ -296,7 +296,7 @@ td{font-size:14px}
     @if(auth()->user()->canDo('clienti.view'))
     @php
       try {
-        $msgNonLetti = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->count();
+        $msgNonLetti = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->where('is_spam', false)->count();
       } catch (\Throwable $e) { $msgNonLetti = 0; }
     @endphp
     <a href="{{ route('messaggi.index') }}" class="nav-item {{ request()->routeIs('messaggi.*') ? 'active' : '' }}" style="display:flex;align-items:center;justify-content:space-between">
@@ -375,7 +375,7 @@ td{font-size:14px}
       @if(auth()->user()->canDo('clienti.view'))
       @php
         try {
-          $bellCount = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->count();
+          $bellCount = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->where('is_spam', false)->count();
         } catch (\Throwable $e) { $bellCount = 0; }
       @endphp
       <a href="{{ route('messaggi.index') }}" title="Messaggi dal sito" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);text-decoration:none;transition:.15s" onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text2)'">

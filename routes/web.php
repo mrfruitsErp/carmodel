@@ -179,6 +179,7 @@ $erpRoutes = function () {
             Route::get('/{messaggio}', [MessaggiController::class, 'show'])->name('show');
             Route::post('/{messaggio}/letto', [MessaggiController::class, 'markLetto'])->name('letto');
             Route::post('/{messaggio}/non-letto', [MessaggiController::class, 'markNonLetto'])->name('non-letto');
+            Route::post('/{messaggio}/spam', [MessaggiController::class, 'toggleSpam'])->name('spam');
             Route::post('/{messaggio}/stato', [MessaggiController::class, 'updateStatus'])->name('stato');
             Route::delete('/{messaggio}', [MessaggiController::class, 'destroy'])->name('destroy');
         });

@@ -163,8 +163,16 @@
             </div>
           @endif
 
-          <form method="POST" action="{{ route('public.vehicles.contact', $vehicle->id) }}">
+          <form method="POST" action="{{ route('public.vehicles.contact', $vehicle->id) }}" autocomplete="off">
             @csrf
+            {{-- Anti-spam honeypot (nascosto agli umani) --}}
+            <div style="position:absolute;left:-9999px;top:-9999px;visibility:hidden" aria-hidden="true">
+              <label>Sito web (lascia vuoto)</label>
+              <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+              <input type="text" name="url" tabindex="-1" autocomplete="off" value="">
+            </div>
+            <input type="hidden" name="_form_ts" value="{{ time() }}">
+
             <div class="form-group">
               <label class="form-label">Nome e Cognome *</label>
               <input type="text" name="name" class="form-input" required placeholder="Mario Rossi" value="{{ old('name') }}">

@@ -13,6 +13,7 @@ class WebBooking extends Model
         'date_start', 'date_end', 'message',
         'status', 'admin_notes', 'confirmed_at',
         'letto_at', 'letto_da_user_id',
+        'is_spam', 'spam_reason', 'ip_address', 'user_agent',
     ];
 
     protected $casts = [
@@ -20,6 +21,7 @@ class WebBooking extends Model
         'date_end'     => 'date',
         'confirmed_at' => 'datetime',
         'letto_at'     => 'datetime',
+        'is_spam'      => 'boolean',
     ];
 
     public function tenant(): BelongsTo     { return $this->belongsTo(Tenant::class); }
@@ -29,6 +31,8 @@ class WebBooking extends Model
     public function scopeForTenant($q, $tid) { return $q->where('tenant_id', $tid); }
     public function scopeNuove($q)           { return $q->where('status', 'nuova'); }
     public function scopeNonLetti($q)        { return $q->whereNull('letto_at'); }
+    public function scopeNonSpam($q)         { return $q->where('is_spam', false); }
+    public function scopeSoloSpam($q)        { return $q->where('is_spam', true); }
 
     public function getDaysAttribute(): int
     {

@@ -106,25 +106,41 @@ class PublicSiteController extends Controller
 
     public function contattiSend(Request $request)
     {
-        $request->validate([
-            'name'        => 'required|string|max:100',
-            'email'       => 'required|email',
-            'phone'       => 'nullable|string|max:30',
+        $data = $request->validate([
+            'name'        => 'required|string|min:2|max:100',
+            'email'       => 'required|email:rfc,dns|max:150',
+            'phone'       => 'nullable|string|max:30|regex:/^[\d\s\+\(\)\-\.\/]+$/',
             'subject'     => 'nullable|string|max:150',
-            'message'     => 'required|string|max:2000',
+            'message'     => 'required|string|min:10|max:2000',
             'gdpr_consent'=> 'accepted',
         ], [
             'gdpr_consent.accepted' => 'Devi accettare il trattamento dei dati per procedere.',
+            'phone.regex'           => 'Il numero di telefono contiene caratteri non validi.',
+            'email.dns'             => 'Email non valida o dominio inesistente.',
         ]);
 
+        // Analisi anti-spam
+        $spam = \App\Services\SpamFilter::analyze($data, $request);
+
+        // Se è palesemente spam (honeypot pieno o submit troppo veloce), rispondi 200
+        // ma NON salvare nulla (così il bot pensa di aver inviato e si ferma).
+        if ($spam->isSpam && in_array($spam->reason, ['honeypot', 'submit_too_fast'])) {
+            return back()->with('contact_success', 'Messaggio inviato! Ti risponderemo entro 24 ore.');
+        }
+
+        // Altri casi spam: salva il record ma marcato come spam (per audit + training)
         WebBooking::create([
-            'tenant_id' => $this->tid(),
-            'type'      => 'contatto',
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'phone'     => $request->phone,
-            'message'   => ($request->subject ? "[{$request->subject}] " : '') . $request->message,
-            'status'    => 'nuova',
+            'tenant_id'   => $this->tid(),
+            'type'        => 'contatto',
+            'name'        => $data['name'],
+            'email'       => $data['email'],
+            'phone'       => $data['phone'] ?? null,
+            'message'     => ($data['subject'] ?? '' ? "[{$data['subject']}] " : '') . $data['message'],
+            'status'      => 'nuova',
+            'is_spam'     => $spam->isSpam,
+            'spam_reason' => $spam->reason,
+            'ip_address'  => $request->ip(),
+            'user_agent'  => substr((string) $request->userAgent(), 0, 500),
         ]);
 
         return back()->with('contact_success', 'Messaggio inviato! Ti risponderemo entro 24 ore.');

@@ -74,8 +74,17 @@
           </div>
         @endif
 
-        <form method="POST" action="{{ route('public.contatti.send') }}">
+        <form method="POST" action="{{ route('public.contatti.send') }}" autocomplete="off">
           @csrf
+          {{-- Anti-spam: honeypot (nascosto agli umani, visibile ai bot) --}}
+          <div style="position:absolute;left:-9999px;top:-9999px;visibility:hidden" aria-hidden="true">
+            <label>Sito web (lascia vuoto)</label>
+            <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+            <input type="text" name="url" tabindex="-1" autocomplete="off" value="">
+          </div>
+          {{-- Anti-spam: timestamp form load (i bot inviano in <2s) --}}
+          <input type="hidden" name="_form_ts" value="{{ time() }}">
+
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div class="form-group">
               <label class="form-label">Nome e Cognome *</label>

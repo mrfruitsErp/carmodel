@@ -23,18 +23,24 @@ $siteRoutes = function () {
     // ── Auto in vendita ───────────────────────────────────
     Route::get('/auto-in-vendita', [PublicVehicleController::class, 'index'])->name('vehicles.index');
     Route::get('/auto-in-vendita/{id}-{slug?}', [PublicVehicleController::class, 'show'])->name('vehicles.show');
-    Route::post('/auto-in-vendita/{vehicle}/contatto', [PublicVehicleController::class, 'contact'])->name('vehicles.contact');
+    Route::post('/auto-in-vendita/{vehicle}/contatto', [PublicVehicleController::class, 'contact'])
+        ->middleware('throttle:5,10')  // Anti-spam: max 5 invii ogni 10 min per IP
+        ->name('vehicles.contact');
 
     // ── Noleggio ──────────────────────────────────────────
     Route::get('/noleggio', [PublicSiteController::class, 'noleggio'])->name('noleggio');
     Route::get('/noleggio/{id}', [PublicSiteController::class, 'noleggioShow'])->name('noleggio.show');
-    Route::post('/noleggio/{id}/prenota', [PublicSiteController::class, 'noleggioBooking'])->name('noleggio.booking');
+    Route::post('/noleggio/{id}/prenota', [PublicSiteController::class, 'noleggioBooking'])
+        ->middleware('throttle:5,10')
+        ->name('noleggio.booking');
 
     // ── Pagine aziendali ──────────────────────────────────
     Route::get('/chi-siamo', [PublicSiteController::class, 'chiSiamo'])->name('chi_siamo');
     Route::get('/servizi', [PublicSiteController::class, 'servizi'])->name('servizi');
     Route::get('/contatti', [PublicSiteController::class, 'contatti'])->name('contatti');
-    Route::post('/contatti', [PublicSiteController::class, 'contattiSend'])->name('contatti.send');
+    Route::post('/contatti', [PublicSiteController::class, 'contattiSend'])
+        ->middleware('throttle:5,10')
+        ->name('contatti.send');
 
     // ── Pagine legali ─────────────────────────────────────
     Route::get('/privacy-policy', [PublicSiteController::class, 'privacy'])->name('privacy');

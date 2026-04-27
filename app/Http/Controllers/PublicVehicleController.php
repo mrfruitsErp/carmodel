@@ -58,42 +58,55 @@ class PublicVehicleController extends Controller
 
     public function contact(Request $request, SaleVehicle $vehicle)
     {
-        $request->validate([
-            'name'         => 'required|string|max:100',
-            'email'        => 'required|email|max:150',
-            'phone'        => 'nullable|string|max:30',
+        $data = $request->validate([
+            'name'         => 'required|string|min:2|max:100',
+            'email'        => 'required|email:rfc,dns|max:150',
+            'phone'        => 'nullable|string|max:30|regex:/^[\d\s\+\(\)\-\.\/]+$/',
             'message'      => 'nullable|string|max:1500',
             'gdpr_consent' => 'accepted',
         ], [
             'gdpr_consent.accepted' => 'Devi accettare il trattamento dei dati per procedere.',
+            'phone.regex'           => 'Il numero di telefono contiene caratteri non validi.',
+            'email.dns'             => 'Email non valida o dominio inesistente.',
         ]);
+
+        // Anti-spam analisi
+        $spam = \App\Services\SpamFilter::analyze($data, $request);
+
+        // Bot palesi: rispondi 200 ma NON salvare
+        if ($spam->isSpam && in_array($spam->reason, ['honeypot', 'submit_too_fast'])) {
+            return back()->with('success', 'Grazie! Ti contatteremo al più presto.');
+        }
 
         try {
             $listing = $vehicle->listings()->first();
 
-            MarketplaceLead::create([
+            \App\Models\MarketplaceLead::create([
                 'tenant_id'              => $vehicle->tenant_id,
-                'marketplace_listing_id' => $listing?->id, // null se non c'è listing — la colonna deve essere nullable
+                'marketplace_listing_id' => $listing?->id,
                 'sale_vehicle_id'        => $vehicle->id,
                 'platform'               => 'manual',
-                'lead_name'              => $request->name,
-                'lead_email'             => $request->email,
-                'lead_phone'             => $request->phone,
-                'lead_message'           => $request->message,
-                'status'                 => 'nuovo',
+                'lead_name'              => $data['name'],
+                'lead_email'             => $data['email'],
+                'lead_phone'             => $data['phone'] ?? null,
+                'lead_message'           => ($spam->isSpam ? '[SPAM:'.$spam->reason.'] ' : '') . ($data['message'] ?? ''),
+                'status'                 => $spam->isSpam ? 'spam' : 'nuovo',
             ]);
         } catch (\Throwable $e) {
-            // Fallback: se MarketplaceLead fallisce (es. listing_id NOT NULL),
-            // salviamo nel WebBooking (struttura più semplice, sempre disponibile).
+            // Fallback su WebBooking
             \Log::warning('MarketplaceLead create fallito, fallback su WebBooking: ' . $e->getMessage());
             \App\Models\WebBooking::create([
-                'tenant_id' => $vehicle->tenant_id,
-                'type'      => 'contatto_veicolo',
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'phone'     => $request->phone,
-                'message'   => "[{$vehicle->brand} {$vehicle->model} #{$vehicle->id}] " . ($request->message ?? ''),
-                'status'    => 'nuova',
+                'tenant_id'   => $vehicle->tenant_id,
+                'type'        => 'contatto_veicolo',
+                'name'        => $data['name'],
+                'email'       => $data['email'],
+                'phone'       => $data['phone'] ?? null,
+                'message'     => "[{$vehicle->brand} {$vehicle->model} #{$vehicle->id}] " . ($data['message'] ?? ''),
+                'status'      => 'nuova',
+                'is_spam'     => $spam->isSpam,
+                'spam_reason' => $spam->reason,
+                'ip_address'  => $request->ip(),
+                'user_agent'  => substr((string) $request->userAgent(), 0, 500),
             ]);
         }
 

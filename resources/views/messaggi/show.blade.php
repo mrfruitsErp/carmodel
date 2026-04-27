@@ -8,6 +8,12 @@
     {{ $messaggio->isNotLetto() ? '✓ Segna letto' : '↶ Segna non letto' }}
   </button>
 </form>
+<form method="POST" action="{{ route('messaggi.spam', $messaggio) }}" style="display:inline">
+  @csrf
+  <button type="submit" class="btn btn-ghost btn-sm" style="color:{{ $messaggio->is_spam ? 'var(--green-text)' : 'var(--red-text)' }}">
+    {{ $messaggio->is_spam ? '✓ Non è spam' : '🚫 Segna spam' }}
+  </button>
+</form>
 <form method="POST" action="{{ route('messaggi.destroy', $messaggio) }}" style="display:inline" onsubmit="return confirm('Eliminare definitivamente il messaggio?')">
   @csrf @method('DELETE')
   <button type="submit" class="btn btn-danger btn-sm">🗑 Elimina</button>
@@ -16,6 +22,18 @@
 
 @section('content')
 <div style="margin-bottom:16px"><a href="{{ route('messaggi.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Tutti i messaggi</a></div>
+
+@if($messaggio->is_spam)
+<div style="background:var(--red-bg);border:1px solid rgba(239,68,68,.4);color:var(--red-text);border-radius:8px;padding:12px 16px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+  <span style="font-size:20px">🚫</span>
+  <div>
+    <strong>Messaggio classificato come SPAM</strong><br>
+    <span style="font-size:12px">Motivo: <code style="font-family:var(--mono);background:rgba(0,0,0,.06);padding:1px 6px;border-radius:3px">{{ $messaggio->spam_reason ?? 'sconosciuto' }}</code>
+    @if($messaggio->ip_address) · IP: <code style="font-family:var(--mono)">{{ $messaggio->ip_address }}</code>@endif
+    </span>
+  </div>
+</div>
+@endif
 
 <div class="two-col">
   <div>

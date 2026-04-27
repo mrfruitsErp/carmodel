@@ -26,6 +26,13 @@ class MessaggiController extends Controller
             ->with('fleetVehicle:id,brand,model,plate')
             ->latest();
 
+        // ── Default: nascondi messaggi spam (li mostri solo col filtro "spam") ──
+        if ($request->view !== 'spam') {
+            $q->where('is_spam', false);
+        } else {
+            $q->where('is_spam', true);
+        }
+
         // Filtri
         if ($f = $request->status) $q->where('status', $f);
         if ($f = $request->type)   $q->where('type', $f);
@@ -41,17 +48,33 @@ class MessaggiController extends Controller
 
         $messaggi = $q->paginate(25)->withQueryString();
 
-        // Conteggi per i tab in cima
-        $base = WebBooking::forTenant($this->tid());
+        // Conteggi per i tab in cima (escluso spam, contati separatamente)
+        $base = WebBooking::forTenant($this->tid())->where('is_spam', false);
         $stats = [
             'totale'    => (clone $base)->count(),
             'non_letti' => (clone $base)->whereNull('letto_at')->count(),
             'nuove'     => (clone $base)->where('status', 'nuova')->count(),
             'noleggio'  => (clone $base)->where('type', 'noleggio')->count(),
             'contatti'  => (clone $base)->whereIn('type', ['contatto', 'contatto_veicolo'])->count(),
+            'spam'      => WebBooking::forTenant($this->tid())->where('is_spam', true)->count(),
         ];
 
         return view('messaggi.index', compact('messaggi', 'stats'));
+    }
+
+    /**
+     * Marca/smarca manualmente un messaggio come spam.
+     */
+    public function toggleSpam(WebBooking $messaggio)
+    {
+        abort_if($messaggio->tenant_id !== $this->tid(), 403);
+        $messaggio->update([
+            'is_spam'     => !$messaggio->is_spam,
+            'spam_reason' => $messaggio->is_spam ? null : 'manual',
+        ]);
+        return back()->with('success', $messaggio->is_spam
+            ? 'Messaggio segnato come spam.'
+            : 'Messaggio rimosso da spam.');
     }
 
     public function show(WebBooking $messaggio)

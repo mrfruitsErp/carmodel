@@ -11,6 +11,7 @@
     ['Nuovi',      $stats['nuove'],     'var(--green)',  'status',    'nuova'],
     ['Noleggio',   $stats['noleggio'],  'var(--purple)', 'type',      'noleggio'],
     ['Contatti',   $stats['contatti'],  'var(--amber)',  'type',      'contatto'],
+    ['🚫 Spam',    $stats['spam'],      'var(--red)',    'view',      'spam'],
   ] as [$label, $val, $color, $key, $value])
   <a href="{{ route('messaggi.index', $key && $value ? [$key=>$value] : []) }}" style="text-decoration:none">
     <div style="background:var(--bg2);border:1px solid {{ ($key && request($key)===$value) ? $color : 'var(--border2)' }};border-radius:10px;padding:12px 14px;position:relative;overflow:hidden;transition:.15s">
@@ -21,6 +22,12 @@
   </a>
   @endforeach
 </div>
+
+@if(request('view') === 'spam')
+<div style="background:var(--red-bg);border:1px solid rgba(239,68,68,.3);color:var(--red-text);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px">
+  🚫 Stai visualizzando i messaggi classificati come <strong>SPAM</strong>. Questi NON appaiono nella lista principale né nei conteggi della campanellina.
+</div>
+@endif
 
 {{-- SEARCH --}}
 <form method="GET" style="display:flex;gap:10px;margin-bottom:18px;align-items:center;flex-wrap:wrap">
