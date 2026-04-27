@@ -115,6 +115,48 @@ tbody tr:hover td{background:var(--bg3)}
 .stato-step.done{background:var(--orange-bg);color:var(--orange-text);border:1px solid var(--orange-border)}
 .stato-step.current{background:var(--amber-bg);color:var(--amber-text);border:1px solid rgba(245,158,11,.3)}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--orange)}
+
+/* ═══════════════════════════════════════════════════════════════
+   +1pt GLOBALE — tutti i font del gestionale aumentati di 1px
+   per migliore leggibilità. Override delle regole sopra.
+   ═══════════════════════════════════════════════════════════════ */
+body{font-size:15px}
+.nav-section{font-size:10px}
+.nav-item{font-size:13px}
+.page-title{font-size:19px}
+.btn{font-size:14px;padding:8px 17px}
+.btn-sm{font-size:13px;padding:6px 12px}
+.card-title{font-size:15px}
+.stat-value{font-size:29px}
+.stat-label{font-size:11px}
+.stat-sub{font-size:12px}
+table{font-size:14px}
+th{font-size:11px}
+td{font-size:14px}
+.badge{font-size:12px;padding:3px 10px}
+.targa{font-size:13px}
+.form-label{font-size:11px}
+.form-input,.form-select,.form-textarea{font-size:14px;padding:9px 12px}
+.info-row{font-size:14px}
+.search-bar input{font-size:14px}
+.chip{font-size:13px;padding:6px 13px}
+.alert{font-size:14px}
+.tl-item{font-size:14px}
+.tl-meta{font-size:12px}
+.stato-step{font-size:11px}
+.avatar{font-size:13px}
+.nav-badge{font-size:10px}
+.user-area .name{font-size:13px}
+/* Bump anche stili inline più frequenti */
+[style*="font-size:10px"]{font-size:11px!important}
+[style*="font-size:11px"]:not(.badge):not(.targa):not(.tl-meta){font-size:12px!important}
+[style*="font-size:12px"]{font-size:13px!important}
+[style*="font-size:13px"]{font-size:14px!important}
+[style*="font-size:14px"]{font-size:15px!important}
+[style*="font-size:15px"]{font-size:16px!important}
+[style*="font-size:16px"]{font-size:17px!important}
+[style*="font-size:18px"]{font-size:19px!important}
+
 @media(max-width:1100px){.stat-grid{grid-template-columns:repeat(3,1fr)}.main-side{grid-template-columns:1fr}}
 @media(max-width:800px){.two-col,.three-col{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){
