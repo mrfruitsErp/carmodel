@@ -55,6 +55,7 @@ class Vehicle extends Model implements HasMedia
     }
 
     public function getFullNameAttribute(): string { return trim("{$this->brand} {$this->model} {$this->year}"); }
+    public function scopeForTenant($q, $tid) { return $q->where('tenant_id', $tid); }
     public function scopeInShop($q) { return $q->where('status', 'in_officina'); }
     public function scopeSearch($q, string $term) {
         return $q->where(fn($s) => $s
