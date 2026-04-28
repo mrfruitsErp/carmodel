@@ -228,10 +228,25 @@
   </div>
 
   {{-- DATI PRATICA --}}
-  @if($fascicolo->data_inizio || $fascicolo->riferimento_veicolo)
+  @if($fascicolo->data_inizio || $fascicolo->riferimento_veicolo || $fascicolo->fleet_vehicle_id || $fascicolo->sale_vehicle_id || $fascicolo->pratica_id)
   <div class="card">
     <div class="card-title">Dati pratica</div>
     <div style="font-size:13px;line-height:2;color:var(--text2)">
+      @if($fascicolo->fleet_vehicle_id && $fascicolo->fleetVehicle)
+        <div>🚗 <strong>Veicolo flotta:</strong>
+          <a href="{{ route('veicoli.show', $fascicolo->fleet_vehicle_id) }}" style="color:var(--orange)">
+            {{ $fascicolo->fleetVehicle->brand }} {{ $fascicolo->fleetVehicle->model }} — {{ $fascicolo->fleetVehicle->plate }}
+          </a>
+        </div>
+      @endif
+      @if($fascicolo->sale_vehicle_id && $fascicolo->saleVehicle)
+        <div>💰 <strong>Veicolo in vendita:</strong>
+          {{ $fascicolo->saleVehicle->brand }} {{ $fascicolo->saleVehicle->model }} {{ $fascicolo->saleVehicle->version }} — {{ $fascicolo->saleVehicle->plate }}
+        </div>
+      @endif
+      @if($fascicolo->pratica_id && $fascicolo->pratica)
+        <div>🔗 <strong>Riferimento:</strong> {{ class_basename($fascicolo->pratica_type) }} #{{ $fascicolo->pratica_id }}</div>
+      @endif
       @if($fascicolo->riferimento_veicolo)
         <div>🚗 {{ $fascicolo->riferimento_veicolo }}</div>
       @endif

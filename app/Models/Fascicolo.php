@@ -27,6 +27,8 @@ class Fascicolo extends Model implements HasMedia
         'data_inizio',
         'data_fine',
         'riferimento_veicolo',
+        'fleet_vehicle_id',
+        'sale_vehicle_id',
         'completato_il',
         'notifica_operatore_il',
     ];
@@ -78,6 +80,16 @@ class Fascicolo extends Model implements HasMedia
     public function pratica()
     {
         return $this->morphTo();
+    }
+
+    public function fleetVehicle()
+    {
+        return $this->belongsTo(\App\Models\FleetVehicle::class, 'fleet_vehicle_id');
+    }
+
+    public function saleVehicle()
+    {
+        return $this->belongsTo(\App\Models\SaleVehicle::class, 'sale_vehicle_id');
     }
 
     // ──────────────────────────────────────────

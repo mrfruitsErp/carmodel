@@ -36,7 +36,7 @@
       <div class="two-col">
         <div class="form-group">
           <label class="form-label">Tipo pratica *</label>
-          <select name="tipo_pratica" class="form-select" required id="sel-tipo">
+          <select name="tipo_pratica" class="form-select" required id="sel-tipo" onchange="aggiornaTipo(this.value)">
             @foreach($tipiPratica as $key => $label)
               <option value="{{ $key }}" {{ old('tipo_pratica', 'noleggio') == $key ? 'selected' : '' }}>{{ $label }}</option>
             @endforeach
@@ -54,7 +54,8 @@
 
       <div class="form-group">
         <label class="form-label">Titolo / riferimento interno</label>
-        <input type="text" name="titolo" class="form-input" placeholder="Es. Sinistro del 15/04/2026, Noleggio Fiat 500..." value="{{ old('titolo') }}">
+        <input type="text" name="titolo" class="form-input" id="input-titolo"
+          placeholder="Es. Noleggio Fiat 500 - Aprile 2026..." value="{{ old('titolo') }}">
       </div>
 
       <div class="form-group">
@@ -63,9 +64,100 @@
       </div>
     </div>
 
-    {{-- SEZIONE NOLEGGIO/AUTO --}}
-    <div class="card" id="card-noleggio">
-      <div class="card-title">Dati veicolo / periodo</div>
+    {{-- SEZIONE VEICOLO --}}
+    <div class="card" id="card-veicolo">
+      <div class="card-title">🚗 Veicolo collegato</div>
+
+      {{-- Veicolo flotta (noleggio, auto sostitutiva) --}}
+      <div id="box-fleet" class="form-group">
+        <label class="form-label">Veicolo flotta (noleggio)</label>
+        <select name="fleet_vehicle_id" class="form-select" id="sel-fleet" onchange="onVeicoloFlotta(this)">
+          <option value="">Nessuno / inserisci manuale</option>
+          @foreach($fleetVehicles as $v)
+            <option value="{{ $v->id }}"
+              data-label="{{ $v->brand }} {{ $v->model }} - {{ $v->plate }}"
+              {{ old('fleet_vehicle_id') == $v->id ? 'selected' : '' }}>
+              {{ $v->brand }} {{ $v->model }} — {{ $v->plate }}
+              @if($v->status !== 'disponibile') ({{ $v->status }}) @endif
+            </option>
+          @endforeach
+        </select>
+      </div>
+
+      {{-- Veicolo vendita --}}
+      <div id="box-sale" class="form-group" style="display:none">
+        <label class="form-label">Veicolo in vendita</label>
+        <select name="sale_vehicle_id" class="form-select" id="sel-sale" onchange="onVeicoloVendita(this)">
+          <option value="">Nessuno / inserisci manuale</option>
+          @foreach($saleVehicles as $v)
+            <option value="{{ $v->id }}"
+              data-label="{{ $v->brand }} {{ $v->model }} {{ $v->version }} - {{ $v->plate }}"
+              {{ old('sale_vehicle_id') == $v->id ? 'selected' : '' }}>
+              {{ $v->brand }} {{ $v->model }} {{ $v->version }} — {{ $v->plate }} — €{{ number_format($v->asking_price,0,',','.') }}
+            </option>
+          @endforeach
+        </select>
+      </div>
+
+      {{-- Riferimento a sinistro --}}
+      <div id="box-sinistro" class="form-group" style="display:none">
+        <label class="form-label">Sinistro collegato</label>
+        <select name="pratica_id" class="form-select" onchange="onPraticaSelezionata(this, 'App\\\\Models\\\\Claim')">
+          <option value="">Nessuno</option>
+          @foreach($sinistri as $s)
+            <option value="{{ $s->id }}"
+              data-label="Sinistro #{{ $s->claim_number }} — {{ $s->counterpart_plate }}"
+              {{ old('pratica_id') == $s->id ? 'selected' : '' }}>
+              #{{ $s->claim_number }} — {{ Str::limit($s->description,40) }} ({{ $s->counterpart_plate }})
+            </option>
+          @endforeach
+        </select>
+        <input type="hidden" name="pratica_type" id="pratica_type_sinistro" value="">
+      </div>
+
+      {{-- Riferimento a lavorazione --}}
+      <div id="box-lavorazione" class="form-group" style="display:none">
+        <label class="form-label">Lavorazione collegata</label>
+        <select name="pratica_id" class="form-select" onchange="onPraticaSelezionata(this, 'App\\\\Models\\\\WorkOrder')">
+          <option value="">Nessuna</option>
+          @foreach($lavorazioni as $l)
+            <option value="{{ $l->id }}"
+              data-label="Lavorazione #{{ $l->job_number }} — {{ $l->vehicle?->plate }}"
+              {{ old('pratica_id') == $l->id ? 'selected' : '' }}>
+              #{{ $l->job_number }} — {{ Str::limit($l->description,40) }} ({{ $l->vehicle?->plate }})
+            </option>
+          @endforeach
+        </select>
+        <input type="hidden" name="pratica_type" id="pratica_type_lavorazione" value="">
+      </div>
+
+      {{-- Riferimento a noleggio --}}
+      <div id="box-noleggio-ref" class="form-group" style="display:none">
+        <label class="form-label">Noleggio collegato</label>
+        <select name="pratica_id" class="form-select" onchange="onPraticaSelezionata(this, 'App\\\\Models\\\\Rental')">
+          <option value="">Nessuno</option>
+          @foreach($noleggi as $n)
+            <option value="{{ $n->id }}"
+              data-label="Noleggio #{{ $n->id }} — {{ $n->vehicle?->brand }} {{ $n->vehicle?->plate }}"
+              {{ old('pratica_id') == $n->id ? 'selected' : '' }}>
+              #{{ $n->id }} — {{ $n->vehicle?->brand }} {{ $n->vehicle?->model }} ({{ $n->vehicle?->plate }})
+              {{ $n->start_date?->format('d/m/Y') }} → {{ $n->end_date?->format('d/m/Y') }}
+            </option>
+          @endforeach
+        </select>
+        <input type="hidden" name="pratica_type" id="pratica_type_noleggio" value="">
+      </div>
+
+      {{-- Campo manuale targa/veicolo --}}
+      <div class="form-group">
+        <label class="form-label">Targa / riferimento veicolo manuale
+          <span style="color:var(--text3);font-weight:400">(compilato automaticamente se selezioni sopra)</span>
+        </label>
+        <input type="text" name="riferimento_veicolo" id="input-rifveicolo" class="form-input"
+          placeholder="Es. AB123CD — Fiat 500" value="{{ old('riferimento_veicolo') }}">
+      </div>
+
+      {{-- Date periodo --}}
       <div class="two-col">
         <div class="form-group">
           <label class="form-label">Data inizio</label>
@@ -75,10 +167,6 @@
           <label class="form-label">Data fine</label>
           <input type="date" name="data_fine" class="form-input" value="{{ old('data_fine') }}">
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Veicolo di riferimento</label>
-        <input type="text" name="riferimento_veicolo" class="form-input" placeholder="Es. Fiat 500 - AB123CD" value="{{ old('riferimento_veicolo') }}">
       </div>
     </div>
   </div>
@@ -98,11 +186,16 @@
       </div>
     </div>
 
+    {{-- Riepilogo collegamento --}}
+    <div class="card" id="card-riepilogo" style="display:none;background:var(--bg3);border-color:var(--border2)">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:8px">COLLEGAMENTO SELEZIONATO</div>
+      <div id="riepilogo-testo" style="font-size:13px;color:var(--text)"></div>
+    </div>
+
     <div class="card" style="background:var(--orange-bg);border-color:var(--orange-border)">
       <div style="font-size:12px;color:var(--text2);line-height:1.7">
         <strong style="color:var(--orange);font-size:13px">📋 Documenti automatici</strong><br><br>
-        Dopo la creazione, il sistema caricherà automaticamente i documenti richiesti dal <strong>catalogo</strong> in base al tipo di pratica e al tipo cliente.<br><br>
-        Potrai aggiungere o rimuovere documenti dalla scheda fascicolo.
+        Dopo la creazione, il sistema caricherà automaticamente i documenti richiesti dal <strong>catalogo</strong> in base al tipo di pratica e al tipo cliente.
       </div>
     </div>
 
@@ -116,5 +209,85 @@
 
 </div>
 </form>
+
+<script>
+// Mappa tipo pratica → quali box mostrare
+const tipoConfig = {
+  'noleggio':          { fleet: true,  sale: false, sinistro: false, lavorazione: false, noleggioRef: true  },
+  'sinistro':          { fleet: false, sale: false, sinistro: true,  lavorazione: false, noleggioRef: false },
+  'riparazione':       { fleet: false, sale: false, sinistro: false, lavorazione: true,  noleggioRef: false },
+  'perizia':           { fleet: true,  sale: true,  sinistro: false, lavorazione: false, noleggioRef: false },
+  'auto_sostitutiva':  { fleet: true,  sale: false, sinistro: true,  lavorazione: false, noleggioRef: false },
+  'lesioni_personali': { fleet: false, sale: false, sinistro: true,  lavorazione: false, noleggioRef: false },
+  'vendita_auto':      { fleet: false, sale: true,  sinistro: false, lavorazione: false, noleggioRef: false },
+  'altro':             { fleet: true,  sale: true,  sinistro: true,  lavorazione: true,  noleggioRef: false },
+};
+
+function aggiornaTipo(tipo) {
+  const cfg = tipoConfig[tipo] || { fleet: true, sale: false, sinistro: false, lavorazione: false, noleggioRef: false };
+  document.getElementById('box-fleet').style.display       = cfg.fleet       ? '' : 'none';
+  document.getElementById('box-sale').style.display        = cfg.sale        ? '' : 'none';
+  document.getElementById('box-sinistro').style.display    = cfg.sinistro    ? '' : 'none';
+  document.getElementById('box-lavorazione').style.display = cfg.lavorazione ? '' : 'none';
+  document.getElementById('box-noleggio-ref').style.display= cfg.noleggioRef ? '' : 'none';
+
+  // Reset selezioni nascoste
+  if (!cfg.fleet)       document.getElementById('sel-fleet').value = '';
+  if (!cfg.sale)        document.getElementById('sel-sale').value  = '';
+}
+
+function onVeicoloFlotta(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const label = opt.dataset.label || '';
+  if (label) {
+    document.getElementById('input-rifveicolo').value = label;
+    mostraRiepilogo('🚗 Flotta: ' + label);
+  } else {
+    nascondiRiepilogo();
+  }
+  // Reset vendita
+  document.getElementById('sel-sale').value = '';
+}
+
+function onVeicoloVendita(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const label = opt.dataset.label || '';
+  if (label) {
+    document.getElementById('input-rifveicolo').value = label;
+    mostraRiepilogo('💰 Vendita: ' + label);
+  } else {
+    nascondiRiepilogo();
+  }
+  // Reset flotta
+  document.getElementById('sel-fleet').value = '';
+}
+
+function onPraticaSelezionata(sel, type) {
+  const opt = sel.options[sel.selectedIndex];
+  if (opt.value) {
+    // Imposta pratica_type su tutti i campi hidden
+    document.querySelectorAll('[name=pratica_type]').forEach(el => el.value = type);
+    mostraRiepilogo('🔗 ' + (opt.dataset.label || opt.text));
+    if (opt.dataset.label) {
+      document.getElementById('input-rifveicolo').value = opt.dataset.label;
+    }
+  } else {
+    document.querySelectorAll('[name=pratica_type]').forEach(el => el.value = '');
+    nascondiRiepilogo();
+  }
+}
+
+function mostraRiepilogo(testo) {
+  const card = document.getElementById('card-riepilogo');
+  document.getElementById('riepilogo-testo').textContent = testo;
+  card.style.display = '';
+}
+function nascondiRiepilogo() {
+  document.getElementById('card-riepilogo').style.display = 'none';
+}
+
+// Init
+aggiornaTipo(document.getElementById('sel-tipo').value);
+</script>
 
 @endsection

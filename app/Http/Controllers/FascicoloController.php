@@ -8,6 +8,11 @@ use App\Models\FascicoloDocumento;
 use App\Models\DocumentoCatalogo;
 use App\Models\Customer;
 use App\Models\User;
+use App\Models\FleetVehicle;
+use App\Models\SaleVehicle;
+use App\Models\Claim;
+use App\Models\WorkOrder;
+use App\Models\Rental;
 use App\Notifications\FascicoloCompletato;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -41,12 +46,36 @@ class FascicoloController extends Controller
 
     public function create(Request $request)
     {
+        $tid         = auth()->user()->tenant_id;
         $clienti     = Customer::orderBy('first_name')->get();
         $tipiPratica = Fascicolo::tipiPratica();
         $stati       = Fascicolo::stati();
         $clienteId   = $request->get('cliente_id');
 
-        return view('fascicoli.create', compact('clienti', 'tipiPratica', 'stati', 'clienteId'));
+        // Veicoli flotta (noleggio)
+        $fleetVehicles = FleetVehicle::forTenant($tid)->orderBy('brand')->orderBy('model')->get();
+
+        // Veicoli in vendita
+        $saleVehicles = SaleVehicle::forTenant($tid)->where('status', 'attivo')->orderBy('brand')->orderBy('model')->get();
+
+        // Sinistri
+        $sinistri = Claim::where('tenant_id', $tid)->orderByDesc('created_at')
+            ->select('id','claim_number','description','counterpart_plate')->get();
+
+        // Riparazioni/Lavorazioni
+        $lavorazioni = WorkOrder::where('tenant_id', $tid)->orderByDesc('created_at')
+            ->with('vehicle:id,brand,model,plate')
+            ->select('id','job_number','description','vehicle_id')->get();
+
+        // Noleggi attivi
+        $noleggi = Rental::where('tenant_id', $tid)->whereIn('status', ['confermato','attivo','confirmed','active'])
+            ->with('vehicle:id,brand,model,plate')
+            ->orderByDesc('created_at')->get();
+
+        return view('fascicoli.create', compact(
+            'clienti', 'tipiPratica', 'stati', 'clienteId',
+            'fleetVehicles', 'saleVehicles', 'sinistri', 'lavorazioni', 'noleggi'
+        ));
     }
 
     public function store(Request $request)
@@ -60,8 +89,25 @@ class FascicoloController extends Controller
             'operatore_id'         => 'nullable|exists:users,id',
             'data_inizio'          => 'nullable|date',
             'data_fine'            => 'nullable|date|after_or_equal:data_inizio',
-            'riferimento_veicolo'  => 'nullable|string|max:100',
+            'riferimento_veicolo'  => 'nullable|string|max:255',
+            'fleet_vehicle_id'     => 'nullable|integer',
+            'sale_vehicle_id'      => 'nullable|integer',
+            'pratica_type'         => 'nullable|string',
+            'pratica_id'           => 'nullable|integer',
         ]);
+
+        // Auto-popola riferimento_veicolo dal veicolo selezionato
+        if (!empty($validated['fleet_vehicle_id'])) {
+            $v = FleetVehicle::find($validated['fleet_vehicle_id']);
+            if ($v && empty($validated['riferimento_veicolo'])) {
+                $validated['riferimento_veicolo'] = "{$v->brand} {$v->model} - {$v->plate}";
+            }
+        } elseif (!empty($validated['sale_vehicle_id'])) {
+            $v = SaleVehicle::find($validated['sale_vehicle_id']);
+            if ($v && empty($validated['riferimento_veicolo'])) {
+                $validated['riferimento_veicolo'] = "{$v->brand} {$v->model} - {$v->plate}";
+            }
+        }
 
         $fascicolo = Fascicolo::create(array_merge($validated, [
             'tenant_id' => auth()->user()->tenant_id,
