@@ -39,7 +39,11 @@ class Setting extends Model
 
     public static function get(string $chiave, mixed $default = null): mixed
     {
-        $tenantId = auth()->user()?->tenant_id ?? 0;
+        // Se nessun utente è loggato (sito pubblico), usa il tenant_id del primo tenant
+        $tenantId = auth()->user()?->tenant_id
+            ?? Cache::remember('default_tenant_id', 3600, fn() =>
+                static::withoutGlobalScope('tenant')->min('tenant_id') ?? 1
+            );
         $settings = Cache::remember("settings_{$tenantId}", 3600, function () use ($tenantId) {
             return static::withoutGlobalScope('tenant')
                 ->where('tenant_id', $tenantId)
