@@ -81,7 +81,7 @@ class FascicoloController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'cliente_id'           => 'required|exists:clienti,id',
+            'cliente_id'           => 'required|exists:customers,id',
             'tipo_pratica'         => 'required|in:' . implode(',', array_keys(Fascicolo::tipiPratica())),
             'stato'                => 'required|in:' . implode(',', array_keys(Fascicolo::stati())),
             'titolo'               => 'nullable|string|max:255',
@@ -144,7 +144,7 @@ class FascicoloController extends Controller
     public function update(Request $request, Fascicolo $fascicolo)
     {
         $validated = $request->validate([
-            'cliente_id'           => 'required|exists:clienti,id',
+            'cliente_id'           => 'required|exists:customers,id',
             'tipo_pratica'         => 'required|in:' . implode(',', array_keys(Fascicolo::tipiPratica())),
             'stato'                => 'required|in:' . implode(',', array_keys(Fascicolo::stati())),
             'titolo'               => 'nullable|string|max:255',
