@@ -17,6 +17,11 @@
   $heroImg       = Setting::get('hero_immagine','');
   $indirizzo     = Setting::get('azienda_indirizzo','Via Ignazio Collino 29, Torino');
   $h1Home        = Setting::get('page_home_h1','');
+  $ctaLabel      = Setting::get('home_cta_label','Siamo qui per te');
+  $ctaTitolo     = Setting::get('home_cta_titolo','Hai domande? Scrivici');
+  $ctaTesto      = Setting::get('home_cta_testo','Il nostro team risponde entro 24 ore. Chiamaci o inviaci un messaggio.');
+  $ctaBtn1       = Setting::get('home_cta_btn1', Setting::get('azienda_telefono','+39 327 807 2650'));
+  $ctaBtn2       = Setting::get('home_cta_btn2','Invia un messaggio');
 @endphp
 
 {{-- HERO --}}
@@ -201,12 +206,12 @@
   <div class="container">
     <div class="cta-box">
       <div class="cta-glow"></div>
-      <div class="section-label" style="text-align:center">Siamo qui per te</div>
-      <h2 class="section-title cta-title">Hai domande? Scrivici</h2>
-      <p class="cta-text">Il nostro team risponde entro 24 ore. Chiamaci o inviaci un messaggio.</p>
+      <div class="section-label" style="text-align:center">{{ $ctaLabel }}</div>
+      <h2 class="section-title cta-title">{{ $ctaTitolo }}</h2>
+      <p class="cta-text">{{ $ctaTesto }}</p>
       <div class="cta-actions">
-        <a href="tel:+393278072650" class="btn btn-primary">📞 +39 327 807 2650</a>
-        <a href="{{ route('public.contatti') }}" class="btn btn-ghost">Invia un messaggio</a>
+        <a href="tel:{{ preg_replace('/[^+\d]/','',$ctaBtn1) }}" class="btn btn-primary">📞 {{ $ctaBtn1 }}</a>
+        <a href="{{ route('public.contatti') }}" class="btn btn-ghost">{{ $ctaBtn2 }}</a>
       </div>
     </div>
   </div>

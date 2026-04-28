@@ -158,6 +158,11 @@ class Setting extends Model
                 'hero_badge'             => 'TORINO — DAL 2018',
                 'hero_cta1_testo'        => 'Vedi auto in vendita',
                 'hero_cta2_testo'        => 'Noleggio veicoli',
+                'home_cta_label'         => 'Siamo qui per te',
+                'home_cta_titolo'        => 'Hai domande? Scrivici',
+                'home_cta_testo'         => 'Il nostro team risponde entro 24 ore. Chiamaci o inviaci un messaggio.',
+                'home_cta_btn1'          => '+39 327 807 2650',
+                'home_cta_btn2'          => 'Invia un messaggio',
                 // VANTAGGI
                 'vantaggi_titolo'        => 'Perché scegliere AleCar',
                 'vantaggio_1_icon'       => '🔍',

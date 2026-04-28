@@ -201,6 +201,34 @@
           </div>
           @endfor
         </div>
+        {{-- CTA box home --}}
+        <div style="border-top:1px solid var(--border2);margin-top:20px;padding-top:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px">💬 Box CTA (sezione "Hai domande?" in fondo alla homepage)</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group">
+              <label class="form-label">Label sopra il titolo</label>
+              <input name="home_cta_label" class="form-input" value="{{ $v('home_cta_label') }}" placeholder="Siamo qui per te">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Titolo</label>
+              <input name="home_cta_titolo" class="form-input" value="{{ $v('home_cta_titolo') }}" placeholder="Hai domande? Scrivici">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Testo descrizione</label>
+            <input name="home_cta_testo" class="form-input" value="{{ $v('home_cta_testo') }}" placeholder="Il nostro team risponde entro 24 ore...">
+          </div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group">
+              <label class="form-label">Testo bottone telefono</label>
+              <input name="home_cta_btn1" class="form-input" value="{{ $v('home_cta_btn1') }}" placeholder="+39 327 807 2650">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Testo bottone messaggio</label>
+              <input name="home_cta_btn2" class="form-input" value="{{ $v('home_cta_btn2') }}" placeholder="Invia un messaggio">
+            </div>
+          </div>
+        </div>
         <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva Hero</button></div>
       </div>
     </div>
