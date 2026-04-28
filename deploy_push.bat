@@ -1,7 +1,7 @@
 @echo off
 cd /d C:\xampp\htdocs\carmodel
 git add -A
-git commit -m "Fix UniqueConstraintViolation in salva(), add azienda_sdi field, dynamic footer SDI"
+git commit -m "Fix public routes: remove Route::domain() constraint, fix redirect to /login on alecar.it"
 git push origin main
 echo DONE
 pause
