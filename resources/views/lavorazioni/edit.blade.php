@@ -125,8 +125,13 @@
 </div>
 
 @push('scripts')
+@php
+  $veicoli_js = $veicoli->map(function($v) {
+    return ['id'=>$v->id,'customer_id'=>$v->customer_id,'plate'=>$v->plate,'brand'=>$v->brand,'model'=>$v->model];
+  })->values();
+@endphp
 <script>
-const allVehicles = @json($veicoli->map(fn($v) => ['id'=>$v->id,'customer_id'=>$v->customer_id,'plate'=>$v->plate,'brand'=>$v->brand,'model'=>$v->model]));
+const allVehicles = {!! json_encode($veicoli_js) !!};
 const currentVehicleId = {{ $workOrder->vehicle_id ?? 'null' }};
 
 function loadVehicles(customerId) {
