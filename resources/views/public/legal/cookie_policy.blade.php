@@ -1,9 +1,11 @@
-{{-- ============================================================
-     SALVA QUESTO FILE COME: cookie_policy.blade.php
-     ============================================================ --}}
 @extends('public.layout')
-@section('title', 'Cookie Policy - AleCar S.r.l.')
-@section('description', 'Informativa sull\'utilizzo dei cookie su alecar.it - AleCar S.r.l.')
+@php
+  use App\Models\Setting;
+  $nome  = Setting::get('azienda_nome', 'AleCar S.r.l.');
+  $email = Setting::get('azienda_email', 'alecarto7@gmail.com');
+@endphp
+@section('title', Setting::get('legal_cookie_title', 'Cookie Policy - '.$nome))
+@section('description', Setting::get('legal_cookie_desc', 'Informativa sull\'utilizzo dei cookie su alecar.it - '.$nome))
 
 @section('content')
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 0 32px">
@@ -63,7 +65,7 @@
         <button onclick="openCookieSettings()" class="btn btn-primary btn-sm">⚙️ Gestisci le tue preferenze cookie</button>
       </div>
 
-      <p style="margin-top:24px">Per ulteriori informazioni: <a href="mailto:alecarto7@gmail.com" style="color:var(--orange)">alecarto7@gmail.com</a> — <a href="{{ route('public.privacy') }}" style="color:var(--orange)">Privacy Policy</a></p>
+      <p style="margin-top:24px">Per ulteriori informazioni: <a href="mailto:{{ $email }}" style="color:var(--orange)">{{ $email }}</a> — <a href="{{ route('public.privacy') }}" style="color:var(--orange)">Privacy Policy</a></p>
     </div>
   </div>
 </section>

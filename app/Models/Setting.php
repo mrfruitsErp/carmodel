@@ -203,6 +203,19 @@ class Setting extends Model
                 'logo_url'               => '',
                 'logo_favicon'           => '',
             ],
+            'legale' => [
+                'legal_privacy_title'          => '',
+                'legal_privacy_desc'           => '',
+                'legal_privacy_testo'          => '',
+                'legal_cookie_title'           => '',
+                'legal_cookie_desc'            => '',
+                'legal_termini_vendita_title'  => '',
+                'legal_termini_vendita_desc'   => '',
+                'legal_termini_vendita_testo'  => '',
+                'legal_termini_noleggio_title' => '',
+                'legal_termini_noleggio_desc'  => '',
+                'legal_termini_noleggio_testo' => '',
+            ],
         ];
     }
 }

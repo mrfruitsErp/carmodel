@@ -1,7 +1,11 @@
 @echo off
 cd /d C:\xampp\htdocs\carmodel
 git add -A
-git commit -m "Fix public routes: remove Route::domain() constraint, fix redirect to /login on alecar.it"
+git commit -m "Add sezione Legale in settings sito_web, pagine legali dinamiche da DB"
 git push origin main
-echo DONE
+echo.
+echo === PUSH COMPLETATO ===
+echo Sul server:
+echo   cd /var/www/carmodel ^&^& git pull origin main ^&^& php artisan cache:clear ^&^& php artisan view:clear
+echo.
 pause

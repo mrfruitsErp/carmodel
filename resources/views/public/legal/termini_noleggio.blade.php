@@ -1,6 +1,14 @@
 @extends('public.layout')
-@section('title', 'Termini e Condizioni di Noleggio - AleCar S.r.l.')
-@section('description', 'Condizioni generali di noleggio veicoli AleCar S.r.l. Torino.')
+@php
+  use App\Models\Setting;
+  $nome      = Setting::get('azienda_nome', 'AleCar S.r.l.');
+  $indirizzo = Setting::get('azienda_indirizzo', 'Via Ignazio Collino 29, 10100 Torino (TO)');
+  $piva      = Setting::get('azienda_piva', '11352180019');
+  $email     = Setting::get('azienda_email', 'alecarto7@gmail.com');
+  $tn_testo  = Setting::get('legal_termini_noleggio_testo', '');
+@endphp
+@section('title', Setting::get('legal_termini_noleggio_title', 'Termini e Condizioni di Noleggio - '.$nome))
+@section('description', Setting::get('legal_termini_noleggio_desc', 'Condizioni generali di noleggio veicoli '.$nome))
 
 @section('content')
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 0 32px">

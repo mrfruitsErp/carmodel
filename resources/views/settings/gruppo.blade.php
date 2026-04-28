@@ -58,6 +58,7 @@
         'media'     => '🖼️ Foto & Media',
         'colori'    => '🎨 Colori',
         'analytics' => '📊 Analytics',
+        'legale'    => '⚖️ Legale',
       ] as $tab => $label)
       <button type="button" onclick="sitoTab('{{ $tab }}')" id="tab-btn-{{ $tab }}"
         class="btn btn-ghost btn-sm" style="font-size:12px">{{ $label }}</button>
@@ -478,6 +479,85 @@
         </div>
         <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva Analytics</button></div>
       </div>
+    </div>
+
+    {{-- ─── TAB: LEGALE ─── --}}
+    <div id="tab-legale" class="sito-tab-panel" style="display:none">
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">⚖️ Privacy Policy</div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Meta Title</label>
+            <input name="legal_privacy_title" class="form-input" value="{{ $v('legal_privacy_title') }}" placeholder="Privacy Policy - AleCar S.r.l.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meta Description</label>
+            <input name="legal_privacy_desc" class="form-input" value="{{ $v('legal_privacy_desc') }}" placeholder="Informativa privacy ai sensi del GDPR">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Testo personalizzato <span style="color:var(--text3)">(opzionale — se vuoto viene usato il testo standard)</span></label>
+          <textarea name="legal_privacy_testo" class="form-textarea" rows="8" placeholder="Inserisci il testo completo della Privacy Policy (formattazione semplice con a-capo)...">{{ $v('legal_privacy_testo') }}</textarea>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">🍪 Cookie Policy</div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Meta Title</label>
+            <input name="legal_cookie_title" class="form-input" value="{{ $v('legal_cookie_title') }}" placeholder="Cookie Policy - AleCar S.r.l.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meta Description</label>
+            <input name="legal_cookie_desc" class="form-input" value="{{ $v('legal_cookie_desc') }}" placeholder="Informativa cookie su alecar.it">
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">🚗 Termini di Vendita</div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Meta Title</label>
+            <input name="legal_termini_vendita_title" class="form-input" value="{{ $v('legal_termini_vendita_title') }}" placeholder="Termini e Condizioni di Vendita - AleCar S.r.l.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meta Description</label>
+            <input name="legal_termini_vendita_desc" class="form-input" value="{{ $v('legal_termini_vendita_desc') }}" placeholder="Condizioni generali di vendita veicoli usati">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Testo personalizzato <span style="color:var(--text3)">(opzionale)</span></label>
+          <textarea name="legal_termini_vendita_testo" class="form-textarea" rows="8" placeholder="Inserisci il testo completo dei Termini di Vendita...">{{ $v('legal_termini_vendita_testo') }}</textarea>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">📅 Termini di Noleggio</div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Meta Title</label>
+            <input name="legal_termini_noleggio_title" class="form-input" value="{{ $v('legal_termini_noleggio_title') }}" placeholder="Termini e Condizioni di Noleggio - AleCar S.r.l.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meta Description</label>
+            <input name="legal_termini_noleggio_desc" class="form-input" value="{{ $v('legal_termini_noleggio_desc') }}" placeholder="Condizioni generali di noleggio veicoli">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Testo personalizzato <span style="color:var(--text3)">(opzionale)</span></label>
+          <textarea name="legal_termini_noleggio_testo" class="form-textarea" rows="8" placeholder="Inserisci il testo completo dei Termini di Noleggio...">{{ $v('legal_termini_noleggio_testo') }}</textarea>
+        </div>
+      </div>
+
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--text3)">
+        💡 <strong>Nota:</strong> Se il campo "Testo personalizzato" è vuoto, viene mostrato il contenuto standard predefinito. Compila solo se vuoi sostituire completamente il testo legale.
+        I dati aziendali (nome, P.IVA, email) vengono sempre letti dalla tab <strong>Testi → Dati Aziendali</strong>.
+      </div>
+
+      <div><button type="submit" class="btn btn-primary">✓ Salva sezioni legali</button></div>
     </div>
 
     </form>

@@ -1,6 +1,14 @@
 @extends('public.layout')
-@section('title', 'Termini e Condizioni di Vendita - AleCar S.r.l.')
-@section('description', 'Condizioni generali di vendita veicoli usati AleCar S.r.l. Torino.')
+@php
+  use App\Models\Setting;
+  $nome      = Setting::get('azienda_nome', 'AleCar S.r.l.');
+  $indirizzo = Setting::get('azienda_indirizzo', 'Via Ignazio Collino 29, 10100 Torino (TO)');
+  $piva      = Setting::get('azienda_piva', '11352180019');
+  $email     = Setting::get('azienda_email', 'alecarto7@gmail.com');
+  $tv_testo  = Setting::get('legal_termini_vendita_testo', '');
+@endphp
+@section('title', Setting::get('legal_termini_vendita_title', 'Termini e Condizioni di Vendita - '.$nome))
+@section('description', Setting::get('legal_termini_vendita_desc', 'Condizioni generali di vendita veicoli usati '.$nome))
 
 @section('content')
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 0 32px">
@@ -15,9 +23,12 @@
     <div class="legal-content" style="max-width:800px;font-size:14px;color:var(--text2);line-height:1.9">
 
       <div style="background:var(--bg2);border:1px solid rgba(255,107,0,.2);border-radius:10px;padding:20px;margin-bottom:32px">
-        <strong style="color:var(--orange)">AleCar S.r.l.</strong> — Via Ignazio Collino 29, 10100 Torino (TO) — P.IVA: 11352180019
+        <strong style="color:var(--orange)">{{ $nome }}</strong> — {{ $indirizzo }} — P.IVA: {{ $piva }}
       </div>
 
+      @if($tv_testo)
+        {!! nl2br(e($tv_testo)) !!}
+      @else
       <h4 style="font-size:16px;font-weight:700;color:var(--text);margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)">1. Ambito di applicazione</h4>
       <p>Le presenti condizioni generali di vendita si applicano a tutte le vendite di veicoli usati effettuate da AleCar S.r.l. nei confronti di consumatori (art. 3 D.Lgs. 206/2005) e operatori professionali.</p>
 
@@ -47,6 +58,7 @@
 
       <h4 style="font-size:16px;font-weight:700;color:var(--text);margin:28px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)">10. Risoluzione alternativa delle controversie</h4>
       <p>Per controversie con consumatori, è possibile ricorrere alla piattaforma europea ODR: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener" style="color:var(--orange)">https://ec.europa.eu/consumers/odr</a></p>
+      @endif
 
     </div>
   </div>
