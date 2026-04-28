@@ -50,11 +50,11 @@ $siteRoutes = function () {
 };
 
 if (app()->environment('production')) {
-    // PROD: le route pubbliche sono accessibili su qualsiasi host.
-    // Le route ERP sono protette da middleware 'restrict' (solo app.alecar.it / IP).
-    // Non usiamo Route::domain() per evitare che richieste da www.alecar.it
-    // o dall'IP diretto non matchino e cadano sul redirect /login.
-    Route::name('public.')->group($siteRoutes);
+    // PROD: route pubbliche solo su alecar.it e www.alecar.it.
+    // Su app.alecar.it non le registriamo così la dashboard ERP gestisce /.
+    foreach (['alecar.it', 'www.alecar.it'] as $publicDomain) {
+        Route::domain($publicDomain)->name('public.')->group($siteRoutes);
+    }
 } else {
     // DEV/locale: prefix "/sito" per non collidere con la dashboard ERP
     Route::prefix('sito')->name('public.')->group($siteRoutes);

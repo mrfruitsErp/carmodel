@@ -26,7 +26,7 @@ class ExpertController extends Controller
             'medico_legale' => Expert::forTenant($tid)->where('type','medico_legale')->count(),
             'consulente'    => Expert::forTenant($tid)->where('type','consulente')->count(),
         ];
-        return view('periti.index', compact('esperti', 'contatori'));
+        return view('esperti.index', compact('esperti', 'contatori'));
     }
 
     public function create()
