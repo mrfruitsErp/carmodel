@@ -1,19 +1,37 @@
 @extends('public.layout')
-@section('title', 'Contatti - AleCar S.r.l. Torino')
-@section('description', 'Contatta AleCar S.r.l. a Torino. Telefono, email e form di contatto.')
+@php
+  use App\Models\Setting;
+  $pageTitle   = Setting::get('page_contatti_title') ?: Setting::get('seo_site_title','Contatti - AleCar S.r.l. Torino');
+  $pageDesc    = Setting::get('page_contatti_description') ?: Setting::get('seo_site_description','Contatta AleCar S.r.l. a Torino.');
+  $h1c         = Setting::get('page_contatti_h1') ?: Setting::get('contatti_h1','Contattaci');
+  $h2c         = Setting::get('page_contatti_h2') ?: Setting::get('contatti_h2','Siamo a tua disposizione');
+  $introC      = Setting::get('contatti_intro','Hai domande su un veicolo, vuoi un preventivo noleggio o hai bisogno di assistenza? Scrivici o chiamaci.');
+  $mapsEmbed   = Setting::get('contatti_maps_embed','');
+  $swTel       = Setting::get('azienda_telefono','+39 327 807 2650');
+  $swEmail     = Setting::get('azienda_email','alecarto7@gmail.com');
+  $swIndirizzo = Setting::get('azienda_indirizzo','Via Ignazio Collino 29, 10100 Torino (TO)');
+@endphp
+@section('title', $pageTitle)
+@section('description', $pageDesc)
 
 @section('content')
 
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:60px 0 48px">
   <div class="container">
-    <div class="section-label">Siamo qui per te</div>
-    <h1 class="section-title">Contattaci</h1>
-    <p class="section-sub">Hai domande su un veicolo, vuoi un preventivo noleggio o hai bisogno di assistenza? Scrivici o chiamaci.</p>
+    <div class="section-label">{{ $h2c }}</div>
+    <h1 class="section-title">{{ $h1c }}</h1>
+    <p class="section-sub">{{ $introC }}</p>
   </div>
 </section>
 
 <section class="section">
   <div class="container">
+    @if($mapsEmbed)
+    <div style="margin-bottom:32px;border-radius:12px;overflow:hidden;border:1px solid var(--border)">
+      {!! $mapsEmbed !!}
+    </div>
+    @endif
+
     <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start">
 
       {{-- Info contatto --}}
@@ -23,10 +41,9 @@
           <h3 style="font-size:18px;font-weight:700;margin-bottom:20px">Informazioni</h3>
           <div style="display:flex;flex-direction:column;gap:16px">
             @foreach([
-              ['📞','Telefono','+39 327 807 2650','tel:+393278072650'],
-              ['✉️','Email','alecarto7@gmail.com','mailto:alecarto7@gmail.com'],
-              ['🏛️','PEC','alecar@legalmail.it','mailto:alecar@legalmail.it'],
-              ['📍','Indirizzo','Via Ignazio Collino 29, 10100 Torino (TO)',null],
+              ['📞','Telefono', $swTel, 'tel:'.preg_replace('/[^+\d]/','',$swTel)],
+              ['✉️','Email', $swEmail, 'mailto:'.$swEmail],
+              ['📍','Indirizzo', $swIndirizzo, null],
             ] as [$icon,$label,$val,$href])
             <div style="display:flex;gap:14px;align-items:flex-start">
               <div style="width:40px;height:40px;background:var(--orange-bg);border:1px solid rgba(255,107,0,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">{{ $icon }}</div>

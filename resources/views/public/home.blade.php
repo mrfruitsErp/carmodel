@@ -1,11 +1,26 @@
 @extends('public.layout')
-@section('title', 'AleCar S.r.l. - Vendita Auto e Noleggio Torino')
-@section('description', 'AleCar S.r.l. Torino - Auto usate garantite e noleggio veicoli. Qualità, trasparenza e assistenza dedicata.')
+@php
+  use App\Models\Setting;
+  $pageTitle = Setting::get('page_home_title') ?: Setting::get('seo_site_title','AleCar S.r.l. - Vendita Auto e Noleggio Torino');
+  $pageDesc  = Setting::get('page_home_description') ?: Setting::get('seo_site_description','AleCar S.r.l. Torino - Auto usate garantite e noleggio veicoli.');
+@endphp
+@section('title', $pageTitle)
+@section('description', $pageDesc)
 
 @section('content')
+@php
+  $heroBadge     = Setting::get('hero_badge','TORINO — DAL 2018');
+  $heroTitolo    = Setting::get('hero_titolo','Auto <span style="color:var(--orange)">selezionate</span><br>e noleggio<br>su misura');
+  $heroSotto     = Setting::get('hero_sottotitolo','AleCar S.r.l. — veicoli usati garantiti, prezzi trasparenti e IVA esposta.');
+  $heroCta1      = Setting::get('hero_cta1_testo','Vedi auto in vendita');
+  $heroCta2      = Setting::get('hero_cta2_testo','Noleggio veicoli');
+  $heroImg       = Setting::get('hero_immagine','');
+  $indirizzo     = Setting::get('azienda_indirizzo','Via Ignazio Collino 29, Torino');
+  $h1Home        = Setting::get('page_home_h1','');
+@endphp
 
 {{-- HERO --}}
-<section class="hero-section">
+<section class="hero-section"@if($heroImg) style="background-image:linear-gradient(to bottom, rgba(10,10,10,.7),rgba(10,10,10,.95)),url('{{ $heroImg }}');background-size:cover;background-position:center"@endif>
   <div class="hero-overlay"></div>
   <div class="hero-glow"></div>
 
@@ -14,17 +29,15 @@
       <div>
         <div class="hero-badge">
           <span class="hero-badge-dot"></span>
-          TORINO — DAL 2018
+          {{ $heroBadge }}
         </div>
         <h1 class="hero-title">
-          Auto <span style="color:var(--orange)">selezionate</span><br>e noleggio<br>su misura
+          @if($h1Home){!! $h1Home !!}@else{!! $heroTitolo !!}@endif
         </h1>
-        <p class="hero-subtitle">
-          AleCar S.r.l. — veicoli usati garantiti, prezzi trasparenti e IVA esposta. Noleggio breve e lungo termine con flotta sempre aggiornata.
-        </p>
+        <p class="hero-subtitle">{{ $heroSotto }}</p>
         <div class="hero-cta">
-          <a href="{{ route('public.vehicles.index') }}" class="btn btn-primary hero-btn">Vedi auto in vendita</a>
-          <a href="{{ route('public.noleggio') }}" class="btn btn-ghost hero-btn">Noleggio veicoli</a>
+          <a href="{{ route('public.vehicles.index') }}" class="btn btn-primary hero-btn">{{ $heroCta1 }}</a>
+          <a href="{{ route('public.noleggio') }}" class="btn btn-ghost hero-btn">{{ $heroCta2 }}</a>
         </div>
         {{-- Stats --}}
         <div class="hero-stats">
@@ -52,7 +65,7 @@
           </div>
           <div class="hero-side-info">
             <div style="font-size:11px;color:var(--text3);margin-bottom:4px">SEDE</div>
-            <div style="font-size:13px;color:var(--text);font-weight:600">Via Ignazio Collino 29, Torino</div>
+            <div style="font-size:13px;color:var(--text);font-weight:600">{{ $indirizzo }}</div>
           </div>
         </div>
       </div>
@@ -61,15 +74,20 @@
 </section>
 
 {{-- VANTAGGI --}}
+@php
+  $vantaggi = [];
+  for($i=1;$i<=4;$i++){
+    $vantaggi[] = [
+      Setting::get("vantaggio_{$i}_icon",['🔍','💰','📞','🚗'][$i-1]),
+      Setting::get("vantaggio_{$i}_titolo",['Veicoli controllati','Prezzi trasparenti','Risposta in 24h','Consegna a domicilio'][$i-1]),
+      Setting::get("vantaggio_{$i}_desc",['Ogni auto viene verificata e certificata prima della vendita','IVA sempre esposta, nessun costo nascosto','Rispondiamo a tutte le richieste entro un giorno lavorativo','Consegniamo il veicolo direttamente da te'][$i-1]),
+    ];
+  }
+@endphp
 <section class="vantaggi-section">
   <div class="container">
     <div class="vantaggi-grid">
-      @foreach([
-        ['🔍','Veicoli controllati','Ogni auto viene verificata e certificata prima della vendita'],
-        ['💰','Prezzi trasparenti','IVA sempre esposta, nessun costo nascosto'],
-        ['📞','Risposta in 24h','Rispondiamo a tutte le richieste entro un giorno lavorativo'],
-        ['🚗','Consegna a domicilio','Consegniamo il veicolo direttamente da te'],
-      ] as [$icon,$title,$desc])
+      @foreach($vantaggi as [$icon,$title,$desc])
       <div class="vantaggio">
         <div class="vantaggio-icon">{{ $icon }}</div>
         <div>

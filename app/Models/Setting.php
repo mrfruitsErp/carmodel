@@ -70,6 +70,7 @@ class Setting extends Model
             'notifiche' => 'Notifiche',
             'privacy'   => 'Privacy & GDPR',
             'veicoli'   => 'Veicoli',
+            'sito_web'  => '🌐 Sito Web',
         ];
     }
 
@@ -130,6 +131,72 @@ class Setting extends Model
             'veicoli' => [
                 'km_alert_soglia'        => '10000',
                 'revisione_alert_giorni' => '30',
+            ],
+            'sito_web' => [
+                // SEO globale
+                'seo_site_title'         => 'AleCar S.r.l. - Vendita Auto e Noleggio Torino',
+                'seo_site_description'   => 'AleCar S.r.l. Torino - Auto usate garantite e noleggio veicoli. Qualità, trasparenza e assistenza dedicata.',
+                'seo_keywords'           => 'auto usate torino, noleggio auto torino, alecar',
+                'seo_og_image'           => '',
+                // Azienda
+                'azienda_slogan'         => 'Auto selezionate e noleggio su misura',
+                'azienda_descrizione'    => 'AleCar S.r.l. — veicoli usati garantiti, prezzi trasparenti e IVA esposta.',
+                'azienda_telefono'       => '+39 327 807 2650',
+                'azienda_email'          => 'alecarto7@gmail.com',
+                'azienda_indirizzo'      => 'Via Ignazio Collino 29, 10100 Torino (TO)',
+                'azienda_piva'           => '11352180019',
+                'azienda_whatsapp'       => '393278072650',
+                'azienda_anno'           => '2018',
+                // HERO
+                'hero_titolo'            => 'Auto <span style="color:var(--orange)">selezionate</span><br>e noleggio<br>su misura',
+                'hero_sottotitolo'       => 'AleCar S.r.l. — veicoli usati garantiti, prezzi trasparenti e IVA esposta. Noleggio breve e lungo termine con flotta sempre aggiornata.',
+                'hero_badge'             => 'TORINO — DAL 2018',
+                'hero_cta1_testo'        => 'Vedi auto in vendita',
+                'hero_cta2_testo'        => 'Noleggio veicoli',
+                // VANTAGGI
+                'vantaggi_titolo'        => 'Perché scegliere AleCar',
+                'vantaggio_1_icon'       => '🔍',
+                'vantaggio_1_titolo'     => 'Veicoli controllati',
+                'vantaggio_1_desc'       => 'Ogni auto viene verificata e certificata prima della vendita',
+                'vantaggio_2_icon'       => '💰',
+                'vantaggio_2_titolo'     => 'Prezzi trasparenti',
+                'vantaggio_2_desc'       => 'IVA sempre esposta, nessun costo nascosto',
+                'vantaggio_3_icon'       => '📞',
+                'vantaggio_3_titolo'     => 'Risposta in 24h',
+                'vantaggio_3_desc'       => 'Rispondiamo a tutte le richieste entro un giorno lavorativo',
+                'vantaggio_4_icon'       => '🚗',
+                'vantaggio_4_titolo'     => 'Consegna a domicilio',
+                'vantaggio_4_desc'       => 'Consegniamo il veicolo direttamente da te',
+                // CHI SIAMO
+                'chi_siamo_h1'           => 'Chi siamo',
+                'chi_siamo_h2'           => 'La nostra storia',
+                'chi_siamo_testo'        => 'AleCar S.r.l. nasce a Torino con la missione di rendere l\'acquisto e il noleggio di veicoli usati un\'esperienza trasparente, semplice e affidabile.',
+                'chi_siamo_missione'     => 'La nostra missione è offrire veicoli selezionati di qualità con prezzi chiari e assistenza dedicata.',
+                'chi_siamo_visione'      => 'Crediamo che ogni cliente meriti un'esperienza d'acquisto serena, senza sorprese.',
+                // SERVIZI
+                'servizi_h1'             => 'I nostri servizi',
+                'servizi_h2'             => 'Tutto quello di cui hai bisogno',
+                'servizi_intro'          => 'Offriamo una gamma completa di servizi automotive per soddisfare ogni esigenza.',
+                // CONTATTI
+                'contatti_h1'            => 'Contattaci',
+                'contatti_h2'            => 'Siamo a tua disposizione',
+                'contatti_intro'         => 'Hai domande su un\'auto o vuoi informazioni sul noleggio? Scrivici o chiamaci.',
+                'contatti_maps_embed'    => '',
+                // FOOTER
+                'footer_descrizione'     => 'AleCar S.r.l. — Vendita auto usate selezionate e noleggio veicoli a Torino. Qualità garantita, prezzi trasparenti, assistenza dedicata.',
+                // SOCIAL
+                'social_facebook'        => '',
+                'social_instagram'       => '',
+                'social_tiktok'          => '',
+                // COLORI
+                'colore_primario'        => '#ff6b00',
+                'colore_sfondo'          => '#0a0a0a',
+                // ANALYTICS
+                'google_analytics_id'    => '',
+                'google_tag_manager'     => '',
+                // LOGO
+                'logo_url'               => '',
+                'logo_favicon'           => '',
             ],
         ];
     }

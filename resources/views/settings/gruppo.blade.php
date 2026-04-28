@@ -39,6 +39,495 @@
       @endforelse
     </div>
 
+    @elseif($gruppo === 'sito_web')
+    {{-- ═══════════════════════════════════════════════════════════ --}}
+    {{-- EDITOR SITO WEB                                            --}}
+    {{-- ═══════════════════════════════════════════════════════════ --}}
+    @php
+      $sw = $settings; // shorthand
+      $v  = fn($k,$d='') => $sw[$k]->valore ?? \App\Models\Setting::defaultPerGruppo()['sito_web'][$k] ?? $d;
+    @endphp
+
+    {{-- Tabs --}}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px" id="sito-tabs">
+      @foreach([
+        'seo'       => '🔍 SEO',
+        'hero'      => '🏠 Hero',
+        'testi'     => '✏️ Testi',
+        'contatti'  => '📞 Contatti',
+        'media'     => '🖼️ Foto & Media',
+        'colori'    => '🎨 Colori',
+        'analytics' => '📊 Analytics',
+      ] as $tab => $label)
+      <button type="button" onclick="sitoTab('{{ $tab }}')" id="tab-btn-{{ $tab }}"
+        class="btn btn-ghost btn-sm" style="font-size:12px">{{ $label }}</button>
+      @endforeach
+    </div>
+
+    {{-- ─── TAB: SEO ─── --}}
+    <form method="POST" action="{{ route('settings.salva', 'sito_web') }}" enctype="multipart/form-data" id="form-sito_web">
+    @csrf
+    <div id="tab-seo" class="sito-tab-panel">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">🔍 SEO — Ottimizzazione motori di ricerca</div>
+
+        <div class="form-group">
+          <label class="form-label">Title tag globale <span style="color:var(--text3)">(tag &lt;title&gt;)</span></label>
+          <input name="seo_site_title" class="form-input" value="{{ $v('seo_site_title') }}" placeholder="AleCar S.r.l. - Vendita Auto e Noleggio Torino">
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Idealmente 50-60 caratteri. Attuale: <span id="title-count">{{ strlen($v('seo_site_title')) }}</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Meta description <span style="color:var(--text3)">(tag &lt;meta description&gt;)</span></label>
+          <textarea name="seo_site_description" class="form-textarea" style="min-height:70px" placeholder="Descrizione breve del sito per Google..." oninput="document.getElementById('desc-count').textContent=this.value.length">{{ $v('seo_site_description') }}</textarea>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Idealmente 150-160 caratteri. Attuale: <span id="desc-count">{{ strlen($v('seo_site_description')) }}</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Parole chiave <span style="color:var(--text3)">(keywords, separate da virgola)</span></label>
+          <input name="seo_keywords" class="form-input" value="{{ $v('seo_keywords') }}" placeholder="auto usate torino, noleggio auto, alecar">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Immagine Open Graph <span style="color:var(--text3)">(condivisione social, 1200×630px)</span></label>
+          @if($v('seo_og_image'))
+            <div style="margin-bottom:8px"><img src="{{ $v('seo_og_image') }}" style="max-height:80px;border-radius:6px;border:1px solid var(--border2)"></div>
+          @endif
+          <input type="file" name="seo_og_image" class="form-input" accept="image/*" style="padding:6px">
+        </div>
+
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-top:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">📋 Anteprima Google</div>
+          <div style="font-size:18px;color:#8ab4f8;font-weight:500;margin-bottom:2px" id="preview-title">{{ $v('seo_site_title') }}</div>
+          <div style="font-size:12px;color:#4caf50;margin-bottom:4px">https://alecar.it</div>
+          <div style="font-size:13px;color:#bdc1c6;line-height:1.5" id="preview-desc">{{ $v('seo_site_description') }}</div>
+        </div>
+
+        {{-- Per-pagina SEO --}}
+        <div style="border-top:1px solid var(--border2);margin-top:20px;padding-top:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px">📄 SEO per pagina</div>
+          @foreach([
+            ['home',          'Home',           'H1 / Title / Description'],
+            ['auto_vendita',  'Auto in vendita','H1 / Title / Description'],
+            ['noleggio',      'Noleggio',        'H1 / Title / Description'],
+            ['servizi',       'Servizi',         'H1 / Title / Description'],
+            ['chi_siamo',     'Chi siamo',       'H1 / Title / Description'],
+            ['contatti',      'Contatti',        'H1 / Title / Description'],
+          ] as [$slug, $nome, $hint])
+          <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:10px">
+            <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:8px">📄 {{ $nome }}</div>
+            <div class="two-col" style="gap:10px">
+              <div class="form-group" style="margin-bottom:8px">
+                <label class="form-label">H1 — Titolo principale</label>
+                <input name="page_{{ $slug }}_h1" class="form-input" value="{{ $v('page_'.$slug.'_h1') }}" placeholder="Titolo H1 pagina {{ $nome }}">
+              </div>
+              <div class="form-group" style="margin-bottom:8px">
+                <label class="form-label">H2 — Sottotitolo</label>
+                <input name="page_{{ $slug }}_h2" class="form-input" value="{{ $v('page_'.$slug.'_h2') }}" placeholder="Sottotitolo H2">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:8px">
+              <label class="form-label">Meta title (lascia vuoto per usare il globale)</label>
+              <input name="page_{{ $slug }}_title" class="form-input" value="{{ $v('page_'.$slug.'_title') }}" placeholder="{{ $v('seo_site_title') }}">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Meta description</label>
+              <textarea name="page_{{ $slug }}_description" class="form-textarea" style="min-height:50px" placeholder="Descrizione pagina {{ $nome }}">{{ $v('page_'.$slug.'_description') }}</textarea>
+            </div>
+          </div>
+          @endforeach
+        </div>
+
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva SEO</button></div>
+      </div>
+    </div>
+
+    {{-- ─── TAB: HERO ─── --}}
+    <div id="tab-hero" class="sito-tab-panel" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">🏠 Sezione Hero (prima schermata)</div>
+        <div class="form-group">
+          <label class="form-label">Badge sopra il titolo</label>
+          <input name="hero_badge" class="form-input" value="{{ $v('hero_badge') }}" placeholder="TORINO — DAL 2018">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Titolo Hero (H1) — puoi usare HTML per colorare parole</label>
+          <textarea name="hero_titolo" class="form-textarea" style="min-height:80px">{{ $v('hero_titolo') }}</textarea>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Esempio: Auto <span style="color:var(--orange)">&lt;span style="color:var(--orange)"&gt;selezionate&lt;/span&gt;</span> e noleggio</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sottotitolo Hero</label>
+          <textarea name="hero_sottotitolo" class="form-textarea" style="min-height:70px">{{ $v('hero_sottotitolo') }}</textarea>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Testo CTA principale</label>
+            <input name="hero_cta1_testo" class="form-input" value="{{ $v('hero_cta1_testo') }}" placeholder="Vedi auto in vendita">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Testo CTA secondario</label>
+            <input name="hero_cta2_testo" class="form-input" value="{{ $v('hero_cta2_testo') }}" placeholder="Noleggio veicoli">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Immagine Hero / Sfondo <span style="color:var(--text3)">(opzionale)</span></label>
+          @if($v('hero_immagine'))
+            <div style="margin-bottom:8px"><img src="{{ $v('hero_immagine') }}" style="max-height:100px;border-radius:6px;border:1px solid var(--border2)"></div>
+          @endif
+          <input type="file" name="hero_immagine" class="form-input" accept="image/*" style="padding:6px">
+        </div>
+
+        {{-- Vantaggi --}}
+        <div style="border-top:1px solid var(--border2);margin-top:20px;padding-top:16px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px">⭐ Vantaggi (4 box sotto l'hero)</div>
+          @for($i=1;$i<=4;$i++)
+          <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:8px">VANTAGGIO {{ $i }}</div>
+            <div style="display:grid;grid-template-columns:60px 1fr 1fr;gap:10px">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Icona</label>
+                <input name="vantaggio_{{ $i }}_icon" class="form-input" value="{{ $v('vantaggio_'.$i.'_icon') }}" placeholder="🔍">
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Titolo</label>
+                <input name="vantaggio_{{ $i }}_titolo" class="form-input" value="{{ $v('vantaggio_'.$i.'_titolo') }}" placeholder="Titolo">
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Descrizione</label>
+                <input name="vantaggio_{{ $i }}_desc" class="form-input" value="{{ $v('vantaggio_'.$i.'_desc') }}" placeholder="Descrizione breve">
+              </div>
+            </div>
+          </div>
+          @endfor
+        </div>
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva Hero</button></div>
+      </div>
+    </div>
+
+    {{-- ─── TAB: TESTI ─── --}}
+    <div id="tab-testi" class="sito-tab-panel" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">✏️ Testi delle pagine</div>
+
+        {{-- Chi siamo --}}
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:10px">👤 Chi siamo</div>
+          <div class="form-group">
+            <label class="form-label">Titolo pagina (H1)</label>
+            <input name="chi_siamo_h1" class="form-input" value="{{ $v('chi_siamo_h1') }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Titolo sezione (H2)</label>
+            <input name="chi_siamo_h2" class="form-input" value="{{ $v('chi_siamo_h2') }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Testo principale</label>
+            <textarea name="chi_siamo_testo" class="form-textarea" style="min-height:100px">{{ $v('chi_siamo_testo') }}</textarea>
+          </div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group">
+              <label class="form-label">La nostra missione</label>
+              <textarea name="chi_siamo_missione" class="form-textarea" style="min-height:80px">{{ $v('chi_siamo_missione') }}</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">La nostra visione</label>
+              <textarea name="chi_siamo_visione" class="form-textarea" style="min-height:80px">{{ $v('chi_siamo_visione') }}</textarea>
+            </div>
+          </div>
+        </div>
+
+        {{-- Servizi --}}
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:10px">🛠️ Servizi</div>
+          <div class="form-group">
+            <label class="form-label">Titolo pagina (H1)</label>
+            <input name="servizi_h1" class="form-input" value="{{ $v('servizi_h1') }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Titolo sezione (H2)</label>
+            <input name="servizi_h2" class="form-input" value="{{ $v('servizi_h2') }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Testo introduttivo</label>
+            <textarea name="servizi_intro" class="form-textarea" style="min-height:70px">{{ $v('servizi_intro') }}</textarea>
+          </div>
+        </div>
+
+        {{-- Azienda / Footer --}}
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:10px">🏢 Azienda & Footer</div>
+          <div class="form-group">
+            <label class="form-label">Slogan azienda</label>
+            <input name="azienda_slogan" class="form-input" value="{{ $v('azienda_slogan') }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descrizione azienda <span style="color:var(--text3)">(usata nel footer e chi siamo)</span></label>
+            <textarea name="azienda_descrizione" class="form-textarea" style="min-height:80px">{{ $v('azienda_descrizione') }}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Testo footer</label>
+            <textarea name="footer_descrizione" class="form-textarea" style="min-height:70px">{{ $v('footer_descrizione') }}</textarea>
+          </div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group">
+              <label class="form-label">Anno fondazione</label>
+              <input name="azienda_anno" class="form-input" value="{{ $v('azienda_anno') }}" placeholder="2018">
+            </div>
+            <div class="form-group">
+              <label class="form-label">P.IVA</label>
+              <input name="azienda_piva" class="form-input" value="{{ $v('azienda_piva') }}">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva testi</button></div>
+      </div>
+    </div>
+
+    {{-- ─── TAB: CONTATTI ─── --}}
+    <div id="tab-contatti" class="sito-tab-panel" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">📞 Contatti & Recapiti</div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Telefono</label>
+            <input name="azienda_telefono" class="form-input" value="{{ $v('azienda_telefono') }}" placeholder="+39 327 807 2650">
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp <span style="color:var(--text3)">(solo numeri, con prefisso, es. 393278072650)</span></label>
+            <input name="azienda_whatsapp" class="form-input" value="{{ $v('azienda_whatsapp') }}" placeholder="393278072650">
+          </div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input name="azienda_email" class="form-input" value="{{ $v('azienda_email') }}" placeholder="alecarto7@gmail.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Indirizzo</label>
+            <input name="azienda_indirizzo" class="form-input" value="{{ $v('azienda_indirizzo') }}" placeholder="Via Ignazio Collino 29, Torino">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Titolo pagina Contatti (H1)</label>
+          <input name="contatti_h1" class="form-input" value="{{ $v('contatti_h1') }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sottotitolo (H2)</label>
+          <input name="contatti_h2" class="form-input" value="{{ $v('contatti_h2') }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Testo introduttivo</label>
+          <textarea name="contatti_intro" class="form-textarea" style="min-height:70px">{{ $v('contatti_intro') }}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Embed Google Maps <span style="color:var(--text3)">(incolla il codice iframe da Google Maps → Condividi → Incorpora)</span></label>
+          <textarea name="contatti_maps_embed" class="form-textarea" style="min-height:80px;font-family:monospace;font-size:11px" placeholder='&lt;iframe src="https://www.google.com/maps/embed?..."&gt;&lt;/iframe&gt;'>{{ $v('contatti_maps_embed') }}</textarea>
+        </div>
+        {{-- Social --}}
+        <div style="border-top:1px solid var(--border2);margin-top:14px;padding-top:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">📱 Social Media</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group">
+              <label class="form-label">Facebook URL</label>
+              <input name="social_facebook" class="form-input" value="{{ $v('social_facebook') }}" placeholder="https://facebook.com/alecar">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Instagram URL</label>
+              <input name="social_instagram" class="form-input" value="{{ $v('social_instagram') }}" placeholder="https://instagram.com/alecar">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">TikTok URL</label>
+            <input name="social_tiktok" class="form-input" value="{{ $v('social_tiktok') }}" placeholder="https://tiktok.com/@alecar">
+          </div>
+        </div>
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva contatti</button></div>
+      </div>
+    </div>
+
+    {{-- ─── TAB: MEDIA ─── --}}
+    <div id="tab-media" class="sito-tab-panel" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">🖼️ Foto & Media</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">Logo principale</div>
+            @if($v('logo_url'))
+              <img src="{{ $v('logo_url') }}" style="max-height:50px;margin-bottom:10px;display:block">
+              <input type="hidden" name="logo_url_attuale" value="{{ $v('logo_url') }}">
+            @endif
+            <input type="file" name="logo_url" class="form-input" accept="image/*" style="padding:6px">
+            <div style="font-size:10px;color:var(--text3);margin-top:4px">Formato PNG con sfondo trasparente consigliato</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px">
+            <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">Favicon <span style="color:var(--text3)">(32×32px)</span></div>
+            @if($v('logo_favicon'))
+              <img src="{{ $v('logo_favicon') }}" style="width:32px;height:32px;margin-bottom:10px;display:block">
+            @endif
+            <input type="file" name="logo_favicon" class="form-input" accept="image/png,image/x-icon,image/svg+xml" style="padding:6px">
+          </div>
+        </div>
+
+        {{-- Foto Chi siamo --}}
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">📸 Foto "Chi siamo"</div>
+          @if($v('chi_siamo_foto'))
+            <img src="{{ $v('chi_siamo_foto') }}" style="max-height:120px;border-radius:6px;margin-bottom:10px;display:block;border:1px solid var(--border2)">
+          @endif
+          <input type="file" name="chi_siamo_foto" class="form-input" accept="image/*" style="padding:6px">
+        </div>
+
+        {{-- Galleria --}}
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">🎞️ Galleria sito</div>
+          @php
+            $galleria = json_decode($v('galleria_foto','[]'), true) ?? [];
+          @endphp
+          @if(count($galleria) > 0)
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:12px">
+            @foreach($galleria as $fotoUrl)
+            <div style="position:relative">
+              <img src="{{ $fotoUrl }}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border2)">
+              <label style="position:absolute;top:4px;right:4px;background:rgba(239,68,68,.9);border-radius:4px;padding:2px 5px;cursor:pointer;font-size:10px;color:#fff">
+                <input type="checkbox" name="galleria_rimuovi[]" value="{{ $fotoUrl }}" style="display:none"> ✕
+              </label>
+            </div>
+            @endforeach
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Seleziona le foto da rimuovere (spunta ✕) e salva</div>
+          @else
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Nessuna foto in galleria</div>
+          @endif
+          <div class="form-group">
+            <label class="form-label">Aggiungi foto (puoi selezionarne più di una)</label>
+            <input type="file" name="galleria_nuove[]" class="form-input" accept="image/*" multiple style="padding:6px">
+          </div>
+        </div>
+
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva media</button></div>
+      </div>
+    </div>
+
+    {{-- ─── TAB: COLORI ─── --}}
+    <div id="tab-colori" class="sito-tab-panel" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">🎨 Colori del sito</div>
+        <div style="background:var(--bg3);border:1px solid var(--amber);border-radius:8px;padding:12px;margin-bottom:16px">
+          <div style="font-size:12px;color:var(--amber)">⚠️ Modifica i colori con attenzione — influenzano tutta la grafica del sito</div>
+        </div>
+        <div class="two-col" style="gap:16px">
+          <div class="form-group">
+            <label class="form-label">Colore primario (arancio)</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="color" name="colore_primario" value="{{ $v('colore_primario','#ff6b00') }}" style="width:48px;height:38px;border:none;border-radius:6px;cursor:pointer;background:transparent">
+              <input type="text" id="colore_primario_txt" class="form-input" value="{{ $v('colore_primario','#ff6b00') }}" style="font-family:monospace" placeholder="#ff6b00"
+                oninput="document.querySelector('[name=colore_primario]').value=this.value">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Colore sfondo</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="color" name="colore_sfondo" value="{{ $v('colore_sfondo','#0a0a0a') }}" style="width:48px;height:38px;border:none;border-radius:6px;cursor:pointer;background:transparent">
+              <input type="text" id="colore_sfondo_txt" class="form-input" value="{{ $v('colore_sfondo','#0a0a0a') }}" style="font-family:monospace" placeholder="#0a0a0a"
+                oninput="document.querySelector('[name=colore_sfondo]').value=this.value">
+            </div>
+          </div>
+        </div>
+        {{-- Preview colori --}}
+        <div style="margin-top:12px;border-radius:8px;overflow:hidden;border:1px solid var(--border2)">
+          <div id="color-preview" style="background:#0a0a0a;padding:20px;text-align:center">
+            <div id="cp-title" style="font-size:20px;font-weight:800;color:#f0f0f0;margin-bottom:8px">Anteprima sito AleCar</div>
+            <div id="cp-btn" style="display:inline-block;background:#ff6b00;color:#000;padding:10px 24px;border-radius:8px;font-weight:700;font-size:14px">Bottone primario</div>
+          </div>
+        </div>
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva colori</button></div>
+      </div>
+    </div>
+
+    {{-- ─── TAB: ANALYTICS ─── --}}
+    <div id="tab-analytics" class="sito-tab-panel" style="display:none">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">📊 Analytics & Tracking</div>
+        <div class="form-group">
+          <label class="form-label">Google Analytics 4 — ID misurazione <span style="color:var(--text3)">(es. G-XXXXXXXXXX)</span></label>
+          <input name="google_analytics_id" class="form-input" value="{{ $v('google_analytics_id') }}" placeholder="G-XXXXXXXXXX">
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Trova l'ID in Analytics → Amministrazione → Flussi di dati</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Google Tag Manager — ID contenitore <span style="color:var(--text3)">(es. GTM-XXXXXXX)</span></label>
+          <input name="google_tag_manager" class="form-input" value="{{ $v('google_tag_manager') }}" placeholder="GTM-XXXXXXX">
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-top:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px">Stato attuale</div>
+          <div style="font-size:12px">
+            GA4: <strong style="color:{{ $v('google_analytics_id') ? 'var(--green)' : 'var(--text3)' }}">{{ $v('google_analytics_id') ?: 'Non configurato' }}</strong><br>
+            GTM: <strong style="color:{{ $v('google_tag_manager') ? 'var(--green)' : 'var(--text3)' }}">{{ $v('google_tag_manager') ?: 'Non configurato' }}</strong>
+          </div>
+        </div>
+        <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva Analytics</button></div>
+      </div>
+    </div>
+
+    </form>
+
+    <script>
+    function sitoTab(tab) {
+      document.querySelectorAll('.sito-tab-panel').forEach(p => p.style.display = 'none');
+      document.getElementById('tab-' + tab).style.display = 'block';
+      document.querySelectorAll('#sito-tabs button').forEach(b => {
+        b.style.background = 'transparent';
+        b.style.borderColor = 'var(--border2)';
+        b.style.color = 'var(--text2)';
+      });
+      const btn = document.getElementById('tab-btn-' + tab);
+      if (btn) {
+        btn.style.background = 'var(--orange)';
+        btn.style.borderColor = 'var(--orange)';
+        btn.style.color = '#000';
+      }
+    }
+    // Apri primo tab di default
+    sitoTab('seo');
+
+    // Anteprima Google
+    const titleInput = document.querySelector('[name=seo_site_title]');
+    const descInput  = document.querySelector('[name=seo_site_description]');
+    if (titleInput) titleInput.addEventListener('input', function(){
+      document.getElementById('preview-title').textContent = this.value;
+      document.getElementById('title-count').textContent = this.value.length;
+    });
+    if (descInput) descInput.addEventListener('input', function(){
+      document.getElementById('preview-desc').textContent = this.value;
+    });
+
+    // Anteprima colori
+    const colPrimario = document.querySelector('[name=colore_primario]');
+    const colSfondo   = document.querySelector('[name=colore_sfondo]');
+    function aggiornaPrev(){
+      const p = colPrimario?.value || '#ff6b00';
+      const s = colSfondo?.value || '#0a0a0a';
+      const prev = document.getElementById('color-preview');
+      const btn  = document.getElementById('cp-btn');
+      if (prev) prev.style.background = s;
+      if (btn)  btn.style.background  = p;
+      document.getElementById('colore_primario_txt').value = p;
+      document.getElementById('colore_sfondo_txt').value = s;
+    }
+    colPrimario?.addEventListener('input', aggiornaPrev);
+    colSfondo?.addEventListener('input', aggiornaPrev);
+
+    // Highlight foto galleria da rimuovere
+    document.querySelectorAll('[name="galleria_rimuovi[]"]').forEach(cb => {
+      cb.closest('div[style*="position:relative"]').addEventListener('click', function(){
+        cb.checked = !cb.checked;
+        this.querySelector('img').style.opacity = cb.checked ? '0.3' : '1';
+        this.querySelector('label').style.background = cb.checked ? 'rgba(239,68,68,1)' : 'rgba(239,68,68,.9)';
+      });
+    });
+    </script>
+
     @else
     <form method="POST" action="{{ route('settings.salva', $gruppo) }}">
       @csrf

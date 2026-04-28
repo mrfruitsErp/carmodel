@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -40,6 +41,43 @@ class SettingController extends Controller
     public function salva(Request $request, string $gruppo)
     {
         $tid = auth()->user()->tenant_id;
+
+        // ── Gestione upload immagini per sito_web ──────────────────────
+        if ($gruppo === 'sito_web') {
+            $campiImmagine = ['logo_url', 'logo_favicon', 'seo_og_image', 'hero_immagine', 'chi_siamo_foto'];
+            foreach ($campiImmagine as $campo) {
+                if ($request->hasFile($campo) && $request->file($campo)->isValid()) {
+                    $path = $request->file($campo)->store("sito/{$tid}", 'public');
+                    $request->merge([$campo => Storage::url($path)]);
+                }
+            }
+            // Gestione galleria foto
+            if ($request->hasFile('galleria_nuove')) {
+                $galleria = [];
+                $esistente = Setting::withoutGlobalScope('tenant')
+                    ->where('tenant_id', $tid)->where('chiave', 'galleria_foto')->value('valore');
+                if ($esistente) {
+                    $galleria = json_decode($esistente, true) ?? [];
+                }
+                foreach ($request->file('galleria_nuove') as $foto) {
+                    if ($foto->isValid()) {
+                        $path = $foto->store("sito/{$tid}/galleria", 'public');
+                        $galleria[] = Storage::url($path);
+                    }
+                }
+                $request->merge(['galleria_foto' => json_encode($galleria)]);
+            }
+            // Rimuovi foto dalla galleria
+            if ($request->input('galleria_rimuovi')) {
+                $esistente = Setting::withoutGlobalScope('tenant')
+                    ->where('tenant_id', $tid)->where('chiave', 'galleria_foto')->value('valore');
+                $galleria = json_decode($esistente, true) ?? [];
+                $daRimuovere = (array) $request->input('galleria_rimuovi');
+                $galleria = array_values(array_diff($galleria, $daRimuovere));
+                $request->merge(['galleria_foto' => json_encode($galleria)]);
+            }
+        }
+
         $payload = $request->except(['_token', '_method']);
 
         // ==== Logica speciale per il gruppo AI: rilevamento automatico provider/modello ====

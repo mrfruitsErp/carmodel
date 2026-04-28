@@ -1,16 +1,28 @@
 {{-- chi_siamo.blade.php --}}
 @extends('public.layout')
-@section('title', 'Chi Siamo - AleCar S.r.l. | Carrozzeria, Officina, Vendita Auto e Noleggio a Torino')
-@section('description', 'AleCar S.r.l. a Torino dal 2013: carrozzeria, officina, vendita auto nuove e usate, noleggio breve e lungo termine, gestione sinistri e pratiche auto. Il tuo partner completo per il mondo dell\'auto.')
+@php
+  use App\Models\Setting;
+  $pageTitle = Setting::get('page_chi_siamo_title') ?: Setting::get('seo_site_title','Chi Siamo - AleCar S.r.l.');
+  $pageDesc  = Setting::get('page_chi_siamo_description') ?: Setting::get('seo_site_description','');
+  $h1        = Setting::get('page_chi_siamo_h1') ?: Setting::get('chi_siamo_h1','Chi siamo');
+  $h2        = Setting::get('page_chi_siamo_h2') ?: Setting::get('chi_siamo_h2','La nostra storia');
+  $testo     = Setting::get('chi_siamo_testo','AleCar nasce a Torino con la missione di rendere l\'acquisto e il noleggio di veicoli usati un\'esperienza trasparente, semplice e affidabile.');
+  $missione  = Setting::get('chi_siamo_missione','La nostra missione è offrire veicoli selezionati di qualità con prezzi chiari e assistenza dedicata.');
+  $visione   = Setting::get('chi_siamo_visione','Crediamo che ogni cliente meriti un\'esperienza d\'acquisto serena, senza sorprese.');
+  $foto      = Setting::get('chi_siamo_foto','');
+  $anno      = Setting::get('azienda_anno','2018');
+@endphp
+@section('title', $pageTitle)
+@section('description', $pageDesc)
 
 @section('content')
 
 {{-- HERO --}}
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:60px 0 48px">
   <div class="container">
-    <div class="section-label">La nostra storia</div>
-    <h1 class="section-title">Chi siamo</h1>
-    <p class="section-sub">AleCar S.r.l. — il tuo partner completo per il mondo dell'auto a Torino dal 2013. Vendita, officina, carrozzeria, noleggio, sinistri e pratiche: tutto in un unico posto.</p>
+    <div class="section-label">{{ $h2 }}</div>
+    <h1 class="section-title">{{ $h1 }}</h1>
+    <p class="section-sub">{{ Setting::get('azienda_descrizione','AleCar S.r.l. — veicoli usati garantiti, prezzi trasparenti e IVA esposta.') }}</p>
   </div>
 </section>
 
@@ -20,17 +32,16 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:60px">
       <div>
         <div class="orange-line"></div>
-        <h2 style="font-size:28px;font-weight:800;margin-bottom:20px">Torino, 2013. Una passione che diventa impresa.</h2>
-        <p style="color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:16px">
-          AleCar nasce a Torino nel 2013 dall'intuizione di un giovane imprenditore con le radici nella carrozzeria di famiglia e lo sguardo rivolto al futuro. L'idea era semplice quanto ambiziosa: creare un punto di riferimento unico per tutto ciò che riguarda l'automobile.
-        </p>
-        <p style="color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:16px">
-          In oltre dieci anni di attività, AleCar si è trasformata in un polo integrato di servizi auto che oggi serve privati e aziende in tutta l'area metropolitana torinese — dall'acquisto alla riparazione, dal noleggio alla gestione dei sinistri, fino al disbrigo delle pratiche burocratiche.
-        </p>
-        <p style="color:var(--text2);font-size:15px;line-height:1.9">
-          Siamo torinesi. Lavoriamo ogni giorno in una città che l'automobile ce l'ha nel DNA, e questo si sente nel modo in cui approcciamo ogni cliente: con competenza, serietà e la flessibilità di chi ha costruito la propria reputazione sulla soddisfazione delle persone.
-        </p>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:20px">Torino, {{ $anno }}. Una passione che diventa impresa.</h2>
+        <p style="color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:16px">{{ $testo }}</p>
+        @if($missione)<p style="color:var(--text2);font-size:15px;line-height:1.9;margin-bottom:16px">{{ $missione }}</p>@endif
+        @if($visione)<p style="color:var(--text2);font-size:15px;line-height:1.9">{{ $visione }}</p>@endif
       </div>
+      @if($foto)
+      <div>
+        <img src="{{ $foto }}" alt="Chi siamo AleCar" style="width:100%;border-radius:16px;border:1px solid var(--border);object-fit:cover;max-height:400px">
+      </div>
+      @else
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:36px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           @foreach([
@@ -47,6 +58,7 @@
           @endforeach
         </div>
       </div>
+      @endif
     </div>
 
     <div class="divider"></div>

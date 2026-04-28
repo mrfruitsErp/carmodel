@@ -1,15 +1,23 @@
 {{-- servizi.blade.php --}}
 @extends('public.layout')
-@section('title', 'Servizi - AleCar S.r.l. Torino')
-@section('description', 'AleCar S.r.l. offre vendita auto usate, noleggio, perizie e assistenza a Torino.')
+@php
+  use App\Models\Setting;
+  $pageTitle = Setting::get('page_servizi_title') ?: Setting::get('seo_site_title','Servizi - AleCar S.r.l. Torino');
+  $pageDesc  = Setting::get('page_servizi_description') ?: Setting::get('seo_site_description','');
+  $h1s       = Setting::get('page_servizi_h1') ?: Setting::get('servizi_h1','I nostri servizi');
+  $h2s       = Setting::get('page_servizi_h2') ?: Setting::get('servizi_h2','Tutto quello di cui hai bisogno');
+  $introS    = Setting::get('servizi_intro','Offriamo una gamma completa di servizi automotive per soddisfare ogni esigenza.');
+@endphp
+@section('title', $pageTitle)
+@section('description', $pageDesc)
 
 @section('content')
 
 <section style="background:var(--bg2);border-bottom:1px solid var(--border);padding:60px 0 48px">
   <div class="container">
-    <div class="section-label">Cosa facciamo</div>
-    <h1 class="section-title">I nostri servizi</h1>
-    <p class="section-sub">Vendita, noleggio e assistenza. Tutto quello che ti serve per il tuo veicolo, in un unico posto.</p>
+    <div class="section-label">{{ $h2s }}</div>
+    <h1 class="section-title">{{ $h1s }}</h1>
+    <p class="section-sub">{{ $introS }}</p>
   </div>
 </section>
 

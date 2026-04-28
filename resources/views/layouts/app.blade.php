@@ -209,14 +209,14 @@ td{font-size:14px}
     </a>
 
     {{-- ANAGRAFICA --}}
-    @if(auth()->user()->canDo('clienti.view') || auth()->user()->canDo('veicoli.view'))
+    @if(optional(auth()->user())->canDo('clienti.view') || optional(auth()->user())->canDo('veicoli.view'))
     <div class="nav-section">Anagrafica</div>
-    @if(auth()->user()->canDo('clienti.view'))
+    @if(optional(auth()->user())->canDo('clienti.view'))
     <a href="{{ route('clienti.index') }}" class="nav-item {{ request()->routeIs('clienti.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Clienti
     </a>
     @endif
-    @if(auth()->user()->canDo('veicoli.view'))
+    @if(optional(auth()->user())->canDo('veicoli.view'))
     <a href="{{ route('veicoli.index') }}" class="nav-item {{ request()->routeIs('veicoli.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>Veicoli
     </a>
@@ -224,24 +224,24 @@ td{font-size:14px}
     @endif
 
     {{-- SINISTRI --}}
-    @if(auth()->user()->canDo('sinistri.view') || auth()->user()->canDo('lesioni.view') || auth()->user()->canDo('periti.view'))
+    @if(optional(auth()->user())->canDo('sinistri.view') || optional(auth()->user())->canDo('lesioni.view') || optional(auth()->user())->canDo('periti.view'))
     <div class="nav-section">Sinistri & Lesioni</div>
-    @if(auth()->user()->canDo('sinistri.view'))
+    @if(optional(auth()->user())->canDo('sinistri.view'))
     <a href="{{ route('sinistri.index') }}" class="nav-item {{ request()->routeIs('sinistri.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Sinistri
     </a>
     @endif
-    @if(auth()->user()->canDo('lesioni.view'))
+    @if(optional(auth()->user())->canDo('lesioni.view'))
     <a href="{{ route('lesioni.index') }}" class="nav-item {{ request()->routeIs('lesioni.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Lesioni Personali
     </a>
     @endif
-    @if(auth()->user()->canDo('periti.view'))
+    @if(optional(auth()->user())->canDo('periti.view'))
     <a href="{{ route('periti.index') }}" class="nav-item {{ request()->routeIs('periti.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>Esperti & Contatti
     </a>
     @endif
-    @if(auth()->user()->canDo('periti.view'))
+    @if(optional(auth()->user())->canDo('periti.view'))
     <a href="{{ route('assicurazioni.index') }}" class="nav-item {{ request()->routeIs('assicurazioni.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Assicurazioni
     </a>
@@ -249,14 +249,14 @@ td{font-size:14px}
     @endif
 
     {{-- OFFICINA --}}
-    @if(auth()->user()->canDo('lavorazioni.view') || auth()->user()->canDo('preventivi.view'))
+    @if(optional(auth()->user())->canDo('lavorazioni.view') || optional(auth()->user())->canDo('preventivi.view'))
     <div class="nav-section">Officina</div>
-    @if(auth()->user()->canDo('lavorazioni.view'))
+    @if(optional(auth()->user())->canDo('lavorazioni.view'))
     <a href="{{ route('lavorazioni.index') }}" class="nav-item {{ request()->routeIs('lavorazioni.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Lavorazioni
     </a>
     @endif
-    @if(auth()->user()->canDo('preventivi.view'))
+    @if(optional(auth()->user())->canDo('preventivi.view'))
     <a href="{{ route('preventivi.index') }}" class="nav-item {{ request()->routeIs('preventivi.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg>Preventivi
     </a>
@@ -264,7 +264,7 @@ td{font-size:14px}
     @endif
 
     {{-- NOLEGGIO --}}
-    @if(auth()->user()->canDo('noleggio.view'))
+    @if(optional(auth()->user())->canDo('noleggio.view'))
     @php
       $isMarketplaceRental = request()->routeIs('marketplace.vehicles.*') && request('type') === 'noleggio';
     @endphp
@@ -281,19 +281,19 @@ td{font-size:14px}
     @endif
 
     {{-- AMMINISTRAZIONE --}}
-    @if(auth()->user()->canDo('fatture.view') || auth()->user()->canDo('ricambi.view') || auth()->user()->canDo('utenti.manage'))
+    @if(optional(auth()->user())->canDo('fatture.view') || optional(auth()->user())->canDo('ricambi.view') || optional(auth()->user())->canDo('utenti.manage'))
     <div class="nav-section">Amministrazione</div>
-    @if(auth()->user()->canDo('clienti.view'))
+    @if(optional(auth()->user())->canDo('clienti.view'))
     <a href="{{ route('fascicoli.index') }}" class="nav-item {{ request()->routeIs('fascicoli.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Fascicoli
     </a>
     @endif
-    @if(auth()->user()->canDo('fatture.view'))
+    @if(optional(auth()->user())->canDo('fatture.view'))
     <a href="{{ route('documenti.index') }}" class="nav-item {{ request()->routeIs('documenti.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Fatture & DDT
     </a>
     @endif
-    @if(auth()->user()->canDo('clienti.view'))
+    @if(optional(auth()->user())->canDo('clienti.view'))
     @php
       try {
         $msgNonLetti = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->where('is_spam', false)->count();
@@ -312,12 +312,12 @@ td{font-size:14px}
     <a href="{{ route('mail.index') }}" class="nav-item {{ request()->routeIs('mail.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Mail & Notifiche
     </a>
-    @if(auth()->user()->canDo('ricambi.view'))
+    @if(optional(auth()->user())->canDo('ricambi.view'))
     <a href="{{ route('ricambi.index') }}" class="nav-item {{ request()->routeIs('ricambi.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Ricambi
     </a>
     @endif
-    @if(auth()->user()->canDo('utenti.manage'))
+    @if(optional(auth()->user())->canDo('utenti.manage'))
     <a href="{{ route('utenti.index') }}" class="nav-item {{ request()->routeIs('utenti.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utenti
     </a>
@@ -330,7 +330,7 @@ td{font-size:14px}
     @endif
 
     {{-- VENDITA AUTO --}}
-    @if(auth()->user()->canDo('marketplace.view'))
+    @if(optional(auth()->user())->canDo('marketplace.view'))
     @php
       $isMarketplaceSale = request()->routeIs('marketplace.vehicles.*') && request('type') !== 'noleggio';
     @endphp
@@ -344,7 +344,7 @@ td{font-size:14px}
     <a href="{{ route('marketplace.leads.index') }}" class="nav-item {{ request()->routeIs('marketplace.leads.*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Lead
     </a>
-    @if(auth()->user()->canDo('impostazioni.manage'))
+    @if(optional(auth()->user())->canDo('impostazioni.manage'))
     <a href="{{ route('marketplace.settings') }}" class="nav-item {{ request()->routeIs('marketplace.settings*') ? 'active' : '' }}">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Piattaforme
     </a>
@@ -372,7 +372,7 @@ td{font-size:14px}
   <div class="topbar">
     <span class="page-title">@yield('title', 'Dashboard')</span>
     <div style="display:flex;gap:8px;align-items:center">
-      @if(auth()->user()->canDo('clienti.view'))
+      @if(optional(auth()->user())->canDo('clienti.view'))
       @php
         try {
           $bellCount = \App\Models\WebBooking::forTenant(auth()->user()->tenant_id)->whereNull('letto_at')->where('is_spam', false)->count();

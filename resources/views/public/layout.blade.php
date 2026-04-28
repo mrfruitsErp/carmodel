@@ -3,24 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>@yield('title', 'AleCar S.r.l. - Torino') | AleCar</title>
-  <meta name="description" content="@yield('description', 'AleCar S.r.l. - Vendita auto usate e noleggio a Torino. Via Ignazio Collino 29.')">
+  @php
+    use App\Models\Setting;
+    $sw_title       = Setting::get('seo_site_title', 'AleCar S.r.l. - Vendita Auto e Noleggio Torino');
+    $sw_desc        = Setting::get('seo_site_description', 'AleCar S.r.l. - Vendita auto usate e noleggio a Torino.');
+    $sw_og_image    = Setting::get('seo_og_image', '');
+    $sw_color       = Setting::get('colore_primario', '#ff6b00');
+    $sw_bgcolor     = Setting::get('colore_sfondo', '#0a0a0a');
+    $sw_ga_id       = Setting::get('google_analytics_id', '');
+    $sw_gtm         = Setting::get('google_tag_manager', '');
+    $sw_favicon     = Setting::get('logo_favicon', '');
+    $sw_whatsapp    = Setting::get('azienda_whatsapp', '393278072650');
+    $sw_telefono    = Setting::get('azienda_telefono', '+39 327 807 2650');
+    $sw_email       = Setting::get('azienda_email', 'alecarto7@gmail.com');
+    $sw_indirizzo   = Setting::get('azienda_indirizzo', 'Via Ignazio Collino 29, 10100 Torino (TO)');
+    $sw_piva        = Setting::get('azienda_piva', '11352180019');
+    $sw_footer_desc = Setting::get('footer_descrizione', 'AleCar S.r.l. — Vendita auto usate selezionate e noleggio veicoli a Torino.');
+    $sw_logo        = Setting::get('logo_url', '');
+    $sw_facebook    = Setting::get('social_facebook', '');
+    $sw_instagram   = Setting::get('social_instagram', '');
+    $sw_tiktok      = Setting::get('social_tiktok', '');
+    $sw_color2      = '#' . dechex(max(0, hexdec(ltrim($sw_color,'#')) - 0x101010));
+  @endphp
+  <title>@yield('title', $sw_title)</title>
+  <meta name="description" content="@yield('description', $sw_desc)">
+  <meta name="keywords" content="{{ Setting::get('seo_keywords','auto usate torino, noleggio auto torino') }}">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="{{ url()->current() }}">
+  <meta property="og:title" content="@yield('title', $sw_title)">
+  <meta property="og:description" content="@yield('description', $sw_desc)">
+  @if($sw_og_image)<meta property="og:image" content="{{ $sw_og_image }}">@endif
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ url()->current() }}">
+  @if($sw_favicon)<link rel="icon" href="{{ $sw_favicon }}">@endif
+  @if($sw_gtm)
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ $sw_gtm }}');</script>
+  @endif
+  @if($sw_ga_id)
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ $sw_ga_id }}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ $sw_ga_id }}');</script>
+  @endif
   <style>
     :root {
-      --bg:        #0a0a0a;
-      --bg2:       #111111;
-      --bg3:       #1a1a1a;
-      --bg4:       #222222;
-      --border:    #2a2a2a;
-      --border2:   #333333;
+      --bg:        {{ $sw_bgcolor }};
+      --bg2:       {{ '#' . dechex(min(0xffffff, hexdec(ltrim($sw_bgcolor,'#')) + 0x0b0b0b)) }};
+      --bg3:       {{ '#' . dechex(min(0xffffff, hexdec(ltrim($sw_bgcolor,'#')) + 0x161616)) }};
+      --bg4:       {{ '#' . dechex(min(0xffffff, hexdec(ltrim($sw_bgcolor,'#')) + 0x1e1e1e)) }};
+      --border:    {{ '#' . dechex(min(0xffffff, hexdec(ltrim($sw_bgcolor,'#')) + 0x242424)) }};
+      --border2:   {{ '#' . dechex(min(0xffffff, hexdec(ltrim($sw_bgcolor,'#')) + 0x303030)) }};
       --text:      #f0f0f0;
       --text2:     #bbbbbb;
       --text3:     #777777;
-      --orange:    #ff6b00;
-      --orange2:   #e05e00;
-      --orange-bg: rgba(255,107,0,.08);
+      --orange:    {{ $sw_color }};
+      --orange2:   {{ $sw_color2 }};
+      --orange-bg: {{ 'rgba('.implode(',',sscanf($sw_color,'#%02x%02x%02x')).',.08)' }};
       --mono:      'Courier New', monospace;
     }
     *{box-sizing:border-box;margin:0;padding:0}
@@ -275,11 +313,12 @@
 <nav class="navbar">
   <div class="navbar-inner">
     @php
-      $logoPath = 'images/logo-alecar-compact.png';
-      $logoVer  = file_exists(public_path($logoPath)) ? filemtime(public_path($logoPath)) : '1';
+      $logoPath    = 'images/logo-alecar-compact.png';
+      $logoVer     = file_exists(public_path($logoPath)) ? filemtime(public_path($logoPath)) : '1';
+      $navbarLogo  = $sw_logo ?: asset($logoPath);
     @endphp
     <a href="{{ route('public.home') }}" class="navbar-logo">
-      <img src="{{ asset($logoPath) }}?v={{ $logoVer }}" alt="AleCar S.r.l.">
+      <img src="{{ $navbarLogo }}?v={{ $logoVer }}" alt="AleCar S.r.l.">
     </a>
     <div class="navbar-menu">
       <a href="{{ route('public.home') }}" class="{{ request()->routeIs('public.home') ? 'active' : '' }}">Home</a>
@@ -312,8 +351,16 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="footer-logo"><img src="{{ asset($logoPath) }}?v={{ $logoVer }}" alt="AleCar"></div>
-        <p class="footer-desc">AleCar S.r.l. — Vendita auto usate selezionate e noleggio veicoli a Torino. Qualità garantita, prezzi trasparenti, assistenza dedicata.</p>
+        @php $footerLogo = $sw_logo ?: asset($logoPath); @endphp
+        <div class="footer-logo"><img src="{{ $footerLogo }}?v={{ $logoVer }}" alt="AleCar"></div>
+        <p class="footer-desc">{{ $sw_footer_desc }}</p>
+        @if($sw_facebook || $sw_instagram || $sw_tiktok)
+        <div style="display:flex;gap:10px;margin-top:12px">
+          @if($sw_facebook)<a href="{{ $sw_facebook }}" target="_blank" rel="noopener" style="color:var(--text3);font-size:12px;text-decoration:none;transition:.15s" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--text3)'">Facebook</a>@endif
+          @if($sw_instagram)<a href="{{ $sw_instagram }}" target="_blank" rel="noopener" style="color:var(--text3);font-size:12px;text-decoration:none;transition:.15s" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--text3)'">Instagram</a>@endif
+          @if($sw_tiktok)<a href="{{ $sw_tiktok }}" target="_blank" rel="noopener" style="color:var(--text3);font-size:12px;text-decoration:none;transition:.15s" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--text3)'">TikTok</a>@endif
+        </div>
+        @endif
       </div>
       <div class="footer-col">
         <h4>Navigazione</h4>
@@ -325,10 +372,9 @@
       </div>
       <div class="footer-col">
         <h4>Contatti</h4>
-        <a href="tel:+393278072650">+39 327 807 2650</a>
-        <a href="mailto:alecarto7@gmail.com">alecarto7@gmail.com</a>
-        <a href="mailto:alecar@legalmail.it">PEC: alecar@legalmail.it</a>
-        <p style="margin-top:8px">Via Ignazio Collino 29<br>10100 Torino (TO)</p>
+        <a href="tel:{{ $sw_telefono }}">{{ $sw_telefono }}</a>
+        <a href="mailto:{{ $sw_email }}">{{ $sw_email }}</a>
+        <p style="margin-top:8px">{{ $sw_indirizzo }}</p>
       </div>
       <div class="footer-col">
         <h4>Legale</h4>
@@ -340,7 +386,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">&copy; {{ date('Y') }} AleCar S.r.l. — P.IVA 11352180019 — Cod. SDI: M5UXCR1 — Iscritta CCIAA Torino</p>
+      <p class="footer-copy">&copy; {{ date('Y') }} AleCar S.r.l. — P.IVA {{ $sw_piva }} — Cod. SDI: M5UXCR1 — Iscritta CCIAA Torino</p>
       <div class="footer-legal">
         <a href="{{ route('public.privacy') }}">Privacy</a>
         <a href="{{ route('public.cookie_policy') }}">Cookie</a>
@@ -498,10 +544,17 @@ function showTerminiVendita(){ openModal('modal-termini-vendita', '{{ route('pub
 function showTerminiNoleggio(){ openModal('modal-termini-noleggio', '{{ route('public.termini_noleggio') }}') }
 </script>
 
+{{-- GTM noscript --}}
+@if($sw_gtm)
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $sw_gtm }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+@endif
+
 {{-- WHATSAPP FLOATING --}}
-<a href="https://wa.me/393278072650?text=Ciao%2C%20ho%20bisogno%20di%20informazioni" target="_blank" rel="noopener" title="Scrivici su WhatsApp" style="position:fixed;bottom:28px;right:28px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:500;transition:.2s;text-decoration:none" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+@if($sw_whatsapp)
+<a href="https://wa.me/{{ $sw_whatsapp }}?text=Ciao%2C%20ho%20bisogno%20di%20informazioni" target="_blank" rel="noopener" title="Scrivici su WhatsApp" style="position:fixed;bottom:28px;right:28px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:500;transition:.2s;text-decoration:none" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
   <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
+@endif
 
 @stack('scripts')
 </body>
