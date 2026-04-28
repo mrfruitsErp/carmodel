@@ -137,6 +137,7 @@ $erpRoutes = function () {
         Route::middleware('cando:preventivi.edit')->group(function () {
             Route::resource('preventivi', QuoteController::class)->except(['index','show']);
             Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
+            Route::post('preventivi/{quote}/stato', [QuoteController::class, 'aggiornaStato'])->name('preventivi.stato');
         });
         Route::middleware('cando:preventivi.view')->group(function () {
             Route::get('preventivi', [QuoteController::class, 'index'])->name('preventivi.index');
