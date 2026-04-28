@@ -1,9 +1,11 @@
 ﻿<!DOCTYPE html>
-<html lang="it">
+<html lang="it" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="google" content="notranslate">
+<meta http-equiv="Content-Language" content="it">
 <title>CarModel Software - @yield('title', 'Dashboard')</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -196,7 +198,7 @@ td{font-size:14px}
   <span style="font-size:12px;color:rgba(255,255,255,.4)">@yield('title', 'Dashboard')</span>
 </div>
 <div class="app">
-<div class="sidebar">
+<div class="sidebar" translate="no">
   <div class="logo">
     <img src="{{ asset('images/logo-alecar-compact.png') }}" alt="AleCar" style="height:44px;width:auto;object-fit:contain;filter:brightness(1.1);display:block">
   </div>
