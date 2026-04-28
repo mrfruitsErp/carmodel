@@ -172,7 +172,7 @@ class Setting extends Model
                 'chi_siamo_h2'           => 'La nostra storia',
                 'chi_siamo_testo'        => 'AleCar S.r.l. nasce a Torino con la missione di rendere l\'acquisto e il noleggio di veicoli usati un\'esperienza trasparente, semplice e affidabile.',
                 'chi_siamo_missione'     => 'La nostra missione è offrire veicoli selezionati di qualità con prezzi chiari e assistenza dedicata.',
-                'chi_siamo_visione'      => 'Crediamo che ogni cliente meriti un'esperienza d'acquisto serena, senza sorprese.',
+                'chi_siamo_visione'      => 'Crediamo che ogni cliente meriti un\'esperienza d\'acquisto serena, senza sorprese.',
                 // SERVIZI
                 'servizi_h1'             => 'I nostri servizi',
                 'servizi_h2'             => 'Tutto quello di cui hai bisogno',
