@@ -108,7 +108,7 @@
             <option value="{{ $s->id }}"
               data-label="Sinistro #{{ $s->claim_number }} — {{ $s->counterpart_plate }}"
               {{ old('pratica_id') == $s->id ? 'selected' : '' }}>
-              #{{ $s->claim_number }} — {{ Str::limit($s->description,40) }} ({{ $s->counterpart_plate }})
+              #{{ $s->claim_number }} — {{ Str::limit($s->event_description ?? '',40) }} ({{ $s->counterpart_plate }})
             </option>
           @endforeach
         </select>

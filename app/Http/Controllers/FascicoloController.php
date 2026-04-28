@@ -60,7 +60,7 @@ class FascicoloController extends Controller
 
         // Sinistri
         $sinistri = Claim::where('tenant_id', $tid)->orderByDesc('created_at')
-            ->select('id','claim_number','description','counterpart_plate')->get();
+            ->select('id','claim_number','event_description','counterpart_plate')->get();
 
         // Riparazioni/Lavorazioni
         $lavorazioni = WorkOrder::where('tenant_id', $tid)->orderByDesc('created_at')
