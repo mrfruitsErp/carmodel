@@ -49,26 +49,26 @@ class FleetVehicleController extends Controller
         return redirect()->route('flotta.show', $vehicle)->with('success', 'Veicolo aggiunto alla flotta.');
     }
 
-    public function show(FleetVehicle $flottum)
+    public function show(FleetVehicle $flotta)
     {
-        $flottum->load(['rentals.customer']);
-        return view('flotta.show', ['vehicle' => $flottum]);
+        $flotta->load(['rentals.customer']);
+        return view('flotta.show', ['vehicle' => $flotta]);
     }
 
-    public function edit(FleetVehicle $flottum)
+    public function edit(FleetVehicle $flotta)
     {
-        return view('flotta.create', ['vehicle' => $flottum]);
+        return view('flotta.create', ['vehicle' => $flotta]);
     }
 
-    public function update(Request $request, FleetVehicle $flottum)
+    public function update(Request $request, FleetVehicle $flotta)
     {
-        $flottum->update($request->except(['tenant_id']));
-        return redirect()->route('flotta.show', $flottum)->with('success', 'Veicolo aggiornato.');
+        $flotta->update($request->except(['tenant_id']));
+        return redirect()->route('flotta.show', $flotta)->with('success', 'Veicolo aggiornato.');
     }
 
-    public function destroy(FleetVehicle $flottum)
+    public function destroy(FleetVehicle $flotta)
     {
-        $flottum->delete();
+        $flotta->delete();
         return redirect()->route('flotta.index')->with('success', 'Veicolo rimosso dalla flotta.');
     }
 }

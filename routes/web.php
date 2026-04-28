@@ -102,19 +102,19 @@ $erpRoutes = function () {
 
         // ─── ESPERTI / LIQUIDATORI / MEDICI ───
         Route::middleware('cando:periti.edit')->group(function () {
-            Route::resource('esperti', ExpertController::class)->except(['index','show'])->names('periti');
-            Route::resource('liquidatori', ExpertController::class)->except(['index','show']);
-            Route::resource('medici', ExpertController::class)->except(['index','show']);
+            Route::resource('esperti', ExpertController::class)->except(['index','show'])->names('periti')->parameters(['esperti' => 'esperto']);
+            Route::resource('liquidatori', ExpertController::class)->except(['index','show'])->parameters(['liquidatori' => 'liquidatore']);
+            Route::resource('medici', ExpertController::class)->except(['index','show'])->parameters(['medici' => 'medico']);
         });
         Route::middleware('cando:periti.view')->group(function () {
-            Route::resource('esperti', ExpertController::class)->only(['index','show'])->names('periti');
-            Route::resource('liquidatori', ExpertController::class)->only(['index','show']);
-            Route::resource('medici', ExpertController::class)->only(['index','show']);
+            Route::resource('esperti', ExpertController::class)->only(['index','show'])->names('periti')->parameters(['esperti' => 'esperto']);
+            Route::resource('liquidatori', ExpertController::class)->only(['index','show'])->parameters(['liquidatori' => 'liquidatore']);
+            Route::resource('medici', ExpertController::class)->only(['index','show'])->parameters(['medici' => 'medico']);
         });
 
         // ─── ASSICURAZIONI (parte del modulo periti) ───
         Route::middleware('cando:periti.edit')->group(function () {
-            Route::resource('assicurazioni', InsuranceCompanyController::class)->except(['index','show']);
+            Route::resource('assicurazioni', InsuranceCompanyController::class)->except(['index','show'])->parameters(['assicurazioni' => 'assicurazioni']);
         });
         Route::middleware('cando:periti.view')->group(function () {
             Route::get('assicurazioni', [InsuranceCompanyController::class, 'index'])->name('assicurazioni.index');
@@ -124,7 +124,7 @@ $erpRoutes = function () {
 
         // ─── LAVORAZIONI ───
         Route::middleware('cando:lavorazioni.edit')->group(function () {
-            Route::resource('lavorazioni', WorkOrderController::class)->except(['index','show']);
+            Route::resource('lavorazioni', WorkOrderController::class)->except(['index','show'])->parameters(['lavorazioni' => 'lavorazioni']);
             Route::post('lavorazioni/{lavorazioni}/stato', [WorkOrderController::class, 'updateStato'])->name('lavorazioni.stato');
             Route::post('lavorazioni/{lavorazioni}/progresso', [WorkOrderController::class, 'updateProgresso'])->name('lavorazioni.progresso');
         });
@@ -135,7 +135,7 @@ $erpRoutes = function () {
 
         // ─── PREVENTIVI ───
         Route::middleware('cando:preventivi.edit')->group(function () {
-            Route::resource('preventivi', QuoteController::class)->except(['index','show']);
+            Route::resource('preventivi', QuoteController::class)->except(['index','show'])->parameters(['preventivi' => 'preventivo']);
             Route::post('preventivi/{quote}/converti', [QuoteController::class, 'convertToJob'])->name('preventivi.converti');
             Route::post('preventivi/{quote}/stato', [QuoteController::class, 'aggiornaStato'])->name('preventivi.stato');
         });
@@ -146,10 +146,10 @@ $erpRoutes = function () {
 
         // ─── FLOTTA / NOLEGGIO / SOSTITUTIVE ───
         Route::middleware('cando:noleggio.edit')->group(function () {
-            Route::resource('flotta', FleetVehicleController::class)->except(['index','show']);
-            Route::resource('noleggio', RentalController::class)->except(['index','show']);
+            Route::resource('flotta', FleetVehicleController::class)->except(['index','show'])->parameters(['flotta' => 'flotta']);
+            Route::resource('noleggio', RentalController::class)->except(['index','show'])->parameters(['noleggio' => 'noleggio']);
             Route::post('noleggio/{noleggio}/chiudi', [RentalController::class, 'chiudi'])->name('noleggio.chiudi');
-            Route::resource('sostitutive', RentalController::class)->except(['index','show']);
+            Route::resource('sostitutive', RentalController::class)->except(['index','show'])->parameters(['sostitutive' => 'sostitutive']);
         });
         Route::middleware('cando:noleggio.view')->group(function () {
             Route::get('flotta', [FleetVehicleController::class, 'index'])->name('flotta.index');
@@ -162,7 +162,7 @@ $erpRoutes = function () {
 
         // ─── DOCUMENTI / FATTURE ───
         Route::middleware('cando:fatture.edit')->group(function () {
-            Route::resource('documenti', DocumentController::class)->except(['index','show']);
+            Route::resource('documenti', DocumentController::class)->except(['index','show'])->parameters(['documenti' => 'documento']);
             Route::post('documenti/{document}/pagato', [DocumentController::class, 'markPagato'])->name('documenti.pagato');
         });
         Route::middleware('cando:fatture.view')->group(function () {
@@ -192,7 +192,7 @@ $erpRoutes = function () {
             Route::get('ricambi/{ricambi}', [SparePartController::class, 'show'])->name('ricambi.show');
         });
         Route::middleware('cando:ricambi.edit')->group(function () {
-            Route::resource('ricambi', SparePartController::class)->except(['index','show']);
+            Route::resource('ricambi', SparePartController::class)->except(['index','show'])->parameters(['ricambi' => 'ricambio']);
         });
 
         // ─── UTENTI (solo admin/manager) ───
