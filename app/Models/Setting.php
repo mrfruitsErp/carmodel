@@ -145,6 +145,7 @@ class Setting extends Model
                 'azienda_email'          => 'alecarto7@gmail.com',
                 'azienda_indirizzo'      => 'Via Ignazio Collino 29, 10100 Torino (TO)',
                 'azienda_piva'           => '11352180019',
+                'azienda_sdi'            => 'M5UXCR1',
                 'azienda_whatsapp'       => '393278072650',
                 'azienda_anno'           => '2018',
                 // HERO

@@ -278,6 +278,16 @@
               <input name="azienda_piva" class="form-input" value="{{ $v('azienda_piva') }}">
             </div>
           </div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group">
+              <label class="form-label">Codice SDI <span style="color:var(--text3)">(appare nel footer)</span></label>
+              <input name="azienda_sdi" class="form-input" value="{{ $v('azienda_sdi') }}" placeholder="M5UXCR1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Anno fondazione</label>
+              <input name="azienda_anno" class="form-input" value="{{ $v('azienda_anno') }}" placeholder="2018">
+            </div>
+          </div>
         </div>
 
         <div style="margin-top:14px"><button type="submit" class="btn btn-primary">✓ Salva testi</button></div>

@@ -18,6 +18,7 @@
     $sw_email       = Setting::get('azienda_email', 'alecarto7@gmail.com');
     $sw_indirizzo   = Setting::get('azienda_indirizzo', 'Via Ignazio Collino 29, 10100 Torino (TO)');
     $sw_piva        = Setting::get('azienda_piva', '11352180019');
+    $sw_sdi         = Setting::get('azienda_sdi', 'M5UXCR1');
     $sw_footer_desc = Setting::get('footer_descrizione', 'AleCar S.r.l. — Vendita auto usate selezionate e noleggio veicoli a Torino.');
     $sw_logo        = Setting::get('logo_url', '');
     $sw_facebook    = Setting::get('social_facebook', '');
@@ -386,7 +387,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">&copy; {{ date('Y') }} AleCar S.r.l. — P.IVA {{ $sw_piva }} — Cod. SDI: M5UXCR1 — Iscritta CCIAA Torino</p>
+      <p class="footer-copy">&copy; {{ date('Y') }} AleCar S.r.l. — P.IVA {{ $sw_piva }}{{ $sw_sdi ? ' — Cod. SDI: '.$sw_sdi : '' }} — Iscritta CCIAA Torino</p>
       <div class="footer-legal">
         <a href="{{ route('public.privacy') }}">Privacy</a>
         <a href="{{ route('public.cookie_policy') }}">Cookie</a>

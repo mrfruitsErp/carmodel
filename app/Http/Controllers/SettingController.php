@@ -110,9 +110,16 @@ class SettingController extends Controller
         }
 
         foreach ($payload as $chiave => $valore) {
-            Setting::withoutGlobalScope('tenant')->updateOrCreate(
-                ['tenant_id' => $tid, 'chiave' => $chiave, 'gruppo' => $gruppo],
-                ['valore' => $valore]
+            DB::table('settings')->updateOrInsert(
+                ['tenant_id' => $tid, 'chiave' => $chiave],
+                [
+                    'gruppo'     => $gruppo,
+                    'valore'     => $valore,
+                    'key'        => $chiave,
+                    'value'      => $valore,
+                    'group'      => $gruppo,
+                    'updated_at' => now(),
+                ]
             );
         }
         Cache::forget("settings_{$tid}");
