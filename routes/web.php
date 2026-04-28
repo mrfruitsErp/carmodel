@@ -201,16 +201,22 @@ $erpRoutes = function () {
         });
 
         // ─── FASCICOLI (parte del modulo clienti) ───
-        Route::middleware('cando:clienti.view')->group(function () {
-            Route::get('fascicoli', [FascicoloController::class, 'index'])->name('fascicoli.index');
-            Route::get('fascicoli/{fascicolo}', [FascicoloController::class, 'show'])->name('fascicoli.show');
-        });
+        // IMPORTANTE: le route statiche (/create, /edit) devono venire PRIMA di /{fascicolo}
         Route::middleware('cando:clienti.edit')->group(function () {
-            Route::resource('fascicoli', FascicoloController::class)->except(['index','show']);
+            Route::get('fascicoli/create', [FascicoloController::class, 'create'])->name('fascicoli.create');
+            Route::post('fascicoli', [FascicoloController::class, 'store'])->name('fascicoli.store');
+            Route::get('fascicoli/{fascicolo}/edit', [FascicoloController::class, 'edit'])->name('fascicoli.edit');
+            Route::put('fascicoli/{fascicolo}', [FascicoloController::class, 'update'])->name('fascicoli.update');
+            Route::patch('fascicoli/{fascicolo}', [FascicoloController::class, 'update']);
+            Route::delete('fascicoli/{fascicolo}', [FascicoloController::class, 'destroy'])->name('fascicoli.destroy');
             Route::post('fascicoli/{fascicolo}/genera-link', [FascicoloController::class, 'generaLink'])->name('fascicoli.genera-link');
             Route::post('fascicoli/{fascicolo}/disattiva-link', [FascicoloController::class, 'disattivaLink'])->name('fascicoli.disattiva-link');
             Route::post('fascicoli/{fascicolo}/popola-documenti', [FascicoloController::class, 'popolaDocumenti'])->name('fascicoli.popola-documenti');
             Route::post('fascicoli/{fascicolo}/completa', [FascicoloController::class, 'segnaCompletato'])->name('fascicoli.completa');
+        });
+        Route::middleware('cando:clienti.view')->group(function () {
+            Route::get('fascicoli', [FascicoloController::class, 'index'])->name('fascicoli.index');
+            Route::get('fascicoli/{fascicolo}', [FascicoloController::class, 'show'])->name('fascicoli.show');
         });
 
         // ─── SETTINGS (solo chi può gestire impostazioni) ───
