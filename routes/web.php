@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     InsuranceCompanyController, MessaggiController
 };
 use App\Http\Controllers\Portale\PortaleClienteController;
+use App\Http\Controllers\DeployController;
 
 /**
  * Tutte le route ERP (login + dashboard + admin) sono raggruppate
@@ -252,9 +253,11 @@ $erpRoutes = function () {
 require __DIR__.'/public.php';
 
 if (app()->environment('production')) {
-    // PROD: ERP + login SOLO sui domini gestionali
-    Route::middleware('restrict:app.alecar.it,erp.alecar.it,142.93.99.245')->group(function () use ($erpRoutes) {
-        require __DIR__.'/auth.php';   // login, register, password reset
+    // PROD: ERP + login registrati SOLO sul dominio gestionale tramite Route::domain().
+    // Così su alecar.it queste route non esistono proprio e non interferiscono
+    // con la homepage pubblica (niente redirect a /login da auth middleware).
+    Route::domain('app.alecar.it')->group(function () use ($erpRoutes) {
+        require __DIR__.'/auth.php';
         $erpRoutes();
     });
 } else {
@@ -262,6 +265,9 @@ if (app()->environment('production')) {
     require __DIR__.'/auth.php';
     $erpRoutes();
 }
+
+// DEPLOY WEBHOOK (protetto da token segreto in .env → DEPLOY_SECRET)
+Route::get('/deploy-hook', [DeployController::class, 'run'])->name('deploy.hook');
 
 // PORTALE PUBBLICO (per fascicoli cliente, accessibile via token da QUALSIASI dominio)
 Route::prefix('portale')->name('portale.')->group(function () {
