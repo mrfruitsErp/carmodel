@@ -4,7 +4,7 @@
 <a href="{{ route('periti.edit', ['esperto' => $esperto->id]) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
 @endsection
 @section('content')
-<div style="margin-bottom:16px"><a href="{{ route('periti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Esperti & Contatti</a></div>
+<div style="margin-bottom:16px"><a href="{{ route('periti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Esperti &amp; Contatti</a></div>
 <div class="two-col">
   <div>
     <div class="card">
