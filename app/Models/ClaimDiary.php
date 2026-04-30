@@ -56,11 +56,11 @@ class ClaimDiary extends Model
     public function getTipoColorAttribute(): string
     {
         return match($this->tipo) {
-            'sollecito'     => 'red',
-            'pagamento'     => 'green',
-            'mail_inviata','mail_ricevuta','pec_inviata','pec_ricevuta' => 'blue',
-            'chiamata'      => 'amber',
-            default         => 'gray',
-        ];
+            'sollecito'                                                   => 'red',
+            'pagamento'                                                   => 'green',
+            'mail_inviata', 'mail_ricevuta', 'pec_inviata', 'pec_ricevuta' => 'blue',
+            'chiamata'                                                    => 'amber',
+            default                                                       => 'gray',
+        };
     }
 }
