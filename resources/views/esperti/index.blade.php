@@ -13,6 +13,15 @@
   <a href="{{ route('periti.index') }}?tipo=liquidatore" class="chip {{ request('tipo')==='liquidatore' ? 'active' : '' }}">Liquidatori <span style="font-size:10px;opacity:.7">({{ $contatori['liquidatore'] }})</span></a>
   <a href="{{ route('periti.index') }}?tipo=medico_legale" class="chip {{ request('tipo')==='medico_legale' ? 'active' : '' }}">Medici Legali <span style="font-size:10px;opacity:.7">({{ $contatori['medico_legale'] }})</span></a>
   <a href="{{ route('periti.index') }}?tipo=consulente" class="chip {{ request('tipo')==='consulente' ? 'active' : '' }}">Consulenti <span style="font-size:10px;opacity:.7">({{ $contatori['consulente'] }})</span></a>
+  @if(($contatori['carrozziere'] ?? 0) > 0)
+  <a href="{{ route('periti.index') }}?tipo=carrozziere" class="chip {{ request('tipo')==='carrozziere' ? 'active' : '' }}">Carrozzieri <span style="font-size:10px;opacity:.7">({{ $contatori['carrozziere'] }})</span></a>
+  @endif
+  @if(($contatori['officina'] ?? 0) > 0)
+  <a href="{{ route('periti.index') }}?tipo=officina" class="chip {{ request('tipo')==='officina' ? 'active' : '' }}">Officine <span style="font-size:10px;opacity:.7">({{ $contatori['officina'] }})</span></a>
+  @endif
+  @if(($contatori['soccorso_stradale'] ?? 0) > 0)
+  <a href="{{ route('periti.index') }}?tipo=soccorso_stradale" class="chip {{ request('tipo')==='soccorso_stradale' ? 'active' : '' }}">Soccorso Str. <span style="font-size:10px;opacity:.7">({{ $contatori['soccorso_stradale'] }})</span></a>
+  @endif
 </form>
 <div class="card" style="padding:0">
   <table>

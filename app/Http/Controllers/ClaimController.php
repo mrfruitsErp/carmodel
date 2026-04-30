@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Claim, Customer, Vehicle, InsuranceCompany, Expert};
+use App\Models\{Claim, Customer, Vehicle, InsuranceCompany, Expert, ClaimDiary};
 use Illuminate\Support\Facades\DB;
 
 class ClaimController extends Controller
@@ -76,19 +76,55 @@ class ClaimController extends Controller
 
     public function show(Claim $sinistri)
     {
-        $sinistri->load(['customer','vehicle','insuranceCompany','expert','assignedTo','personalInjuries','workOrders']);
+        $sinistri->load(['customer','vehicle','insuranceCompany','expert','liquidatore','assignedTo','personalInjuries','workOrders','diary.user']);
         $statusHistory = DB::table('claim_status_histories')
             ->where('claim_id', $sinistri->id)
             ->orderBy('created_at', 'desc')
             ->get();
         $claim = $sinistri;
-        return view('sinistri.show', compact('claim', 'statusHistory'));
+        $diaryTipi = ClaimDiary::tipiLabel();
+        return view('sinistri.show', compact('claim', 'statusHistory', 'diaryTipi'));
+    }
+
+    public function stampa(Claim $sinistri)
+    {
+        $sinistri->load(['customer','vehicle','insuranceCompany','expert','liquidatore','diary.user','workOrders']);
+        $claim = $sinistri;
+        return view('sinistri.stampa', compact('claim'));
+    }
+
+    public function diaryStore(Request $request, Claim $sinistri)
+    {
+        $request->validate([
+            'data_evento' => 'required|date',
+            'tipo'        => 'required|string',
+            'testo'       => 'required|string',
+            'oggetto'     => 'nullable|string|max:300',
+            'importo'     => 'nullable|numeric',
+        ]);
+        ClaimDiary::create([
+            'tenant_id'   => auth()->user()->tenant_id,
+            'claim_id'    => $sinistri->id,
+            'user_id'     => auth()->id(),
+            'data_evento' => $request->data_evento,
+            'tipo'        => $request->tipo,
+            'oggetto'     => $request->oggetto,
+            'testo'       => $request->testo,
+            'importo'     => $request->importo,
+        ]);
+        return back()->with('success', 'Voce aggiunta al diario.');
+    }
+
+    public function diaryDestroy(Claim $sinistri, ClaimDiary $diary)
+    {
+        $diary->delete();
+        return back()->with('success', 'Voce eliminata.');
     }
 
     public function edit(Claim $sinistri)
     {
         $tenantId = auth()->user()->tenant_id;
-        $claim = $sinistri;
+        $claim = $sinistri->load(['liquidatore']);
         return view('sinistri.edit', [
             'claim'       => $claim,
             'clienti'     => Customer::forTenant($tenantId)->orderBy('last_name')->get(),

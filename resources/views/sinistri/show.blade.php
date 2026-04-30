@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Sinistro #'.$claim->claim_number)
 @section('topbar-actions')
+<a href="{{ route('sinistri.stampa', $claim) }}" class="btn btn-ghost btn-sm" target="_blank">🖨️ Stampa</a>
 <a href="{{ route('sinistri.edit', $claim) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
 <button onclick="document.getElementById('modal-stato').style.display='flex'" class="btn btn-primary btn-sm">Aggiorna stato</button>
 @endsection
@@ -140,6 +141,55 @@ foreach($stepsMap as $idx => $stati) {
       </form>
     </div>
 
+    {{-- Liquidatore --}}
+    @if($claim->liquidatore)
+    <div class="card">
+      <div class="card-title">💼 Liquidatore</div>
+      <div class="info-row"><span class="info-label">Nome</span><span class="info-value"><strong>{{ $claim->liquidatore->name }}</strong></span></div>
+      @if($claim->liquidatore->company_name)<div class="info-row"><span class="info-label">Studio</span><span class="info-value">{{ $claim->liquidatore->company_name }}</span></div>@endif
+      @if($claim->liquidatore->phone)<div class="info-row"><span class="info-label">Tel</span><span class="info-value"><a href="tel:{{ $claim->liquidatore->phone }}" style="color:var(--green)">{{ $claim->liquidatore->phone }}</a></span></div>@endif
+      @if($claim->liquidatore->orario_disponibilita)<div class="info-row"><span class="info-label">Orario</span><span class="info-value">{{ $claim->liquidatore->orario_disponibilita }}</span></div>@endif
+      @if($claim->liquidatore->email)<div class="info-row"><span class="info-label">Email</span><span class="info-value"><a href="mailto:{{ $claim->liquidatore->email }}" style="color:var(--green)">{{ $claim->liquidatore->email }}</a></span></div>@endif
+    </div>
+    @endif
+
+    {{-- Importi & scadenze --}}
+    <div class="card">
+      <div class="card-title">💰 Importi</div>
+      @if($claim->importo_richiesto)<div class="info-row"><span class="info-label">Richiesto</span><span class="info-value" style="color:var(--amber)">€ {{ number_format($claim->importo_richiesto,2,',','.') }}</span></div>@endif
+      @if($claim->importo_perizia)<div class="info-row"><span class="info-label">Perizia</span><span class="info-value">€ {{ number_format($claim->importo_perizia,2,',','.') }}</span></div>@endif
+      @if($claim->importo_concordato)<div class="info-row"><span class="info-label">Concordato</span><span class="info-value" style="color:var(--green)">€ {{ number_format($claim->importo_concordato,2,',','.') }}</span></div>@endif
+      @if($claim->noleggio_importo)<div class="info-row"><span class="info-label">Noleggio</span><span class="info-value">€ {{ number_format($claim->noleggio_importo,2,',','.') }}{{ $claim->noleggio_giorni ? ' ('.$claim->noleggio_giorni.'gg)' : '' }}</span></div>@endif
+      @if($claim->fermo_tecnico_importo)<div class="info-row"><span class="info-label">Fermo tecnico</span><span class="info-value">€ {{ number_format($claim->fermo_tecnico_importo,2,',','.') }}{{ $claim->fermo_tecnico_giorni ? ' ('.$claim->fermo_tecnico_giorni.'gg)' : '' }}</span></div>@endif
+      @if($claim->paid_amount)<div class="info-row"><span class="info-label">Liquidato</span><span class="info-value" style="color:var(--green);font-weight:600">€ {{ number_format($claim->paid_amount,2,',','.') }}</span></div>@endif
+      @if($claim->onorario_percentuale)<div class="info-row"><span class="info-label">Onorario</span><span class="info-value">{{ $claim->onorario_percentuale }}%</span></div>@endif
+      <div class="info-row"><span class="info-label">Recupero IVA</span><span class="info-value">{{ $claim->recupera_iva ? '✅ Sì' : '❌ No' }}</span></div>
+    </div>
+
+    @if($claim->scadenza_nomina_perito || $claim->scadenza_chiusura_perito || $claim->scadenza_chiusura_totale)
+    <div class="card">
+      <div class="card-title">📅 Scadenze legali</div>
+      @if($claim->scadenza_nomina_perito)
+      <div class="info-row">
+        <span class="info-label">10gg — Nomina perito</span>
+        <span class="info-value" style="color:{{ $claim->scadenza_nomina_perito->isPast() ? 'var(--red)' : 'var(--amber)' }}">{{ $claim->scadenza_nomina_perito->format('d/m/Y') }}</span>
+      </div>
+      @endif
+      @if($claim->scadenza_chiusura_perito)
+      <div class="info-row">
+        <span class="info-label">35gg — Chiusura perito</span>
+        <span class="info-value" style="color:{{ $claim->scadenza_chiusura_perito->isPast() ? 'var(--red)' : 'var(--amber)' }}">{{ $claim->scadenza_chiusura_perito->format('d/m/Y') }}</span>
+      </div>
+      @endif
+      @if($claim->scadenza_chiusura_totale)
+      <div class="info-row">
+        <span class="info-label">60gg — Chiusura totale</span>
+        <span class="info-value" style="color:{{ $claim->scadenza_chiusura_totale->isPast() ? 'var(--red)' : 'var(--text2)' }}">{{ $claim->scadenza_chiusura_totale->format('d/m/Y') }}</span>
+      </div>
+      @endif
+    </div>
+    @endif
+
     <div class="card">
       <div class="card-title">Note interne</div>
       <form method="POST" action="{{ route('sinistri.update', $claim) }}">
@@ -148,6 +198,84 @@ foreach($stepsMap as $idx => $stati) {
         <button type="submit" class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%">Salva note</button>
       </form>
     </div>
+  </div>
+</div>
+
+{{-- ══════════════════════════════════════════════════════════ --}}
+{{-- DIARIO COMUNICAZIONI                                       --}}
+{{-- ══════════════════════════════════════════════════════════ --}}
+<div class="card" style="margin-top:16px">
+  <div class="section-header">
+    <span class="card-title" style="margin-bottom:0">📋 Diario comunicazioni</span>
+    <button onclick="document.getElementById('modal-diary').style.display='flex'" class="btn btn-primary btn-sm">+ Aggiungi voce</button>
+  </div>
+
+  @forelse($claim->diary as $d)
+  <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border1)">
+    <div style="min-width:50px;text-align:center">
+      <div style="font-size:18px">{{ $d->tipo_icon }}</div>
+      <div style="font-size:10px;color:var(--text3)">{{ $d->data_evento->format('d/m') }}</div>
+      <div style="font-size:10px;color:var(--text3)">{{ $d->data_evento->format('Y') }}</div>
+    </div>
+    <div style="flex:1">
+      @if($d->oggetto)<div style="font-size:13px;font-weight:600;margin-bottom:3px">{{ $d->oggetto }}</div>@endif
+      <div style="font-size:13px;color:var(--text2);white-space:pre-line">{{ $d->testo }}</div>
+      <div style="display:flex;gap:10px;margin-top:6px;font-size:11px;color:var(--text3)">
+        @if($d->importo)<span style="color:var(--green)">€ {{ number_format($d->importo,2,',','.') }}</span>@endif
+        <span>{{ $d->user?->name ?? 'Sistema' }}</span>
+        <span class="badge badge-{{ $d->tipo_color }}" style="font-size:10px">{{ $d->tipo }}</span>
+      </div>
+    </div>
+    <form method="POST" action="{{ route('sinistri.diario.destroy', [$claim, $d]) }}">
+      @csrf @method('DELETE')
+      <button type="submit" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px" onclick="return confirm('Elimina questa voce?')" title="Elimina">×</button>
+    </form>
+  </div>
+  @empty
+  <div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">Nessuna voce nel diario</div>
+  @endforelse
+</div>
+
+{{-- MODAL DIARIO --}}
+<div id="modal-diary" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:24px;width:480px;max-height:90vh;overflow-y:auto">
+    <div style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between">
+      📋 Aggiungi voce al diario
+      <button onclick="document.getElementById('modal-diary').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">×</button>
+    </div>
+    <form method="POST" action="{{ route('sinistri.diario.store', $claim) }}">
+      @csrf
+      <div class="two-col" style="gap:10px">
+        <div class="form-group">
+          <label class="form-label">Data *</label>
+          <input type="date" name="data_evento" class="form-input" value="{{ date('Y-m-d') }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo *</label>
+          <select name="tipo" class="form-select" required>
+            @foreach($diaryTipi as $k => $l)
+            <option value="{{ $k }}">{{ $l }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Oggetto / titolo</label>
+        <input name="oggetto" class="form-input" placeholder="es. Mail liquidatore Emilio Mesto">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Testo *</label>
+        <textarea name="testo" class="form-textarea" style="min-height:100px" required placeholder="Descrivi l'azione o la comunicazione..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Importo € (opzionale)</label>
+        <input type="number" name="importo" class="form-input" step="0.01" placeholder="0.00">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button type="button" onclick="document.getElementById('modal-diary').style.display='none'" class="btn btn-ghost" style="flex:1">Annulla</button>
+        <button type="submit" class="btn btn-primary" style="flex:2">Salva voce</button>
+      </div>
+    </form>
   </div>
 </div>
 

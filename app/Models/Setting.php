@@ -65,16 +65,20 @@ class Setting extends Model
     public static function gruppi(): array
     {
         return [
-            'generale'  => 'Generale',
-            'mail'      => 'Mail & SMTP',
-            'ai'        => 'Intelligenza Artificiale',
-            'sms'       => 'SMS Gateway',
-            'fascicoli' => 'Fascicoli',
-            'documenti' => 'Documenti',
-            'notifiche' => 'Notifiche',
-            'privacy'   => 'Privacy & GDPR',
-            'veicoli'   => 'Veicoli',
-            'sito_web'  => '🌐 Sito Web',
+            'generale'      => 'Generale',
+            'mail'          => '📧 Mail & SMTP',
+            'pec'           => '📮 PEC',
+            'imap'          => '📥 Ricezione Mail (IMAP)',
+            'calendar'      => '📅 Calendario & Google',
+            'integrazioni'  => '🔌 Integrazioni API',
+            'ai'            => '🤖 Intelligenza Artificiale',
+            'sms'           => 'SMS Gateway',
+            'fascicoli'     => 'Fascicoli',
+            'documenti'     => 'Documenti',
+            'notifiche'     => 'Notifiche',
+            'privacy'       => 'Privacy & GDPR',
+            'veicoli'       => 'Veicoli',
+            'sito_web'      => '🌐 Sito Web',
         ];
     }
 

@@ -16,28 +16,53 @@ class Claim extends Model implements HasMedia
     use SoftDeletes, LogsActivity, InteractsWithMedia;
 
     protected $fillable = [
-        'tenant_id','claim_number','customer_id','vehicle_id',
-        'insurance_company_id','expert_id','claim_type',
+        'tenant_id','claim_number','numero_sinistro_compagnia',
+        'customer_id','vehicle_id',
+        'insurance_company_id','expert_id','liquidatore_id','claim_type',
         'event_date','event_location','event_description',
-        'counterpart_plate','counterpart_insurance','counterpart_policy',
+        'counterpart_plate','counterpart_insurance','counterpart_policy','danneggiato_cf',
         'policy_number','policy_expiry',
         'cid_signed','cid_date','cid_expiry',
-        'status','estimated_amount','approved_amount','paid_amount','paid_date',
+        'scadenza_nomina_perito','scadenza_chiusura_perito','scadenza_chiusura_totale',
+        'status',
+        'estimated_amount','importo_richiesto','importo_concordato','importo_perizia',
+        'concordato','costo_ora_mo','costo_ora_materiali','ore_lavoro',
+        'noleggio_importo','noleggio_giorni','traino_importo',
+        'fermo_tecnico_giorni','fermo_tecnico_importo',
+        'valore_commerciale','onorario_percentuale','recupera_iva',
+        'riferimento_gestore','iban_liquidazione','beneficiario_liquidazione',
+        'approved_amount','paid_amount','paid_date',
         'survey_date','survey_notes','notes','internal_notes',
         'assigned_to','created_by'
     ];
 
     protected $casts = [
-        'event_date' => 'date',
-        'policy_expiry' => 'date',
-        'cid_date' => 'date',
-        'cid_expiry' => 'date',
-        'survey_date' => 'date',
-        'paid_date' => 'date',
-        'cid_signed' => 'boolean',
-        'estimated_amount' => 'decimal:2',
-        'approved_amount' => 'decimal:2',
-        'paid_amount' => 'decimal:2',
+        'event_date'                => 'date',
+        'policy_expiry'             => 'date',
+        'cid_date'                  => 'date',
+        'cid_expiry'                => 'date',
+        'scadenza_nomina_perito'    => 'date',
+        'scadenza_chiusura_perito'  => 'date',
+        'scadenza_chiusura_totale'  => 'date',
+        'survey_date'               => 'date',
+        'paid_date'                 => 'date',
+        'cid_signed'                => 'boolean',
+        'concordato'                => 'boolean',
+        'recupera_iva'              => 'boolean',
+        'estimated_amount'          => 'decimal:2',
+        'importo_richiesto'         => 'decimal:2',
+        'importo_concordato'        => 'decimal:2',
+        'importo_perizia'           => 'decimal:2',
+        'noleggio_importo'          => 'decimal:2',
+        'traino_importo'            => 'decimal:2',
+        'fermo_tecnico_importo'     => 'decimal:2',
+        'valore_commerciale'        => 'decimal:2',
+        'approved_amount'           => 'decimal:2',
+        'paid_amount'               => 'decimal:2',
+        'costo_ora_mo'              => 'decimal:2',
+        'costo_ora_materiali'       => 'decimal:2',
+        'ore_lavoro'                => 'decimal:2',
+        'onorario_percentuale'      => 'decimal:2',
     ];
 
     public function getActivitylogOptions(): LogOptions {
@@ -55,6 +80,8 @@ class Claim extends Model implements HasMedia
     public function vehicle(): BelongsTo { return $this->belongsTo(Vehicle::class); }
     public function insuranceCompany(): BelongsTo { return $this->belongsTo(InsuranceCompany::class); }
     public function expert(): BelongsTo { return $this->belongsTo(Expert::class); }
+    public function liquidatore(): BelongsTo { return $this->belongsTo(Expert::class, 'liquidatore_id'); }
+    public function diary(): HasMany { return $this->hasMany(ClaimDiary::class)->orderByDesc('data_evento'); }
     public function assignedTo(): BelongsTo { return $this->belongsTo(User::class, 'assigned_to'); }
     public function createdBy(): BelongsTo { return $this->belongsTo(User::class, 'created_by'); }
    

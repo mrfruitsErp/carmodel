@@ -15,11 +15,15 @@
             <select name="type" class="form-select" required>
               <option value="">— Seleziona —</option>
               <option value="perito" {{ old('type', $esperto->type ?? '') === 'perito' ? 'selected' : '' }}>Perito</option>
+              <option value="liquidatore" {{ old('type', $esperto->type ?? '') === 'liquidatore' ? 'selected' : '' }}>Liquidatore</option>
               <option value="avvocato" {{ old('type', $esperto->type ?? '') === 'avvocato' ? 'selected' : '' }}>Avvocato</option>
               <option value="legale" {{ old('type', $esperto->type ?? '') === 'legale' ? 'selected' : '' }}>Legale</option>
-              <option value="liquidatore" {{ old('type', $esperto->type ?? '') === 'liquidatore' ? 'selected' : '' }}>Liquidatore</option>
               <option value="medico_legale" {{ old('type', $esperto->type ?? '') === 'medico_legale' ? 'selected' : '' }}>Medico Legale</option>
               <option value="consulente" {{ old('type', $esperto->type ?? '') === 'consulente' ? 'selected' : '' }}>Consulente</option>
+              <option value="carrozziere" {{ old('type', $esperto->type ?? '') === 'carrozziere' ? 'selected' : '' }}>Carrozziere</option>
+              <option value="officina" {{ old('type', $esperto->type ?? '') === 'officina' ? 'selected' : '' }}>Officina Meccanica</option>
+              <option value="soccorso_stradale" {{ old('type', $esperto->type ?? '') === 'soccorso_stradale' ? 'selected' : '' }}>Soccorso Stradale / Traino</option>
+              <option value="altro" {{ old('type', $esperto->type ?? '') === 'altro' ? 'selected' : '' }}>Altro</option>
             </select>
           </div>
           <div class="form-group">
@@ -64,6 +68,10 @@
         <div class="form-group">
           <label class="form-label">PEC</label>
           <input type="email" name="pec" class="form-input" value="{{ old('pec', $esperto->pec ?? '') }}" placeholder="pec@esempio.it">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Orario disponibilità</label>
+          <input name="orario_disponibilita" class="form-input" value="{{ old('orario_disponibilita', $esperto->orario_disponibilita ?? '') }}" placeholder="es. Lun-Gio 9-11.30">
         </div>
         <div class="form-group">
           <label class="form-label">Indirizzo</label>

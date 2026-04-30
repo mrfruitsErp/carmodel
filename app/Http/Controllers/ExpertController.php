@@ -18,13 +18,16 @@ class ExpertController extends Controller
         }
         $esperti = $q->orderBy('name')->paginate(25);
         $contatori = [
-            'tutti'         => Expert::forTenant($tid)->count(),
-            'perito'        => Expert::forTenant($tid)->where('type','perito')->count(),
-            'avvocato'      => Expert::forTenant($tid)->where('type','avvocato')->count(),
-            'legale'        => Expert::forTenant($tid)->where('type','legale')->count(),
-            'liquidatore'   => Expert::forTenant($tid)->where('type','liquidatore')->count(),
-            'medico_legale' => Expert::forTenant($tid)->where('type','medico_legale')->count(),
-            'consulente'    => Expert::forTenant($tid)->where('type','consulente')->count(),
+            'tutti'           => Expert::forTenant($tid)->count(),
+            'perito'          => Expert::forTenant($tid)->where('type','perito')->count(),
+            'liquidatore'     => Expert::forTenant($tid)->where('type','liquidatore')->count(),
+            'avvocato'        => Expert::forTenant($tid)->where('type','avvocato')->count(),
+            'legale'          => Expert::forTenant($tid)->where('type','legale')->count(),
+            'medico_legale'   => Expert::forTenant($tid)->where('type','medico_legale')->count(),
+            'consulente'      => Expert::forTenant($tid)->where('type','consulente')->count(),
+            'carrozziere'     => Expert::forTenant($tid)->where('type','carrozziere')->count(),
+            'officina'        => Expert::forTenant($tid)->where('type','officina')->count(),
+            'soccorso_stradale' => Expert::forTenant($tid)->where('type','soccorso_stradale')->count(),
         ];
         return view('esperti.index', compact('esperti', 'contatori'));
     }
@@ -32,7 +35,7 @@ class ExpertController extends Controller
     public function create()
     {
         $tid = auth()->user()->tenant_id;
-        return view('periti.create', [
+        return view('esperti.create', [
             'compagnie' => InsuranceCompany::forTenant($tid)->orderBy('name')->get(),
         ]);
     }
@@ -46,11 +49,13 @@ class ExpertController extends Controller
             'company_name'         => 'nullable',
             'insurance_company_id' => 'nullable|exists:insurance_companies,id',
             'email'                => 'nullable|email',
+            'pec'                  => 'nullable|email',
             'phone'                => 'nullable',
             'phone2'               => 'nullable',
             'address'              => 'nullable',
             'fiscal_code'          => 'nullable',
             'vat_number'           => 'nullable',
+            'orario_disponibilita' => 'nullable',
             'rating'               => 'nullable|integer|min:1|max:5',
             'notes'                => 'nullable',
         ]);
@@ -62,13 +67,13 @@ class ExpertController extends Controller
     public function show(Expert $periti)
     {
         $periti->load(['insuranceCompany']);
-        return view('periti.show', ['esperto' => $periti]);
+        return view('esperti.show', ['esperto' => $periti]);
     }
 
     public function edit(Expert $periti)
     {
         $tid = auth()->user()->tenant_id;
-        return view('periti.create', [
+        return view('esperti.create', [
             'esperto'   => $periti,
             'compagnie' => InsuranceCompany::forTenant($tid)->orderBy('name')->get(),
         ]);

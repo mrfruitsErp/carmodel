@@ -79,11 +79,14 @@ $erpRoutes = function () {
             Route::post('sinistri/{claim}/stato', [ClaimController::class, 'updateStato'])->name('sinistri.stato');
             Route::post('sinistri/{claim}/mail', [ClaimController::class, 'sendMail'])->name('sinistri.mail');
             Route::post('sinistri/{claim}/documento', [ClaimController::class, 'uploadDoc'])->name('sinistri.documento');
+            Route::post('sinistri/{sinistri}/diario', [ClaimController::class, 'diaryStore'])->name('sinistri.diario.store');
+            Route::delete('sinistri/{sinistri}/diario/{diary}', [ClaimController::class, 'diaryDestroy'])->name('sinistri.diario.destroy');
         });
         Route::middleware('cando:sinistri.view')->group(function () {
             Route::get('sinistri/export', [ClaimController::class, 'export'])->name('sinistri.export');
             Route::get('sinistri', [ClaimController::class, 'index'])->name('sinistri.index');
             Route::get('sinistri/{sinistri}', [ClaimController::class, 'show'])->name('sinistri.show');
+            Route::get('sinistri/{sinistri}/stampa', [ClaimController::class, 'stampa'])->name('sinistri.stampa');
         });
 
         // ─── LESIONI ───
