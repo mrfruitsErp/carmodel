@@ -100,9 +100,13 @@ class PortaleClienteController extends Controller
         $email  = $fascicoloToken->fascicolo->cliente->email;
 
         // Invia email con OTP
-        Mail::raw("Il tuo codice di accesso CarModel è: {$otp}\n\nValido per " . Setting::get('otp_timeout_minuti', 10) . " minuti.", function ($m) use ($email) {
-            $m->to($email)->subject('Codice di accesso CarModel');
-        });
+        try {
+            Mail::raw("Il tuo codice di accesso CarModel è: {$otp}\n\nValido per " . Setting::get('otp_timeout_minuti', 10) . " minuti.", function ($m) use ($email) {
+                $m->to($email)->subject('Codice di accesso CarModel');
+            });
+        } catch (\Exception $e) {
+            \Log::error('Errore invio OTP accesso: ' . $e->getMessage());
+        }
 
         return view('portale.otp', compact('fascicoloToken', 'token'));
     }
@@ -129,9 +133,14 @@ class PortaleClienteController extends Controller
         $otp   = $fascicoloToken->generaOtp();
         $email = $fascicoloToken->fascicolo->cliente->email;
 
-        Mail::raw("Il tuo nuovo codice CarModel è: {$otp}", function ($m) use ($email) {
-            $m->to($email)->subject('Nuovo codice di accesso CarModel');
-        });
+        try {
+            Mail::raw("Il tuo nuovo codice CarModel è: {$otp}", function ($m) use ($email) {
+                $m->to($email)->subject('Nuovo codice di accesso CarModel');
+            });
+        } catch (\Exception $e) {
+            \Log::error('Errore reinvio OTP: ' . $e->getMessage());
+            return back()->withErrors(['otp' => 'Errore invio email. Riprova tra qualche secondo.']);
+        }
 
         return back()->with('success', 'Nuovo codice inviato.');
     }
@@ -223,11 +232,15 @@ class PortaleClienteController extends Controller
         $otp   = $doc->generaFirmaOtp();
         $email = $fascicoloToken->fascicolo->cliente->email;
 
-        Mail::raw("Codice per firmare '{$doc->nome}': {$otp}\n\nValido 15 minuti.", function ($m) use ($email, $doc) {
-            $m->to($email)->subject("Firma documento: {$doc->nome}");
-        });
-
-        return back()->with('success', 'Codice di firma inviato alla tua email.');
+        try {
+            Mail::raw("Codice per firmare '{$doc->nome}': {$otp}\n\nValido 15 minuti.", function ($m) use ($email, $doc) {
+                $m->to($email)->subject("Firma documento: {$doc->nome}");
+            });
+            return back()->with('success', 'Codice di firma inviato alla tua email.');
+        } catch (\Exception $e) {
+            \Log::error('Errore invio OTP firma: ' . $e->getMessage());
+            return back()->withErrors(['firma' => 'Errore invio email. Riprova tra qualche secondo.']);
+        }
     }
 
     public function verificaFirmaOtp(Request $request, string $token, FascicoloDocumento $doc)
