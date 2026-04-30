@@ -1,0 +1,376 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#8143
+    [34mall[39m: [
+      [34;4mApp\Models\SaleVehicle[39;24m {#8144
+        [34mid[39m: [35m1[39m,
+        [34mtenant_id[39m: [35m1[39m,
+        [34mplate[39m: [32m"[39m[32mFD057DN[39m[32m"[39m,
+        [34mplate_visible[39m: [35m0[39m,
+        [34mvin[39m: [36mnull[39m,
+        [34mbrand[39m: [32m"[39m[32mFIAT[39m[32m"[39m,
+        [34mmodel[39m: [32m"[39m[32m500 Abarth[39m[32m"[39m,
+        [34mversion[39m: [32m"[39m[32m595[39m[32m"[39m,
+        [34myear[39m: [32m"[39m[32m2016[39m[32m"[39m,
+        [34mmileage[39m: [35m81112[39m,
+        [34mfuel_type[39m: [32m"[39m[32mbenzina[39m[32m"[39m,
+        [34mtransmission[39m: [32m"[39m[32mmanuale[39m[32m"[39m,
+        [34mcolor[39m: [32m"[39m[32mROSSO OFFICINA[39m[32m"[39m,
+        [34mcolor_type[39m: [32m"[39m[32msolido[39m[32m"[39m,
+        [34mdoors[39m: [35m5[39m,
+        [34mseats[39m: [35m5[39m,
+        [34mengine_cc[39m: [35m1368[39m,
+        [34mpower_kw[39m: [35m103[39m,
+        [34mpower_hp[39m: [35m140[39m,
+        [34mbody_type[39m: [32m"[39m[32mberlina[39m[32m"[39m,
+        [34mcondition[39m: [32m"[39m[32mbuono[39m[32m"[39m,
+        [34mprevious_owners[39m: [35m1[39m,
+        [34mfirst_registration[39m: [32m"[39m[32m2016-03-07[39m[32m"[39m,
+        [34mfeatures[39m: [32m"[39m[32m[[39m\"[32maria_condizionata[39m\"[32m, [39m\"[32mclima_automatico[39m\"[32m, [39m\"[32mclima_bizona[39m\"[32m, [39m\"[32mabs[39m\"[32m, [39m\"[32mesp[39m\"[32m, [39m\"[32mairbag_frontali[39m\"[32m, [39m\"[32mairbag_laterali[39m\"[32m, [39m\"[32mbluetooth[39m\"[32m, [39m\"[32musb[39m\"[32m, [39m\"[32mcerchi_lega[39m\"[32m, [39m\"[32mvernice_metallizzata[39m\"[32m, [39m\"[32mspecchi_elettrici[39m\"[32m, [39m\"[32mfari_fendinebbia[39m\"[32m, [39m\"[32mstart_stop[39m\"[32m][39m[32m"[39m,
+        [34masking_price[39m: [32m"[39m[32m14900.00[39m[32m"[39m,
+        [34mprice_visible[39m: [35m0[39m,
+        [34mprice_label[39m: [36mnull[39m,
+        [34mmin_price[39m: [36mnull[39m,
+        [34mprice_negotiable[39m: [35m0[39m,
+        [34mbadge_label[39m: [32m"[39m[32mIntrovabile[39m[32m"[39m,
+        [34mvat_deductible[39m: [35m0[39m,
+        [34mpurchase_price[39m: [36mnull[39m,
+        [34mtitle[39m: [32m"[39m[32mFIAT 500 ABARTH 595[39m[32m"[39m,
+        [34mdescription[39m: <<<[32mEOS[39m
+          [32m🚗 FIAT 500 ABARTH 1.4 TURBO 135CV – PERFETTA – EURO 6[39m\r
+          \r
+          [32mCerchi una city car sportiva, iconica e divertente da guidare?[39m\r
+          [32mQuesta Abarth 500 è la combinazione perfetta tra prestazioni, stile e affidabilità.[39m\r
+          \r
+          [32m🔥 PUNTI DI FORZA[39m\r
+          [32mMotore 1.4 Turbo benzina da 135 CV[39m\r
+          [32mCambio manuale preciso e sportivo[39m\r
+          [32mCerchi in lega 17” Abarth[39m\r
+          [32mDoppio scarico sportivo[39m\r
+          [32mModalità guida Sport[39m\r
+          [32mInterni sportivi con dettagli Abarth[39m\r
+          [32m📊 DATI PRINCIPALI[39m\r
+          [32m📅 Anno: 2016[39m\r
+          [32m⛽ Alimentazione: Benzina[39m\r
+          [32m⚙️ Cilindrata: 1368 cc[39m\r
+          [32m💪 Potenza: 103 kW / 135 CV[39m\r
+          [32m🌍 Classe ambientale: Euro 6[39m\r
+          [32m👥 Posti: 4[39m\r
+          [32m🧾 STATO VEICOLO[39m\r
+          \r
+          [32m✔️ Carrozzeria in ottime condizioni[39m\r
+          [32m✔️ Interni curati e puliti[39m\r
+          [32m✔️ Meccanica efficiente[39m\r
+          [32m✔️ Revisione regolare[39m\r
+          \r
+          [32m🎯 PERCHÉ SCEGLIERLA[39m\r
+          [32mPerfetta per chi vuole divertimento alla guida[39m\r
+          [32mDimensioni compatte → ideale città[39m\r
+          [32mMotore brillante ma ancora gestibile nei consumi[39m\r
+          [32mAuto che mantiene valore nel tempo[39m\r
+          [32m📸 NOTE SUL VEICOLO[39m\r
+          \r
+          [32mAuto tenuta molto bene, con allestimento sportivo originale Abarth.[39m\r
+          [32mLe immagini parlano da sole: design aggressivo, dettagli curati e condizioni sopra la media.[39m\r
+          \r
+          [32m💰 PREZZO[39m\r
+          \r
+          [32m👉 Contattaci per info e disponibilità[39m\r
+          \r
+          [32m📞 CONTATTI[39m\r
+          \r
+          [32mPossibilità di:[39m\r
+          \r
+          [32mFinanziamento[39m\r
+          [32mPermuta[39m\r
+          [32mConsegna[39m
+          [32mEOS[39m,
+        [34minternal_notes[39m: [36mnull[39m,
+        [34mstatus[39m: [32m"[39m[32mattivo[39m[32m"[39m,
+        [34mavailable_from[39m: [36mnull[39m,
+        [34msold_date[39m: [36mnull[39m,
+        [34msold_price[39m: [36mnull[39m,
+        [34msold_to_customer_id[39m: [36mnull[39m,
+        [34mvehicle_id[39m: [36mnull[39m,
+        [34mcreated_by[39m: [35m2[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-04-25 06:38:12[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-04-25 07:02:41[39m[32m"[39m,
+        [34mdeleted_at[39m: [36mnull[39m,
+      },
+      [34;4mApp\Models\SaleVehicle[39;24m {#8145
+        [34mid[39m: [35m2[39m,
+        [34mtenant_id[39m: [35m1[39m,
+        [34mplate[39m: [32m"[39m[32mEX495FE[39m[32m"[39m,
+        [34mplate_visible[39m: [35m0[39m,
+        [34mvin[39m: [36mnull[39m,
+        [34mbrand[39m: [32m"[39m[32mMINI[39m[32m"[39m,
+        [34mmodel[39m: [32m"[39m[32mCOOPER D[39m[32m"[39m,
+        [34mversion[39m: [36mnull[39m,
+        [34myear[39m: [32m"[39m[32m2011[39m[32m"[39m,
+        [34mmileage[39m: [35m20800[39m,
+        [34mfuel_type[39m: [32m"[39m[32mdiesel[39m[32m"[39m,
+        [34mtransmission[39m: [32m"[39m[32mmanuale[39m[32m"[39m,
+        [34mcolor[39m: [32m"[39m[32mARANCIONE[39m[32m"[39m,
+        [34mcolor_type[39m: [32m"[39m[32mmetallizzato[39m[32m"[39m,
+        [34mdoors[39m: [35m5[39m,
+        [34mseats[39m: [35m5[39m,
+        [34mengine_cc[39m: [35m1496[39m,
+        [34mpower_kw[39m: [35m85[39m,
+        [34mpower_hp[39m: [35m116[39m,
+        [34mbody_type[39m: [32m"[39m[32mberlina[39m[32m"[39m,
+        [34mcondition[39m: [32m"[39m[32mbuono[39m[32m"[39m,
+        [34mprevious_owners[39m: [35m1[39m,
+        [34mfirst_registration[39m: [32m"[39m[32m2011-11-28[39m[32m"[39m,
+        [34mfeatures[39m: [32m"[39m[32m[[39m\"[32maria_condizionata[39m\"[32m, [39m\"[32mclima_automatico[39m\"[32m, [39m\"[32mcruise_control[39m\"[32m, [39m\"[32mabs[39m\"[32m, [39m\"[32mesp[39m\"[32m, [39m\"[32mairbag_frontali[39m\"[32m, [39m\"[32mairbag_laterali[39m\"[32m, [39m\"[32mradio[39m\"[32m, [39m\"[32mbluetooth[39m\"[32m, [39m\"[32mcerchi_lega[39m\"[32m, [39m\"[32mvernice_metallizzata[39m\"[32m, [39m\"[32mtetto_nero[39m\"[32m, [39m\"[32mspecchi_elettrici[39m\"[32m][39m[32m"[39m,
+        [34masking_price[39m: [32m"[39m[32m13900.00[39m[32m"[39m,
+        [34mprice_visible[39m: [35m0[39m,
+        [34mprice_label[39m: [36mnull[39m,
+        [34mmin_price[39m: [36mnull[39m,
+        [34mprice_negotiable[39m: [35m0[39m,
+        [34mbadge_label[39m: [32m"[39m[32mIntrovabile[39m[32m"[39m,
+        [34mvat_deductible[39m: [35m0[39m,
+        [34mpurchase_price[39m: [36mnull[39m,
+        [34mtitle[39m: [32m"[39m[32mMINI COOPER D 1.5 116CV – UNICO COLORE – SUPER ECONOMICA – EURO 6[39m[32m"[39m,
+        [34mdescription[39m: <<<[32mEOS[39m
+          [32m🚗 MINI COOPER D 1.5 116CV – UNICO COLORE – SUPER ECONOMICA – EURO 6[39m\r
+          \r
+          [32mCerchi una MINI diversa dalle solite, con stile e consumi ridotti?[39m\r
+          [32mQuesta Mini Cooper D si distingue subito per il suo colore arancione con tetto e dettagli neri, sportiva ma perfetta anche per tutti i giorni.[39m\r
+          \r
+          [32m🔥 PUNTI DI FORZA[39m\r
+          [32mMotore 1.5 Diesel 116 CV → brillante e parco nei consumi[39m\r
+          [32mConsumi bassissimi (fino a 3,6 l/100 km)[39m\r
+          [32mAllestimento sportivo con dettagli black[39m\r
+          [32mCerchi in lega scuri[39m\r
+          [32mStrisce racing sul cofano[39m\r
+          [32mInterni MINI originali, puliti e ben tenuti[39m\r
+          [32m📊 DATI PRINCIPALI[39m\r
+          [32m📅 Anno: 2014[39m\r
+          [32m⛽ Alimentazione: Diesel[39m\r
+          [32m⚙️ Cilindrata: 1496 cc[39m\r
+          [32m💪 Potenza: 116 CV[39m\r
+          [32m🌍 Classe ambientale: Euro 6[39m\r
+          [32m👥 Posti: 4[39m\r
+          [32m⚙️ Cambio: Manuale[39m\r
+          [32m🧾 STATO VEICOLO[39m\r
+          \r
+          [32m✔️ Carrozzeria molto bella (colore raro 🔥)[39m\r
+          [32m✔️ Interni in ottime condizioni[39m\r
+          [32m✔️ Motore affidabile e dai bassi consumi[39m\r
+          [32m✔️ Ideale per uso quotidiano[39m\r
+          \r
+          [32m🎯 PERCHÉ SCEGLIERLA[39m\r
+          [32mCosti di gestione ridotti[39m\r
+          [32mLook distintivo → non è la solita MINI[39m\r
+          [32mPerfetta sia per città che per viaggi[39m\r
+          [32mOttima rivendibilità futura[39m\r
+          [32m📸 NOTE[39m\r
+          \r
+          [32mAuto realmente come da foto:[39m\r
+          [32mdesign moderno, linea iconica MINI e condizioni sopra la media.[39m\r
+          \r
+          [32m💰 PREZZO[39m\r
+          \r
+          [32m👉 Contattaci per info e disponibilità[39m\r
+          \r
+          [32m📞 SERVIZI[39m\r
+          [32mPossibilità finanziamento[39m\r
+          [32mValutiamo permuta[39m\r
+          [32mConsegna disponibile[39m
+          [32mEOS[39m,
+        [34minternal_notes[39m: [36mnull[39m,
+        [34mstatus[39m: [32m"[39m[32mattivo[39m[32m"[39m,
+        [34mavailable_from[39m: [36mnull[39m,
+        [34msold_date[39m: [36mnull[39m,
+        [34msold_price[39m: [36mnull[39m,
+        [34msold_to_customer_id[39m: [36mnull[39m,
+        [34mvehicle_id[39m: [36mnull[39m,
+        [34mcreated_by[39m: [35m2[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-04-25 07:45:24[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-04-25 07:58:10[39m[32m"[39m,
+        [34mdeleted_at[39m: [36mnull[39m,
+      },
+      [34;4mApp\Models\SaleVehicle[39;24m {#8146
+        [34mid[39m: [35m3[39m,
+        [34mtenant_id[39m: [35m1[39m,
+        [34mplate[39m: [32m"[39m[32mEZ229DD[39m[32m"[39m,
+        [34mplate_visible[39m: [35m0[39m,
+        [34mvin[39m: [36mnull[39m,
+        [34mbrand[39m: [32m"[39m[32mFORD[39m[32m"[39m,
+        [34mmodel[39m: [32m"[39m[32mFIESTA[39m[32m"[39m,
+        [34mversion[39m: [32m"[39m[32m1.5 TDCi 75CV[39m[32m"[39m,
+        [34myear[39m: [32m"[39m[32m2015[39m[32m"[39m,
+        [34mmileage[39m: [35m1[39m,
+        [34mfuel_type[39m: [32m"[39m[32mdiesel[39m[32m"[39m,
+        [34mtransmission[39m: [32m"[39m[32mmanuale[39m[32m"[39m,
+        [34mcolor[39m: [32m"[39m[32mGRIGIO[39m[32m"[39m,
+        [34mcolor_type[39m: [32m"[39m[32mmetallizzato[39m[32m"[39m,
+        [34mdoors[39m: [35m5[39m,
+        [34mseats[39m: [35m5[39m,
+        [34mengine_cc[39m: [35m1498[39m,
+        [34mpower_kw[39m: [35m55[39m,
+        [34mpower_hp[39m: [35m75[39m,
+        [34mbody_type[39m: [32m"[39m[32mberlina[39m[32m"[39m,
+        [34mcondition[39m: [32m"[39m[32mbuono[39m[32m"[39m,
+        [34mprevious_owners[39m: [35m2[39m,
+        [34mfirst_registration[39m: [32m"[39m[32m2015-03-30[39m[32m"[39m,
+        [34mfeatures[39m: [32m"[39m[32m[[39m\"[32maria_condizionata[39m\"[32m, [39m\"[32mclima_automatico[39m\"[32m, [39m\"[32mabs[39m\"[32m, [39m\"[32mesp[39m\"[32m, [39m\"[32mairbag_frontali[39m\"[32m, [39m\"[32mairbag_laterali[39m\"[32m, [39m\"[32mradio[39m\"[32m, [39m\"[32mbluetooth[39m\"[32m, [39m\"[32mcerchi_lega[39m\"[32m, [39m\"[32mvernice_metallizzata[39m\"[32m][39m[32m"[39m,
+        [34masking_price[39m: [32m"[39m[32m8200.00[39m[32m"[39m,
+        [34mprice_visible[39m: [35m0[39m,
+        [34mprice_label[39m: [36mnull[39m,
+        [34mmin_price[39m: [36mnull[39m,
+        [34mprice_negotiable[39m: [35m0[39m,
+        [34mbadge_label[39m: [32m"[39m[32mOccasione del mese[39m[32m"[39m,
+        [34mvat_deductible[39m: [35m0[39m,
+        [34mpurchase_price[39m: [36mnull[39m,
+        [34mtitle[39m: [32m"[39m[32mFORD FIESTA 1.5 TDCi 75CV – 5 PORTE – BASSI CONSUMI – PERFETTA[39m[32m"[39m,
+        [34mdescription[39m: <<<[32mEOS[39m
+          [32m🚗 FORD FIESTA 1.5 TDCi 75CV – 5 PORTE – BASSI CONSUMI – PERFETTA[39m\r
+          \r
+          [32mCerchi un’auto affidabile, economica e pronta all’uso?[39m\r
+          [32mQuesta Ford Fiesta diesel 5 porte è ideale per chi vuole spendere poco e avere zero problemi.[39m\r
+          \r
+          [32m🔥 PUNTI DI FORZA (REALI DALLE FOTO)[39m\r
+          [32mColore grigio/blu metallizzato elegante (facile da rivendere)[39m\r
+          [32m5 porte → molto più pratica rispetto alle 3[39m\r
+          [32mCerchi in lega originali Ford[39m\r
+          [32mFari anteriori con design moderno[39m\r
+          [32mInterni ordinati e puliti[39m\r
+          [32mPlancia centrale con display + comandi completi[39m\r
+          [32mClimatizzatore[39m\r
+          [32mRadio con comandi al volante[39m\r
+          [32mCambio manuale preciso[39m\r
+          [32m📊 DATI PRINCIPALI[39m\r
+          [32m📅 Anno: 2015[39m\r
+          [32m⛽ Diesel[39m\r
+          [32m⚙️ 1.5 TDCi[39m\r
+          [32m💪 75 CV → perfetta neopatentati[39m\r
+          [32m👥 5 posti[39m\r
+          [32m⚙️ Cambio manuale[39m\r
+          [32m🌍 Euro 5[39m\r
+          [32m🧾 STATO VEICOLO[39m\r
+          \r
+          [32m✔️ Revisione appena fatta (2025)[39m\r
+          [32m✔️ Interni ben tenuti (come da foto)[39m\r
+          [32m✔️ Carrozzeria in buone condizioni[39m\r
+          [32m✔️ Motore economico e affidabile Ford[39m\r
+          \r
+          [32m🎯 PERCHÉ È INTERESSANTE[39m\r
+          [32mConsumi bassissimi → perfetta per chi lavora o si sposta tanto[39m\r
+          [32mCosti gestione ridotti[39m\r
+          [32mFacile da guidare e parcheggiare[39m\r
+          [32mOttima come prima auto o seconda auto[39m\r
+          [32m📸 COSA SI VEDE DALLE FOTO (IMPORTANTE)[39m\r
+          [32mAuto tenuta bene, non “maltrattata”[39m\r
+          [32mInterni originali (no modifiche strane)[39m\r
+          [32mAllestimento semplice ma completo[39m\r
+          [32m👉 Questo aumenta fiducia = più contatti[39m\r
+          [32m💰 PREZZO[39m\r
+          \r
+          [32m👉 Contattaci per info e prova[39m\r
+          \r
+          [32m📞 SERVIZI[39m\r
+          [32mFinanziamento disponibile[39m\r
+          [32mPermuta valutata[39m\r
+          [32mConsegna[39m
+          [32mEOS[39m,
+        [34minternal_notes[39m: [36mnull[39m,
+        [34mstatus[39m: [32m"[39m[32mattivo[39m[32m"[39m,
+        [34mavailable_from[39m: [36mnull[39m,
+        [34msold_date[39m: [36mnull[39m,
+        [34msold_price[39m: [36mnull[39m,
+        [34msold_to_customer_id[39m: [36mnull[39m,
+        [34mvehicle_id[39m: [36mnull[39m,
+        [34mcreated_by[39m: [35m2[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-04-25 07:57:56[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-04-25 07:58:14[39m[32m"[39m,
+        [34mdeleted_at[39m: [36mnull[39m,
+      },
+      [34;4mApp\Models\SaleVehicle[39;24m {#8147
+        [34mid[39m: [35m4[39m,
+        [34mtenant_id[39m: [35m1[39m,
+        [34mplate[39m: [32m"[39m[32mFZ790EA[39m[32m"[39m,
+        [34mplate_visible[39m: [35m0[39m,
+        [34mvin[39m: [36mnull[39m,
+        [34mbrand[39m: [32m"[39m[32mALFA ROMEO[39m[32m"[39m,
+        [34mmodel[39m: [32m"[39m[32mSTELVIO[39m[32m"[39m,
+        [34mversion[39m: [32m"[39m[32mBTECH 190cv[39m[32m"[39m,
+        [34myear[39m: [32m"[39m[32m2019[39m[32m"[39m,
+        [34mmileage[39m: [35m106000[39m,
+        [34mfuel_type[39m: [32m"[39m[32mbenzina[39m[32m"[39m,
+        [34mtransmission[39m: [32m"[39m[32mautomatico[39m[32m"[39m,
+        [34mcolor[39m: [32m"[39m[32mBLU MISANO[39m[32m"[39m,
+        [34mcolor_type[39m: [32m"[39m[32mmetallizzato[39m[32m"[39m,
+        [34mdoors[39m: [35m5[39m,
+        [34mseats[39m: [35m5[39m,
+        [34mengine_cc[39m: [35m2413[39m,
+        [34mpower_kw[39m: [35m140[39m,
+        [34mpower_hp[39m: [35m190[39m,
+        [34mbody_type[39m: [32m"[39m[32mberlina[39m[32m"[39m,
+        [34mcondition[39m: [32m"[39m[32mottimo[39m[32m"[39m,
+        [34mprevious_owners[39m: [35m1[39m,
+        [34mfirst_registration[39m: [32m"[39m[32m2019-10-18[39m[32m"[39m,
+        [34mfeatures[39m: [32m"[39m[32m[[39m\"[32maria_condizionata[39m\"[32m, [39m\"[32mclima_automatico[39m\"[32m, [39m\"[32mclima_bizona[39m\"[32m, [39m\"[32msedili_riscaldati[39m\"[32m, [39m\"[32msedili_elettrici[39m\"[32m, [39m\"[32msedili_memoria[39m\"[32m, [39m\"[32mvolante_riscaldato[39m\"[32m, [39m\"[32mcruise_control[39m\"[32m, [39m\"[32mabs[39m\"[32m, [39m\"[32mesp[39m\"[32m, [39m\"[32mairbag_frontali[39m\"[32m, [39m\"[32mairbag_laterali[39m\"[32m, [39m\"[32mairbag_tendina[39m\"[32m, [39m\"[32msensori_parcheggio_ant[39m\"[32m, [39m\"[32msensori_parcheggio_post[39m\"[32m, [39m\"[32mtelecamera_posteriore[39m\"[32m, [39m\"[32mlane_assist[39m\"[32m, [39m\"[32mfrenata_autonoma[39m\"[32m, [39m\"[32mriconoscimento_segnali[39m\"[32m, [39m\"[32mradio[39m\"[32m, [39m\"[32mbluetooth[39m\"[32m, [39m\"[32mapple_carplay[39m\"[32m, [39m\"[32mandroid_auto[39m\"[32m, [39m\"[32mnavigatore[39m\"[32m, [39m\"[32mschermo_touch[39m\"[32m, [39m\"[32mhifi[39m\"[32m, [39m\"[32musb[39m\"[32m, [39m\"[32mcerchi_lega[39m\"[32m, [39m\"[32mvernice_metallizzata[39m\"[32m, [39m\"[32mspecchi_elettrici[39m\"[32m, [39m\"[32mspecchi_ripiegabili[39m\"[32m, [39m\"[32mluci_led[39m\"[32m, [39m\"[32mfari_fendinebbia[39m\"[32m, [39m\"[32mstart_stop[39m\"[32m, [39m\"[32mpaddleshift[39m\"[32m, [39m\"[32m4x4[39m\"[32m, [39m\"[32mdifferenziale_sportivo[39m\"[32m, [39m\"[32mfreni_sportivi[39m\"[32m][39m[32m"[39m,
+        [34masking_price[39m: [32m"[39m[32m25900.00[39m[32m"[39m,
+        [34mprice_visible[39m: [35m0[39m,
+        [34mprice_label[39m: [36mnull[39m,
+        [34mmin_price[39m: [36mnull[39m,
+        [34mprice_negotiable[39m: [35m0[39m,
+        [34mbadge_label[39m: [32m"[39m[32mPronta consegna[39m[32m"[39m,
+        [34mvat_deductible[39m: [35m0[39m,
+        [34mpurchase_price[39m: [36mnull[39m,
+        [34mtitle[39m: [32m"[39m[32mALFA ROMEO STELVIO 2.2 190CV Q4 AUTOMATICA – BLU MISANO – FULL SPORT[39m[32m"[39m,
+        [34mdescription[39m: <<<[32mEOS[39m
+          [32m🚗 ALFA ROMEO STELVIO 2.2 190CV Q4 AUTOMATICA – BLU MISANO – FULL SPORT[39m\r
+          \r
+          [32mNon è un SUV.[39m\r
+          [32mÈ una Stelvio.[39m\r
+          \r
+          [32mSe cerchi un’auto che unisca prestazioni, eleganza e guida vera, questa è quella giusta.[39m\r
+          \r
+          [32m🔥 PERCHÉ È DIVERSA DALLE ALTRE[39m\r
+          [32mMotore 2.2 Diesel 190 CV → potente ma gestibile[39m\r
+          [32mTrazione Q4 integrale → sicurezza + grip totale[39m\r
+          [32mCambio automatico con palette al volante[39m\r
+          [32mColore Blu Misano metallizzato (super richiesto)[39m\r
+          [32mPinze freno gialle + cerchi neri → look sportivo vero[39m\r
+          [32mDNA Alfa → modalità di guida dinamiche[39m\r
+          [32m📊 DATI PRINCIPALI[39m\r
+          [32m📅 2019[39m\r
+          [32m⛽ Diesel[39m\r
+          [32m⚙️ 2143 cc[39m\r
+          [32m💪 190 CV[39m\r
+          [32m🔄 Cambio automatico[39m\r
+          [32m🛞 Trazione integrale Q4[39m\r
+          [32m👥 5 posti[39m\r
+          [32m📍 106.000 km[39m\r
+          [32m🧾 STATO VEICOLO[39m\r
+          \r
+          [32m✔️ Auto curata e ben tenuta[39m\r
+          [32m✔️ Interni premium[39m\r
+          [32m✔️ Meccanica affidabile[39m\r
+          [32m✔️ Configurazione molto richiesta[39m\r
+          \r
+          [32m🎯 PERCHÉ COMPRARLA[39m\r
+          [32mGuida sportiva (non è un SUV “noioso”)[39m\r
+          [32mSicurezza totale grazie al Q4[39m\r
+          [32mPerfetta per famiglia ma anche per divertirsi[39m\r
+          [32mMantiene valore nel tempo (Alfa giusta)[39m\r
+          \r
+          [32m📞 SERVIZI[39m\r
+          [32mFinanziamento[39m\r
+          [32mPermuta[39m\r
+          [32mConsegna[39m
+          [32mEOS[39m,
+        [34minternal_notes[39m: [36mnull[39m,
+        [34mstatus[39m: [32m"[39m[32mattivo[39m[32m"[39m,
+        [34mavailable_from[39m: [36mnull[39m,
+        [34msold_date[39m: [36mnull[39m,
+        [34msold_price[39m: [36mnull[39m,
+        [34msold_to_customer_id[39m: [36mnull[39m,
+        [34mvehicle_id[39m: [36mnull[39m,
+        [34mcreated_by[39m: [35m2[39m,
+        [34mcreated_at[39m: [32m"[39m[32m2026-04-25 08:02:58[39m[32m"[39m,
+        [34mupdated_at[39m: [32m"[39m[32m2026-04-25 08:06:17[39m[32m"[39m,
+        [34mdeleted_at[39m: [36mnull[39m,
+      },
+    ],
+  }
