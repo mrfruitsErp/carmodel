@@ -365,10 +365,10 @@ td{font-size:14px}
   </nav>
   <div class="user-area">
     <div style="display:flex;align-items:center;gap:10px">
-      <div class="avatar">{{ strtoupper(substr(auth()->user()->name,0,2)) }}</div>
+      <div class="avatar">{{ strtoupper(substr(auth()->user()?->name ?? 'U',0,2)) }}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()->name }}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.05em">{{ ucfirst(auth()->user()->role) }}</div>
+        <div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()?->name ?? '' }}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.05em">{{ ucfirst(auth()->user()?->role ?? '') }}</div>
       </div>
       <form method="POST" action="{{ route('logout') }}">
         @csrf
