@@ -170,6 +170,37 @@
     </div>
 
     <div class="card">
+      <div class="section-header">
+        <span class="card-title" style="margin-bottom:0">🚗 Movimenti Oggi</span>
+        <a href="{{ route('movimenti.calendario') }}" class="btn btn-ghost btn-sm">Calendario</a>
+      </div>
+      @forelse($movimenti_oggi ?? [] as $m)
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border1)">
+        <div style="min-width:44px;text-align:center">
+          <div style="font-size:16px">{{ $m->tipo_icon }}</div>
+          <div style="font-size:10px;color:var(--text3)">{{ $m->data_inizio->format('H:i') }}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            {{ $m->titolo ?: $m->tipo_label }}
+          </div>
+          <div style="font-size:11px;color:var(--text2)">{{ $m->veicolo_label }}</div>
+          @if($m->luogo_partenza || $m->luogo_arrivo)
+          <div style="font-size:11px;color:var(--text3)">
+            @if($m->luogo_partenza) 📍{{ $m->luogo_partenza }} @endif
+            @if($m->luogo_arrivo) → 🏁{{ $m->luogo_arrivo }} @endif
+          </div>
+          @endif
+        </div>
+        <span class="badge badge-{{ $m->stato_color }}" style="font-size:10px;white-space:nowrap">{{ $m->stato_label }}</span>
+      </div>
+      @empty
+      <div style="text-align:center;color:var(--text3);padding:16px;font-size:13px">Nessun movimento programmato oggi</div>
+      @endforelse
+      <a href="{{ route('movimenti.create') }}" class="btn btn-ghost btn-sm" style="width:100%;margin-top:10px;text-align:center">+ Nuovo movimento</a>
+    </div>
+
+    <div class="card">
       <div class="card-title">Fatturato per tipo (30gg)</div>
       @php
       $tipi = ['carrozzeria' => 'Carrozzeria', 'meccanica' => 'Meccanica', 'detailing' => 'Detailing', 'tagliando' => 'Tagliando'];

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', $vehicle->plate.' — '.$vehicle->brand.' '.$vehicle->model)
 @section('topbar-actions')
+<a href="{{ route('movimenti.create', ['vehicle_type'=>'customer','vehicle_id'=>$vehicle->id]) }}" class="btn btn-ghost btn-sm">🚗 Crea Attività</a>
 <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('input-scan-libretto-existing').click()">📷 Scansiona libretto</button>
 <input type="file" id="input-scan-libretto-existing" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
 <a href="{{ route('veicoli.edit', ['veicoli' => $vehicle]) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>

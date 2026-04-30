@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', $vehicle->plate.' — '.$vehicle->brand.' '.$vehicle->model)
 @section('topbar-actions')
+<a href="{{ route('movimenti.create', ['vehicle_type'=>'fleet','vehicle_id'=>$vehicle->id]) }}" class="btn btn-ghost btn-sm">🚗 Crea Attività</a>
 <a href="{{ route('flotta.edit', $vehicle) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
 @endsection
 @section('content')

@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Claim, WorkOrder, Rental, Document, Customer, FleetVehicle};
+use App\Models\{Claim, WorkOrder, Rental, Document, Customer, FleetVehicle, VehicleMovement};
 
 class DashboardController extends Controller
 {
@@ -50,6 +50,13 @@ class DashboardController extends Controller
             ->orderByDesc('created_at')
             ->limit(6)->get();
 
+        // Movimenti del giorno
+        $movimenti_oggi = VehicleMovement::with(['fleetVehicle','saleVehicle','vehicle','cliente','operatore'])
+            ->whereDate('data_inizio', today())
+            ->whereNotIn('stato', ['annullato'])
+            ->orderBy('data_inizio')
+            ->limit(6)->get();
+
         // Fatturato per tipo lavorazione (ultimi 30gg)
         $fatturato_tipo = WorkOrder::forTenant($tenantId)
             ->whereIn('status',['completato','consegnato'])
@@ -59,7 +66,7 @@ class DashboardController extends Controller
             ->pluck('totale','job_type');
 
         return view('dashboard.index', compact(
-            'kpi','sinistri_urgenti','lavorazioni','sostitutive','attivita','fatturato_tipo'
+            'kpi','sinistri_urgenti','lavorazioni','sostitutive','attivita','fatturato_tipo','movimenti_oggi'
         ));
     }
 }

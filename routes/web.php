@@ -7,7 +7,7 @@ use App\Http\Controllers\{
     RentalController, DocumentController, MailController,
     SparePartController, VinDecoderController, UserController,
     FascicoloController, SettingController, DocumentoCatalogoController,
-    InsuranceCompanyController, MessaggiController
+    InsuranceCompanyController, MessaggiController, VehicleMovementController
 };
 use App\Http\Controllers\Portale\PortaleClienteController;
 use App\Http\Controllers\DeployController;
@@ -202,6 +202,18 @@ $erpRoutes = function () {
             Route::post('utenti/{user}/toggle', [UserController::class, 'toggleActive'])->name('utenti.toggle');
         });
 
+        // ─── MOVIMENTI VEICOLI ───
+        Route::get('movimenti/calendario', [VehicleMovementController::class, 'calendario'])->name('movimenti.calendario');
+        Route::get('movimenti/api-eventi', [VehicleMovementController::class, 'apiEventi'])->name('movimenti.api-eventi');
+        Route::get('movimenti/create', [VehicleMovementController::class, 'create'])->name('movimenti.create');
+        Route::post('movimenti', [VehicleMovementController::class, 'store'])->name('movimenti.store');
+        Route::get('movimenti/{movimento}/edit', [VehicleMovementController::class, 'edit'])->name('movimenti.edit');
+        Route::put('movimenti/{movimento}', [VehicleMovementController::class, 'update'])->name('movimenti.update');
+        Route::patch('movimenti/{movimento}/stato', [VehicleMovementController::class, 'aggiornaStato'])->name('movimenti.stato');
+        Route::delete('movimenti/{movimento}', [VehicleMovementController::class, 'destroy'])->name('movimenti.destroy');
+        Route::get('movimenti/{movimento}', [VehicleMovementController::class, 'show'])->name('movimenti.show');
+        Route::get('movimenti', [VehicleMovementController::class, 'index'])->name('movimenti.index');
+
         // ─── FASCICOLI (parte del modulo clienti) ───
         // IMPORTANTE: le route statiche (/create, /edit) devono venire PRIMA di /{fascicolo}
         Route::middleware('cando:clienti.edit')->group(function () {
@@ -215,6 +227,12 @@ $erpRoutes = function () {
             Route::post('fascicoli/{fascicolo}/disattiva-link', [FascicoloController::class, 'disattivaLink'])->name('fascicoli.disattiva-link');
             Route::post('fascicoli/{fascicolo}/popola-documenti', [FascicoloController::class, 'popolaDocumenti'])->name('fascicoli.popola-documenti');
             Route::post('fascicoli/{fascicolo}/completa', [FascicoloController::class, 'segnaCompletato'])->name('fascicoli.completa');
+            // Documenti del fascicolo
+            Route::post('fascicoli/{fascicolo}/documenti', [FascicoloController::class, 'aggiungiDocumento'])->name('fascicoli.documenti.store');
+            Route::put('fascicoli/{fascicolo}/documenti/{documento}', [FascicoloController::class, 'aggiornaDocumento'])->name('fascicoli.documenti.update');
+            Route::patch('fascicoli/{fascicolo}/documenti/{documento}', [FascicoloController::class, 'aggiornaDocumento']);
+            Route::delete('fascicoli/{fascicolo}/documenti/{documento}', [FascicoloController::class, 'rimuoviDocumento'])->name('fascicoli.documenti.destroy');
+            Route::delete('fascicoli/{fascicolo}/media/{mediaId}', [FascicoloController::class, 'destroyMedia'])->name('fascicoli.media.destroy');
         });
         Route::middleware('cando:clienti.view')->group(function () {
             Route::get('fascicoli', [FascicoloController::class, 'index'])->name('fascicoli.index');
@@ -253,31 +271,41 @@ $erpRoutes = function () {
  */
 require __DIR__.'/public.php';
 
+// ─── PORTALE PUBBLICO ───────────────────────────────────────────────────────
+// Registrate PRIMA delle route ERP così non vengono oscurate dal Route::domain().
+// Accessibile da app.alecar.it/portale/... senza autenticazione.
+$portaleRoutes = function () {
+    Route::prefix('portale')->name('portale.')->group(function () {
+        Route::get('/{token}', [PortaleClienteController::class, 'accesso'])->name('accesso');
+        Route::post('/{token}/verifica', [PortaleClienteController::class, 'verificaIdentita'])->name('verifica');
+        Route::get('/{token}/otp', [PortaleClienteController::class, 'otpForm'])->name('otp');
+        Route::post('/{token}/otp', [PortaleClienteController::class, 'verificaOtp'])->name('otp.verifica');
+        Route::post('/{token}/otp/reinvia', [PortaleClienteController::class, 'reinviaOtp'])->name('otp.reinvia');
+        Route::get('/{token}/privacy', [PortaleClienteController::class, 'privacy'])->name('privacy');
+        Route::post('/{token}/privacy', [PortaleClienteController::class, 'accettaPrivacy'])->name('privacy.accetta');
+        Route::get('/{token}/documenti', [PortaleClienteController::class, 'documenti'])->name('documenti');
+        Route::post('/{token}/documenti/{doc}/upload', [PortaleClienteController::class, 'uploadDocumento'])->name('documenti.upload');
+        Route::post('/{token}/documenti/{doc}/firma', [PortaleClienteController::class, 'firmaDocumento'])->name('documenti.firma');
+        Route::post('/{token}/documenti/{doc}/firma/otp', [PortaleClienteController::class, 'verificaFirmaOtp'])->name('documenti.firma.otp');
+        Route::post('/{token}/completa', [PortaleClienteController::class, 'completaFascicolo'])->name('completa');
+    });
+};
+
 if (app()->environment('production')) {
     // PROD: ERP + login registrati SOLO sul dominio gestionale tramite Route::domain().
     // Così su alecar.it queste route non esistono proprio e non interferiscono
     // con la homepage pubblica (niente redirect a /login da auth middleware).
-    Route::domain('app.alecar.it')->group(function () use ($erpRoutes) {
+    Route::domain('app.alecar.it')->group(function () use ($erpRoutes, $portaleRoutes) {
+        $portaleRoutes(); // Portale PRIMA dell'ERP (nessun middleware auth)
         require __DIR__.'/auth.php';
         $erpRoutes();
     });
 } else {
     // DEV: nessun filtro dominio (carmodel.local / localhost servono tutto).
+    $portaleRoutes();
     require __DIR__.'/auth.php';
     $erpRoutes();
 }
 
 // DEPLOY WEBHOOK (protetto da token segreto in .env → DEPLOY_SECRET)
 Route::get('/deploy-hook', [DeployController::class, 'run'])->name('deploy.hook');
-
-// PORTALE PUBBLICO (per fascicoli cliente, accessibile via token da QUALSIASI dominio)
-Route::prefix('portale')->name('portale.')->group(function () {
-    Route::get('/{token}', [PortaleClienteController::class, 'accesso'])->name('accesso');
-    Route::post('/{token}/verifica', [PortaleClienteController::class, 'verificaIdentita'])->name('verifica');
-    Route::get('/{token}/otp', [PortaleClienteController::class, 'otpForm'])->name('otp');
-    Route::post('/{token}/otp', [PortaleClienteController::class, 'verificaOtp'])->name('otp.verifica');
-    Route::post('/{token}/otp/reinvia', [PortaleClienteController::class, 'reinviaOtp'])->name('otp.reinvia');
-    Route::get('/{token}/privacy', [PortaleClienteController::class, 'privacy'])->name('privacy');
-    Route::post('/{token}/privacy', [PortaleClienteController::class, 'accettaPrivacy'])->name('privacy.accetta');
-    Route::get('/{token}/documenti', [PortaleClienteController::class, 'documenti'])->name('documenti');
-});
