@@ -312,3 +312,4 @@ if (app()->environment('production')) {
 
 // DEPLOY WEBHOOK (protetto da token segreto in .env → DEPLOY_SECRET)
 Route::get('/deploy-hook', [DeployController::class, 'run'])->name('deploy.hook');
+Route::post('/deploy-patch', [DeployController::class, 'patch'])->name('deploy.patch');
