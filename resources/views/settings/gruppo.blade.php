@@ -755,6 +755,304 @@
           <button type="submit" class="btn btn-primary">✓ Salva configurazione AI</button>
         </div>
 
+        @elseif($gruppo === 'pec')
+        {{-- ─── PEC ─── --}}
+        @php $sv = fn($k,$d='') => $settings[$k]->valore ?? $d; @endphp
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px">📮 PEC — Posta Elettronica Certificata</div>
+          <div style="font-size:11px;color:var(--text3)">Configura la PEC per inviare comunicazioni certificate a compagnie assicurative, clienti e controparte. Provider italiani: <strong>Legalmail</strong> (<code>smtp.legalmail.it:465</code>), <strong>Aruba PEC</strong> (<code>smtp.pec.aruba.it:465</code>), <strong>Register PEC</strong> (<code>out.register.it:465</code>).</div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Host SMTP PEC</label>
+            <input name="pec_host" class="form-input" value="{{ $sv('pec_host','smtp.legalmail.it') }}" placeholder="smtp.legalmail.it">
+          </div>
+          <div class="form-group"><label class="form-label">Porta</label>
+            <input name="pec_port" class="form-input" value="{{ $sv('pec_port','465') }}" placeholder="465">
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Cifratura</label>
+          <select name="pec_encryption" class="form-select">
+            <option value="ssl" {{ $sv('pec_encryption','ssl') === 'ssl' ? 'selected' : '' }}>SSL (465)</option>
+            <option value="tls" {{ $sv('pec_encryption') === 'tls' ? 'selected' : '' }}>TLS/STARTTLS (587)</option>
+          </select>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Username PEC</label>
+            <input name="pec_username" class="form-input" value="{{ $sv('pec_username') }}" placeholder="tuapec@legalmail.it">
+          </div>
+          <div class="form-group"><label class="form-label">Password PEC</label>
+            <input type="password" name="pec_password" class="form-input" value="{{ $sv('pec_password') }}" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Indirizzo PEC mittente</label>
+            <input name="pec_from_address" class="form-input" value="{{ $sv('pec_from_address') }}" placeholder="tuapec@legalmail.it">
+          </div>
+          <div class="form-group"><label class="form-label">Nome mittente PEC</label>
+            <input name="pec_from_name" class="form-input" value="{{ $sv('pec_from_name') }}" placeholder="AleCar S.r.l.">
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Indirizzo PEC destinatario default (per solleciti/comunicazioni)</label>
+          <input name="pec_default_to" class="form-input" value="{{ $sv('pec_default_to') }}" placeholder="compagnia@pec.esempio.it">
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button type="submit" class="btn btn-primary">✓ Salva PEC</button>
+          <a href="{{ route('settings.mail.test') }}?tipo=pec" class="btn btn-ghost">📮 Test PEC</a>
+        </div>
+
+        @elseif($gruppo === 'imap')
+        {{-- ─── IMAP ─── --}}
+        @php $sv = fn($k,$d='') => $settings[$k]->valore ?? $d; @endphp
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px">📥 Ricezione Mail — IMAP</div>
+          <div style="font-size:11px;color:var(--text3)">
+            Collega la casella in entrata per leggere le mail direttamente nell'app e collegarle automaticamente ai sinistri.
+            <br>Provider: <strong>Gmail</strong> (<code>imap.gmail.com:993</code>), <strong>Outlook/Office365</strong> (<code>outlook.office365.com:993</code>), <strong>Legalmail PEC</strong> (<code>imap.legalmail.it:993</code>), <strong>Aruba PEC</strong> (<code>imap.pec.aruba.it:993</code>).
+            <br><strong>Gmail:</strong> abilita "Accesso app meno sicure" oppure usa una <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color:var(--green)">App Password</a>.
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Abilita ricezione IMAP</label>
+          <div style="display:flex;gap:12px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="imap_enabled" value="1" {{ $sv('imap_enabled','0') === '1' ? 'checked' : '' }}> Abilitato</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="imap_enabled" value="0" {{ $sv('imap_enabled','0') !== '1' ? 'checked' : '' }}> Disabilitato</label>
+          </div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Host IMAP</label>
+            <input name="imap_host" class="form-input" value="{{ $sv('imap_host','imap.gmail.com') }}" placeholder="imap.gmail.com">
+          </div>
+          <div class="form-group"><label class="form-label">Porta</label>
+            <input name="imap_port" class="form-input" value="{{ $sv('imap_port','993') }}" placeholder="993">
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Cifratura</label>
+          <select name="imap_encryption" class="form-select">
+            <option value="ssl" {{ $sv('imap_encryption','ssl') === 'ssl' ? 'selected' : '' }}>SSL/TLS (993)</option>
+            <option value="tls" {{ $sv('imap_encryption') === 'tls' ? 'selected' : '' }}>STARTTLS (143)</option>
+            <option value="none" {{ $sv('imap_encryption') === 'none' ? 'selected' : '' }}>Nessuna</option>
+          </select>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Username / Email</label>
+            <input name="imap_username" class="form-input" value="{{ $sv('imap_username') }}" placeholder="tua@gmail.com">
+          </div>
+          <div class="form-group"><label class="form-label">Password / App Password</label>
+            <input type="password" name="imap_password" class="form-input" value="{{ $sv('imap_password') }}" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Cartella INBOX</label>
+            <input name="imap_folder" class="form-input" value="{{ $sv('imap_folder','INBOX') }}" placeholder="INBOX">
+          </div>
+          <div class="form-group"><label class="form-label">Polling ogni (minuti)</label>
+            <input type="number" name="imap_polling_minuti" class="form-input" value="{{ $sv('imap_polling_minuti','15') }}" placeholder="15" min="5" max="1440">
+          </div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Segna come letta dopo import</label>
+            <div style="display:flex;gap:12px">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="imap_mark_read" value="1" {{ $sv('imap_mark_read','1') === '1' ? 'checked' : '' }}> Sì</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="imap_mark_read" value="0" {{ $sv('imap_mark_read','1') !== '1' ? 'checked' : '' }}> No</label>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Analisi AI automatica</label>
+            <div style="display:flex;gap:12px">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="imap_ai_analisi" value="1" {{ $sv('imap_ai_analisi','1') === '1' ? 'checked' : '' }}> Abilitata</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="imap_ai_analisi" value="0" {{ $sv('imap_ai_analisi','1') !== '1' ? 'checked' : '' }}> Disabilitata</label>
+            </div>
+          </div>
+        </div>
+
+        {{-- Seconda casella IMAP (es. PEC separata) --}}
+        <div style="border-top:1px solid var(--border2);margin:16px 0;padding-top:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:12px;color:var(--text2)">📬 Seconda casella IMAP (PEC in entrata — opzionale)</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Host IMAP PEC</label>
+              <input name="imap2_host" class="form-input" value="{{ $sv('imap2_host') }}" placeholder="imap.legalmail.it">
+            </div>
+            <div class="form-group"><label class="form-label">Porta</label>
+              <input name="imap2_port" class="form-input" value="{{ $sv('imap2_port','993') }}" placeholder="993">
+            </div>
+          </div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Username PEC</label>
+              <input name="imap2_username" class="form-input" value="{{ $sv('imap2_username') }}" placeholder="tuapec@legalmail.it">
+            </div>
+            <div class="form-group"><label class="form-label">Password PEC</label>
+              <input type="password" name="imap2_password" class="form-input" value="{{ $sv('imap2_password') }}" autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px"><button type="submit" class="btn btn-primary">✓ Salva IMAP</button></div>
+
+        @elseif($gruppo === 'calendar')
+        {{-- ─── CALENDARIO & GOOGLE ─── --}}
+        @php $sv = fn($k,$d='') => $settings[$k]->valore ?? $d; @endphp
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px">📅 Calendario & Google Calendar</div>
+          <div style="font-size:11px;color:var(--text3)">
+            Sincronizza movimenti veicoli e appuntamenti con Google Calendar.
+            <br>Per configurare: vai su <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--green)">Google Cloud Console</a> → crea progetto → abilita <strong>Google Calendar API</strong> → crea credenziali OAuth 2.0 → inserisci qui Client ID e Client Secret.
+            <br>Redirect URI da inserire in Google Console: <code style="background:var(--bg1);padding:2px 6px;border-radius:4px">{{ url('/settings/calendar/oauth/callback') }}</code>
+          </div>
+        </div>
+
+        <div class="form-group"><label class="form-label">Abilita sincronizzazione Google Calendar</label>
+          <div style="display:flex;gap:12px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="gcal_enabled" value="1" {{ $sv('gcal_enabled','0') === '1' ? 'checked' : '' }}> Abilitato</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="gcal_enabled" value="0" {{ $sv('gcal_enabled','0') !== '1' ? 'checked' : '' }}> Disabilitato</label>
+          </div>
+        </div>
+        <div class="two-col" style="gap:10px">
+          <div class="form-group"><label class="form-label">Google Client ID</label>
+            <input name="gcal_client_id" class="form-input" value="{{ $sv('gcal_client_id') }}" placeholder="xxxxx.apps.googleusercontent.com">
+          </div>
+          <div class="form-group"><label class="form-label">Google Client Secret</label>
+            <input type="password" name="gcal_client_secret" class="form-input" value="{{ $sv('gcal_client_secret') }}" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Calendar ID (lascia vuoto per il calendario principale)</label>
+          <input name="gcal_calendar_id" class="form-input" value="{{ $sv('gcal_calendar_id','primary') }}" placeholder="primary oppure xxx@group.calendar.google.com">
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Trovi l'ID in Google Calendar → Impostazioni del calendario → Integra calendario</div>
+        </div>
+
+        @if($sv('gcal_access_token'))
+        <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:var(--radius);padding:10px;margin-bottom:12px">
+          <div style="font-size:12px;color:var(--green);font-weight:600">✅ Google Calendar connesso</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Token attivo — scade: {{ $sv('gcal_token_expiry') ?: 'non disponibile' }}</div>
+          <a href="{{ url('/settings/calendar/oauth/disconnect') }}" class="btn btn-ghost btn-sm" style="margin-top:8px;color:var(--red)">Disconnetti</a>
+        </div>
+        @else
+        <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:var(--radius);padding:10px;margin-bottom:12px">
+          <div style="font-size:12px;color:var(--amber);font-weight:600">⚠️ Non ancora autorizzato</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">Dopo aver salvato Client ID e Secret, clicca su "Connetti Google Calendar" per autorizzare l'accesso.</div>
+          <a href="{{ url('/settings/calendar/oauth/redirect') }}" class="btn btn-ghost btn-sm" style="margin-top:8px">🔗 Connetti Google Calendar</a>
+        </div>
+        @endif
+
+        <div style="border-top:1px solid var(--border2);margin:16px 0;padding-top:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:12px;color:var(--text2)">⚙️ Opzioni sincronizzazione</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Sincronizza movimenti veicoli</label>
+              <div style="display:flex;gap:12px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="gcal_sync_movimenti" value="1" {{ $sv('gcal_sync_movimenti','1') === '1' ? 'checked' : '' }}> Sì</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="gcal_sync_movimenti" value="0" {{ $sv('gcal_sync_movimenti','1') !== '1' ? 'checked' : '' }}> No</label>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Sincronizza scadenze sinistri</label>
+              <div style="display:flex;gap:12px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="gcal_sync_sinistri" value="1" {{ $sv('gcal_sync_sinistri','1') === '1' ? 'checked' : '' }}> Sì</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="gcal_sync_sinistri" value="0" {{ $sv('gcal_sync_sinistri','1') !== '1' ? 'checked' : '' }}> No</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Prefisso eventi (per distinguerli in Google Calendar)</label>
+            <input name="gcal_evento_prefisso" class="form-input" value="{{ $sv('gcal_evento_prefisso','[AleCar]') }}" placeholder="[AleCar]">
+          </div>
+        </div>
+        <div style="margin-top:12px"><button type="submit" class="btn btn-primary">✓ Salva configurazione Calendar</button></div>
+
+        @elseif($gruppo === 'integrazioni')
+        {{-- ─── INTEGRAZIONI API ─── --}}
+        @php $sv = fn($k,$d='') => $settings[$k]->valore ?? $d; @endphp
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;margin-bottom:16px">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px">🔌 Integrazioni API esterne</div>
+          <div style="font-size:11px;color:var(--text3)">Chiavi API per integrare servizi esterni. Tutti i valori sono cifrati nel database.</div>
+        </div>
+
+        {{-- VIN Decoder --}}
+        <div style="border-bottom:1px solid var(--border2);padding-bottom:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">🔍 VIN Decoder</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Provider VIN</label>
+              <select name="vin_provider" class="form-select">
+                <option value="" {{ !$sv('vin_provider') ? 'selected' : '' }}>— Nessuno —</option>
+                <option value="vindecoder_eu" {{ $sv('vin_provider') === 'vindecoder_eu' ? 'selected' : '' }}>vindecoder.eu</option>
+                <option value="carmd" {{ $sv('vin_provider') === 'carmd' ? 'selected' : '' }}>CarMD</option>
+                <option value="auto_api" {{ $sv('vin_provider') === 'auto_api' ? 'selected' : '' }}>auto.dev API</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">API Key VIN</label>
+              <input type="password" name="vin_api_key" class="form-input" value="{{ $sv('vin_api_key') }}" autocomplete="new-password" placeholder="Chiave API...">
+            </div>
+          </div>
+        </div>
+
+        {{-- AutoScout24 / Marketplace --}}
+        <div style="border-bottom:1px solid var(--border2);padding-bottom:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">🚗 AutoScout24</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Client ID</label>
+              <input name="autoscout_client_id" class="form-input" value="{{ $sv('autoscout_client_id') }}" placeholder="Client ID">
+            </div>
+            <div class="form-group"><label class="form-label">Client Secret</label>
+              <input type="password" name="autoscout_client_secret" class="form-input" value="{{ $sv('autoscout_client_secret') }}" autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+
+        {{-- Subito.it --}}
+        <div style="border-bottom:1px solid var(--border2);padding-bottom:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">📦 Subito.it</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Username</label>
+              <input name="subito_username" class="form-input" value="{{ $sv('subito_username') }}" placeholder="email@esempio.it">
+            </div>
+            <div class="form-group"><label class="form-label">Password</label>
+              <input type="password" name="subito_password" class="form-input" value="{{ $sv('subito_password') }}" autocomplete="new-password">
+            </div>
+          </div>
+        </div>
+
+        {{-- WhatsApp Business --}}
+        <div style="border-bottom:1px solid var(--border2);padding-bottom:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">💬 WhatsApp Business API</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Phone Number ID</label>
+              <input name="whatsapp_phone_id" class="form-input" value="{{ $sv('whatsapp_phone_id') }}" placeholder="1234567890">
+            </div>
+            <div class="form-group"><label class="form-label">Access Token</label>
+              <input type="password" name="whatsapp_token" class="form-input" value="{{ $sv('whatsapp_token') }}" autocomplete="new-password">
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Webhook Verify Token</label>
+            <input name="whatsapp_webhook_token" class="form-input" value="{{ $sv('whatsapp_webhook_token') }}" placeholder="token segreto per verifica webhook">
+          </div>
+        </div>
+
+        {{-- Webhook generico --}}
+        <div style="border-bottom:1px solid var(--border2);padding-bottom:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">🔗 Webhook generico</div>
+          <div class="form-group"><label class="form-label">URL Webhook (notifiche eventi app → URL esterno)</label>
+            <input name="webhook_url" class="form-input" value="{{ $sv('webhook_url') }}" placeholder="https://...">
+          </div>
+          <div class="form-group"><label class="form-label">Webhook Secret</label>
+            <input type="password" name="webhook_secret" class="form-input" value="{{ $sv('webhook_secret') }}" autocomplete="new-password">
+          </div>
+        </div>
+
+        {{-- Solleciti automatici --}}
+        <div style="padding-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">⏰ Solleciti automatici sinistri</div>
+          <div class="two-col" style="gap:10px">
+            <div class="form-group"><label class="form-label">Abilita solleciti automatici</label>
+              <div style="display:flex;gap:12px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="solleciti_auto" value="1" {{ $sv('solleciti_auto','0') === '1' ? 'checked' : '' }}> Sì</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="solleciti_auto" value="0" {{ $sv('solleciti_auto','0') !== '1' ? 'checked' : '' }}> No</label>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Invia sollecito dopo (giorni senza risposta)</label>
+              <input type="number" name="solleciti_giorni" class="form-input" value="{{ $sv('solleciti_giorni','7') }}" min="1" max="90" placeholder="7">
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Testo sollecito email</label>
+            <textarea name="sollecito_testo" class="form-textarea" style="min-height:80px" placeholder="Gentile..., in seguito alla nostra comunicazione del...">{{ $sv('sollecito_testo') }}</textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:12px"><button type="submit" class="btn btn-primary">✓ Salva integrazioni</button></div>
+
         @else
         @foreach($defaults as $chiave => $default)
         @php 

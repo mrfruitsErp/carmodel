@@ -2,7 +2,7 @@
 @section('title', isset($esperto) ? 'Modifica '.$esperto->name : 'Nuovo Contatto')
 @section('content')
 <div style="margin-bottom:16px"><a href="{{ route('periti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Esperti & Contatti</a></div>
-<form method="POST" action="{{ isset($esperto) ? route('periti.update', $esperto) : route('periti.store') }}">
+<form method="POST" action="{{ isset($esperto) ? route('periti.update', ['periti' => $esperto->id]) : route('periti.store') }}">
   @csrf
   @if(isset($esperto)) @method('PUT') @endif
   <div class="two-col">

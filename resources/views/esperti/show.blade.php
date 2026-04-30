@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', $esperto->name)
 @section('topbar-actions')
-<a href="{{ route('periti.edit', $esperto) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
+<a href="{{ route('periti.edit', ['periti' => $esperto->id]) }}" class="btn btn-ghost btn-sm">✎ Modifica</a>
 @endsection
 @section('content')
 <div style="margin-bottom:16px"><a href="{{ route('periti.index') }}" style="color:var(--text3);text-decoration:none;font-size:13px">← Esperti & Contatti</a></div>
@@ -39,8 +39,8 @@
     </div>
     @endif
     <div style="display:flex;gap:8px;margin-top:8px">
-      <a href="{{ route('periti.edit', $esperto) }}" class="btn btn-ghost" style="flex:1;justify-content:center">✎ Modifica</a>
-      <form method="POST" action="{{ route('periti.destroy', $esperto) }}" onsubmit="return confirm('Eliminare questo contatto?')">
+      <a href="{{ route('periti.edit', ['periti' => $esperto->id]) }}" class="btn btn-ghost" style="flex:1;justify-content:center">✎ Modifica</a>
+      <form method="POST" action="{{ route('periti.destroy', ['periti' => $esperto->id]) }}" onsubmit="return confirm('Eliminare questo contatto?')">
         @csrf @method('DELETE')
         <button type="submit" class="btn btn-ghost" style="color:var(--red)">Elimina</button>
       </form>

@@ -28,7 +28,7 @@
     <thead><tr><th>Nome</th><th>Ruolo</th><th>Compagnia / Studio</th><th>Telefono</th><th>Email</th><th>Valutazione</th></tr></thead>
     <tbody>
       @forelse($esperti as $e)
-      <tr onclick="location.href='{{ route('periti.show', $e) }}'" style="cursor:pointer">
+      <tr onclick="location.href='{{ route('periti.show', ['periti' => $e->id]) }}'" style="cursor:pointer">
         <td>
           <div style="display:flex;align-items:center;gap:9px">
             <div class="avatar" style="width:28px;height:28px;font-size:11px;background:var(--purple-bg);border-color:var(--purple);color:var(--purple)">{{ strtoupper(substr($e->name,0,2)) }}</div>
