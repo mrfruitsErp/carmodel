@@ -299,17 +299,19 @@ if (app()->environment('production')) {
     // Così su alecar.it queste route non esistono proprio e non interferiscono
     // con la homepage pubblica (niente redirect a /login da auth middleware).
     Route::domain('app.alecar.it')->group(function () use ($erpRoutes, $portaleRoutes) {
+        // DEPLOY WEBHOOK — PRIMA di tutto, nessun auth, protetto solo da token
+        Route::get('/deploy-hook', [DeployController::class, 'run'])->name('deploy.hook');
+        Route::post('/deploy-patch', [DeployController::class, 'patch'])->name('deploy.patch');
+
         $portaleRoutes(); // Portale PRIMA dell'ERP (nessun middleware auth)
         require __DIR__.'/auth.php';
         $erpRoutes();
     });
 } else {
     // DEV: nessun filtro dominio (carmodel.local / localhost servono tutto).
+    Route::get('/deploy-hook', [DeployController::class, 'run'])->name('deploy.hook');
+    Route::post('/deploy-patch', [DeployController::class, 'patch'])->name('deploy.patch');
     $portaleRoutes();
     require __DIR__.'/auth.php';
     $erpRoutes();
 }
-
-// DEPLOY WEBHOOK (protetto da token segreto in .env → DEPLOY_SECRET)
-Route::get('/deploy-hook', [DeployController::class, 'run'])->name('deploy.hook');
-Route::post('/deploy-patch', [DeployController::class, 'patch'])->name('deploy.patch');
